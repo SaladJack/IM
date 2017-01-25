@@ -16,9 +16,6 @@ import net.openmob.mobileimsdk.android.core.KeepAliveDaemon;
 /**
  * MobileIMSDK的全局参数控制类。
  * 
- * @author Jack Jiang, 2015-08-17
- * @version 1.0
- * @since 2.0
  */
 public class ConfigEntity
 {

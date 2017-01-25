@@ -44,8 +44,6 @@ import android.util.Log;
  * <p>
  * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
  * 
- * @author Jack Jiang, 2013-11-20
- * @version 1.0
  */
 public class QoS4ReciveDaemon
 {
@@ -108,7 +106,7 @@ public class QoS4ReciveDaemon
 					_excuting = true;
 					
 					if(ClientCoreSDK.DEBUG)
-						Log.d(TAG, "【IMCORE】【QoS接收方】++++++++++ START 暂存处理线程正在运行中，当前长度"+recievedMessages.size()+".");
+						Log.d(TAG, "【QoS接收方】++++++++++ START 暂存处理线程正在运行中，当前长度"+recievedMessages.size()+".");
 					
 					// 
 					for(String key : recievedMessages.keySet())
@@ -118,7 +116,7 @@ public class QoS4ReciveDaemon
 						if(delta >= MESSAGES_VALID_TIME)
 						{
 							if(ClientCoreSDK.DEBUG)
-								Log.d(TAG, "【IMCORE】【QoS接收方】指纹为"+key+"的包已生存"+delta
+								Log.d(TAG, "【QoS接收方】指纹为"+key+"的包已生存"+delta
 									+"ms(最大允许"+MESSAGES_VALID_TIME+"ms), 马上将删除之.");
 							recievedMessages.remove(key);
 						}
@@ -126,7 +124,7 @@ public class QoS4ReciveDaemon
 				}
 
 				if(ClientCoreSDK.DEBUG)
-					Log.d(TAG, "【IMCORE】【QoS接收方】++++++++++ END 暂存处理线程正在运行中，当前长度"+recievedMessages.size()+".");
+					Log.d(TAG, "【QoS接收方】++++++++++ END 暂存处理线程正在运行中，当前长度"+recievedMessages.size()+".");
 				
 				//
 				_excuting = false;
@@ -220,12 +218,12 @@ public class QoS4ReciveDaemon
 	{
 		if(fingerPrintOfProtocal == null)
 		{
-			Log.w(TAG, "【IMCORE】无效的 fingerPrintOfProtocal==null!");
+			Log.w(TAG, "无效的 fingerPrintOfProtocal==null!");
 			return;
 		}
 		
 		if(recievedMessages.containsKey(fingerPrintOfProtocal))
-			Log.w(TAG, "【IMCORE】【QoS接收方】指纹为"+fingerPrintOfProtocal
+			Log.w(TAG, "【QoS接收方】指纹为"+fingerPrintOfProtocal
 					+"的消息已经存在于接收列表中，该消息重复了（原理可能是对方因未收到应答包而错误重传导致），更新收到时间戳哦.");
 		
 		// 无条件放入已收到列表（如果已存在则覆盖之，已在存则意味着消息重复被接收，那么就用最新的时间戳更新之）

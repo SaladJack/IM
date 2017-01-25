@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">App</string>
+    <string name="registerFailure">注册失败,账号已存在!</string>
+    <string name="registerSuccess">注册成功</string>
 </resources>

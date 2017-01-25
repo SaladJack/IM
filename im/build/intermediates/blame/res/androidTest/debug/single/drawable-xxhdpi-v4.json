@@ -1,6 +1,10 @@
 [
     {
-        "merged": "D:\\AndroidStudioProjects\\IMSDK\\im\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xxhdpi-v4\\icon.png",
-        "source": "D:\\AndroidStudioProjects\\IMSDK\\im\\build\\intermediates\\bundles\\debug\\res\\drawable-xxhdpi-v4\\icon.png"
+        "merged": "/Users/tusm/AndroidStudioProjects/IM/im/build/intermediates/res/merged/androidTest/debug/drawable-xxhdpi-v4/icon.png",
+        "source": "/Users/tusm/AndroidStudioProjects/IM/im/build/intermediates/bundles/debug/res/drawable-xxhdpi-v4/icon.png"
+    },
+    {
+        "merged": "/Users/tusm/AndroidStudioProjects/IM/D:\\AndroidStudioProjects\\IMSDK\\im\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xxhdpi-v4\\icon.png",
+        "source": "/Users/tusm/AndroidStudioProjects/IM/D:\\AndroidStudioProjects\\IMSDK\\im\\build\\intermediates\\bundles\\debug\\res\\drawable-xxhdpi-v4\\icon.png"
     }
 ]

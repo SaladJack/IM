@@ -28,9 +28,6 @@ import android.util.Log;
  * <p>
  * 依据作者对MobileIMSDK API的设计理念，本类将以单例的形式提供给调用者使用。
  *
- * @author Jack Jiang, 2013-10-10
- * @version 1.0
- * @since 1.0
  */
 public class LocalUDPSocketProvider
 {
@@ -67,12 +64,12 @@ public class LocalUDPSocketProvider
 			//
 			closeLocalUDPSocket();
 			if(ClientCoreSDK.DEBUG)
-				Log.d(TAG, "【IMCORE】new DatagramSocket()中...");
+				Log.d(TAG, "new DatagramSocket()中...");
 			localUDPSocket = (ConfigEntity.localUDPPort == 0?
 					new DatagramSocket():new DatagramSocket(ConfigEntity.localUDPPort));//_Utils.LOCAL_UDP_SEND$LISTENING_PORT);
 			localUDPSocket.setReuseAddress(true);
 			if(ClientCoreSDK.DEBUG)
-				Log.d(TAG, "【IMCORE】new DatagramSocket()已成功完成.");
+				Log.d(TAG, "new DatagramSocket()已成功完成.");
 			
 //			// 设置本地消息监听（并启动监听处理线程）
 ////			localUDPDataReciever.setLocalUDPSocket(localUDPSocket);
@@ -82,7 +79,7 @@ public class LocalUDPSocketProvider
 		}
 		catch (Exception e)
 		{
-			Log.w(TAG, "【IMCORE】localUDPSocket创建时出错，原因是："+e.getMessage(), e);
+			Log.w(TAG, "localUDPSocket创建时出错，原因是："+e.getMessage(), e);
 			//
 			closeLocalUDPSocket();
 			return null;
@@ -114,13 +111,13 @@ public class LocalUDPSocketProvider
 		if(isLocalUDPSocketReady())
 		{
 			if(ClientCoreSDK.DEBUG)
-				Log.d(TAG, "【IMCORE】isLocalUDPSocketReady()==true，直接返回本地socket引用哦。");
+				Log.d(TAG, "isLocalUDPSocketReady()==true，直接返回本地socket引用哦。");
 			return localUDPSocket;
 		}
 		else
 		{
 			if(ClientCoreSDK.DEBUG)
-				Log.d(TAG, "【IMCORE】isLocalUDPSocketReady()==false，需要先resetLocalUDPSocket()...");
+				Log.d(TAG, "isLocalUDPSocketReady()==false，需要先resetLocalUDPSocket()...");
 			return resetLocalUDPSocket();
 		}
 	}
@@ -142,7 +139,7 @@ public class LocalUDPSocketProvider
 		try
 		{
 			if(ClientCoreSDK.DEBUG)
-				Log.d(TAG, "【IMCORE】正在closeLocalUDPSocket()...");
+				Log.d(TAG, "正在closeLocalUDPSocket()...");
 			if(localUDPSocket != null)
 			{
 				localUDPSocket.close();
@@ -150,12 +147,12 @@ public class LocalUDPSocketProvider
 			}
 			else
 			{
-				Log.d(TAG, "【IMCORE】Socket处于未初化状态（可能是您还未登陆），无需关闭。");
+				Log.d(TAG, "Socket处于未初化状态（可能是您还未登陆），无需关闭。");
 			}	
 		}
 		catch (Exception e)
 		{
-			Log.w(TAG, "【IMCORE】lcloseLocalUDPSocket时出错，原因是："+e.getMessage(), e);
+			Log.w(TAG, "lcloseLocalUDPSocket时出错，原因是："+e.getMessage(), e);
 		}
 	}
 }

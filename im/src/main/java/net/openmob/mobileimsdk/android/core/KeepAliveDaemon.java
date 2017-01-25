@@ -128,7 +128,7 @@ public class KeepAliveDaemon
 						{
 							_excuting = true;
 							if(ClientCoreSDK.DEBUG)
-								Log.d(TAG, "【IMCORE】心跳线程执行中...");
+								Log.d(TAG, "心跳线程执行中...");
 							int code = LocalUDPDataSender.getInstance(context).sendKeepAlive();
 							
 							return code;

@@ -13,6 +13,8 @@ package net.openmob.mobileimsdk.android.core;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import net.openmob.mobileimsdk.android.ClientCoreSDK;
 import net.openmob.mobileimsdk.android.conf.ConfigEntity;
@@ -237,7 +239,7 @@ public class LocalUDPDataSender
 		
 		if(!ClientCoreSDK.getInstance().isLocalDeviceNetworkOk())
 		{
-			Log.e(TAG, "【IMCORE】本地网络不能工作，send数据没有继续!");
+			Log.e(TAG, "本地网络不能工作，send数据没有继续!");
 			return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
 		}
 //		if(!ClientCoreSDK.getInstance().isLogined())
@@ -255,20 +257,21 @@ public class LocalUDPDataSender
 				// 序未捕获异常而崩溃的风险！（加了这个判断的目的在于让程序直接报错或提示算了！）
 				if(ConfigEntity.serverIP == null)
 				{
-					Log.w(TAG, "【IMCORE】send数据没有继续，原因是ConfigEntity.server_ip==null!");
+					Log.w(TAG, "send数据没有继续，原因是ConfigEntity.server_ip==null!");
 					return ErrorCode.ForC.TO_SERVER_NET_INFO_NOT_SETUP;
 				}
 				
 				// 即刻连接上服务端（如果不connect，即使在DataProgram中设置了远程id和地址则服务端MINA也收不到，跟普通的服
 				// 务端UDP貌似不太一样，普通UDP时客户端无需先connect可以直接send设置好远程ip和端口的DataPragramPackage）
 //				ds.connect(InetAddress.getByName(_Utils.REMOTE_SERVER_LISTENING_IP), _Utils.REMOTE_SERVER_LISTENING_PORT);
-				ds.connect(InetAddress.getByName(ConfigEntity.serverIP), ConfigEntity.serverUDPPort);
-				
+
+//				ds.connect(InetAddress.getByName(ConfigEntity.serverIP), ConfigEntity.serverUDPPort);
+				ds.connect(new InetSocketAddress(ConfigEntity.serverIP,ConfigEntity.serverUDPPort));
 //				FIXME: 因为connect是异步的，为了在尽可能保证在send前就已connect，所以最好在socketProvider里Bind后就connect!
 			}
 			catch (Exception e)
 			{
-				Log.w(TAG, "【IMCORE】send时出错，原因是："+e.getMessage(), e);
+				Log.w(TAG, "send时出错，原因是："+e.getMessage(), e);
 				return ErrorCode.ForC.BAD_CONNECT_TO_SERVER;
 			}
 		}
@@ -334,7 +337,7 @@ public class LocalUDPDataSender
 		{
 			if(p == null)
 			{
-				Log.w(TAG, "【IMCORE】无效的参数p==null!");
+				Log.w(TAG, "无效的参数p==null!");
 				return;
 			}
 			this.context = context;
@@ -455,7 +458,7 @@ public class LocalUDPDataSender
 			}
 			else
 			{
-				Log.d(TAG, "【IMCORE】数据发送失败, 错误码是："+code+"！");
+				Log.d(TAG, "数据发送失败, 错误码是："+code+"！");
 			}
 			
 			//

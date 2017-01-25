@@ -43,8 +43,6 @@ import android.util.Log;
  * 法的合理性和简洁性暂不实现这个了，好在客户端业务层可无条件判定并提示该消息没有成功发
  * 送，那此种情况在应用层的体验上也是可接受的！
  * 
- * @author Jack Jiang, 2013-11-19
- * @version 1.1
  */
 public class QoS4SendDaemon
 {
@@ -78,7 +76,7 @@ public class QoS4SendDaemon
 	 * <p>
 	 * 此阀值的作用在于：在QoS=true的情况下，一条刚刚发出的消息会同时保存到本类中的QoS保证队列，
 	 * 在接收方的应答包还未被发出方收到时（已经发出但因为存在数十毫秒的网络延迟，应答包正在路上）
-	 * ，恰好遇到本次QoS质量保证心跳间隔的到来，因为之前的QoS队列罗辑是只要存在本队列中还未被去掉
+	 * ，恰好遇到本次QoS质量保证心跳间隔的到来，因为之前的QoS队列逻辑是只要存在本队列中还未被去掉
 	 * 的包，就意味着是要重传的——那么此逻辑在我们本次讨论的情况下就存在漏洞而导致没有必要的重传了。
 	 * 如果有本阀值存在，则即使刚刚发出的消息刚放到QoS队列就遇到QoS心跳到来，则只要当前放入队列的时间
 	 * 小于或等于本值，就可以被认为是刚刚放入，那么也就避免被误重传了。
@@ -127,7 +125,6 @@ public class QoS4SendDaemon
 	private QoS4SendDaemon(Context context)
 	{
 		this.context = context;
-		
 		init();
 	}
 	
@@ -156,7 +153,7 @@ public class QoS4SendDaemon
 							try
 							{
 								if(ClientCoreSDK.DEBUG)
-									Log.d(TAG, "【IMCORE】【QoS】=========== 消息发送质量保证线程运行中, 当前需要处理的列表长度为"+sentMessages.size()+"...");
+									Log.d(TAG, "【QoS】=========== 消息发送质量保证线程运行中, 当前需要处理的列表长度为"+sentMessages.size()+"...");
 								
 								// 开始处理中 ************************************************
 								for(String key : sentMessages.keySet())
@@ -168,7 +165,7 @@ public class QoS4SendDaemon
 										if(p.getRetryCount() >= QOS_TRY_COUNT)
 										{
 											if(ClientCoreSDK.DEBUG)
-												Log.d(TAG, "【IMCORE】【QoS】指纹为"+p.getFp()
+												Log.d(TAG, "【QoS】指纹为"+p.getFp()
 													+"的消息包重传次数已达"+p.getRetryCount()+"(最多"+QOS_TRY_COUNT+"次)上限，将判定为丢包！");
 											
 											// 将这个包加入到丢包列表（该Protocal对象将是一个clone的全新对象而非原来的引用哦！）
@@ -186,7 +183,7 @@ public class QoS4SendDaemon
 											if(delta <= MESSAGES_JUST$NOW_TIME)
 											{
 												if(ClientCoreSDK.DEBUG)
-													Log.w(TAG, "【IMCORE】【QoS】指纹为"+key+"的包距\"刚刚\"发出才"+delta
+													Log.w(TAG, "【QoS】指纹为"+key+"的包距\"刚刚\"发出才"+delta
 														+"ms(<="+MESSAGES_JUST$NOW_TIME+"ms将被认定是\"刚刚\"), 本次不需要重传哦.");
 											}
 											//### 2015103 Bug Fix END
@@ -203,13 +200,13 @@ public class QoS4SendDaemon
 															p.increaseRetryCount();
 
 															if(ClientCoreSDK.DEBUG)
-																Log.d(TAG, "【IMCORE】【QoS】指纹为"+p.getFp()
+																Log.d(TAG, "【QoS】指纹为"+p.getFp()
 																		+"的消息包已成功进行重传，此次之后重传次数已达"
 																		+p.getRetryCount()+"(最多"+QOS_TRY_COUNT+"次).");
 														}
 														else
 														{
-															Log.w(TAG, "【IMCORE】【QoS】指纹为"+p.getFp()
+															Log.w(TAG, "【QoS】指纹为"+p.getFp()
 																	+"的消息包重传失败，它的重传次数之前已累计为"
 																	+p.getRetryCount()+"(最多"+QOS_TRY_COUNT+"次).");
 														}
@@ -228,7 +225,7 @@ public class QoS4SendDaemon
 							}
 							catch (Exception eee)
 							{
-								Log.w(TAG, "【IMCORE】【QoS】消息发送质量保证线程运行时发生异常,"+eee.getMessage(), eee);
+								Log.w(TAG, "【QoS】消息发送质量保证线程运行时发生异常,"+eee.getMessage(), eee);
 							}
 							
 							return lostMessages;
@@ -347,7 +344,7 @@ public class QoS4SendDaemon
 		
 		// 如果列表中已经存则仅提示（用于debug）
 		if(sentMessages.get(p.getFp()) != null)
-			Log.w(TAG, "【IMCORE】【QoS】指纹为"+p.getFp()+"的消息已经放入了发送质量保证队列，该消息为何会重复？（生成的指纹码重复？还是重复put？）");
+			Log.w(TAG, "【QoS】指纹为"+p.getFp()+"的消息已经放入了发送质量保证队列，该消息为何会重复？（生成的指纹码重复？还是重复put？）");
 		
 		// save it
 		sentMessages.put(p.getFp(), p);
@@ -375,7 +372,7 @@ public class QoS4SendDaemon
 			}
 			protected void onPostExecute(Object result) 
 			{
-				Log.w(TAG, "【IMCORE】【QoS】指纹为"+fingerPrint+"的消息已成功从发送质量保证队列中移除(可能是收到接收方的应答也可能是达到了重传的次数上限)，重试次数="
+				Log.w(TAG, "【QoS】指纹为"+fingerPrint+"的消息已成功从发送质量保证队列中移除(可能是收到接收方的应答也可能是达到了重传的次数上限)，重试次数="
 						+(result != null?((Protocal)result).getRetryCount():"none呵呵."));
 		    }
 		}.execute();

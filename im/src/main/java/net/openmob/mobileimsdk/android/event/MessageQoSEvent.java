@@ -27,8 +27,6 @@ import net.openmob.mobileimsdk.server.protocal.Protocal;
  * MobileIMSDK的QoS机制将会即时准确地告之发送方：“已送达”或者“没有送达”，
  * 没有第3种可能）。
  * 
- * @author Jack Jiang, 2013-11-19
- * @version 1.0
  */
 public interface MessageQoSEvent
 {

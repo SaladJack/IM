@@ -35,8 +35,6 @@ import android.util.Log;
  * <br>
  * 本类主要提供一些全局参数的读取和设置。
  * 
- * @author Jack Jiang, 2013-10-08
- * @version 1.0
  */
 public class ClientCoreSDK
 {
@@ -559,7 +557,7 @@ public class ClientCoreSDK
 					&& !(wifiNetInfo != null && wifiNetInfo.isConnected()))
 			{ 
 //				if(ClientCoreSDK.DEBUG)
-				Log.e(TAG, "【IMCORE】【本地网络通知】检测本地网络连接断开了!"); 
+				Log.e(TAG, "【本地网络通知】检测本地网络连接断开了!");
 				
 				//
 				localDeviceNetworkOk = false;
@@ -571,7 +569,7 @@ public class ClientCoreSDK
 			{ 
 				if(ClientCoreSDK.DEBUG)
 					// connect network 
-					Log.e(TAG, "【IMCORE】【本地网络通知】检测本地网络已连接上了!"); 
+					Log.e(TAG, "【本地网络通知】检测本地网络已连接上了!");
 				
 				//
 				localDeviceNetworkOk = true;
@@ -580,7 +578,7 @@ public class ClientCoreSDK
 				// 【此处可以解决以下场景问题：】当用户成功登陆后，本地网络断开了，则此时自动重连机制已启动，
 				// 而本地侦听的开启是在登陆信息成功发出时（本地网络连好后，信息是可以发出的）启动的，而
 				// 收到网络连接好的消息可能要滞后于真正的网络连接好（那此时间间隔内登陆数据可以成功发出）
-				// ，那么此时出果启动侦听则必须导致侦听不可能成功。以下代码保证在收到网络连接消息时，先无条件关闭
+				// ，那么此时如果启动侦听则必须导致侦听不可能成功。以下代码保证在收到网络连接消息时，先无条件关闭
 				// 网络连接，当下一个自动登陆循环到来时自然就重新建立Socket了，那么此时重新登陆消息发出后再
 				// 启动UDP侦听就ok了。--> 说到底，关闭网络连接就是为了在下次使用网络时无条件重置Socket，从而保证
 				// Socket被建立时是处于正常的网络状况下。

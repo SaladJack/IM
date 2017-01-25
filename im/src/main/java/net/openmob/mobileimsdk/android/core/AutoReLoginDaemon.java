@@ -32,11 +32,6 @@ import android.util.Log;
  * <b>注意：</b>自动登陆（重连）只可能发生在登陆成功后与服务端的网络通信断开时。
  * <p>
  * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
- * 
- * @author Jack Jiang, 2013-10-10
- * @version 1.0
- * @see SendLoginDataAsync
- * @see net.openmob.mobileimsdk.android.conf.ConfigEntity
  */
 public class AutoReLoginDaemon
 {
@@ -95,7 +90,7 @@ public class AutoReLoginDaemon
 						{
 							_excuting = true;
 							if(ClientCoreSDK.DEBUG)
-								Log.d(TAG, "【IMCORE】自动重新登陆线程执行中, autoReLogin?"+ClientCoreSDK.autoReLogin+"...");
+								Log.d(TAG, "自动重新登陆线程执行中, autoReLogin?"+ClientCoreSDK.autoReLogin+"...");
 							int code = -1;
 							// 是否允许自动重新登陆哦
 							if(ClientCoreSDK.autoReLogin)

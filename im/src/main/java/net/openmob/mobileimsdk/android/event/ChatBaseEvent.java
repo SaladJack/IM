@@ -19,9 +19,6 @@ package net.openmob.mobileimsdk.android.event;
  * #setChatBaseEvent(ChatBaseEvent)}
  * 方法设置之，可实现回调事件的通知和处理。
  * 
- * @author Jack Jiang, 2013-10-08
- * @version 1.0
- * @see net.openmob.mobileimsdk.android.ClientCoreSDK
  */
 public interface ChatBaseEvent
 {
@@ -39,7 +36,7 @@ public interface ChatBaseEvent
 	 * 与服务端的通信断开的回调事件通知。
 	 * <br>
 	 * 该消息只有在客户端连接服务器成功之后网络异常中断之时触发。
-	 * 导致与与服务端的通信断开的原因有（但不限于）：无线网络信号不稳定、WiFi与2G/3G/4G等同开情
+	 * 导致与服务端的通信断开的原因有（但不限于）：无线网络信号不稳定、WiFi与2G/3G/4G等同开情
 	 * 况下的网络切换、手机系统的省电策略等。
 	 * 
 	 * @param dwErrorCode 本回调参数表示表示连接断开的原因，目前错误码没有太多意义，仅作保留字段，目前通常为-1

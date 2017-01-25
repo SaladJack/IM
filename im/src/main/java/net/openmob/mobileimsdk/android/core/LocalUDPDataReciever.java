@@ -38,9 +38,6 @@ import android.util.Log;
  * <p>
  * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
  * 
- * @author Jack Jiang, 2013-10-10
- * @version 1.0
- * @since 1.0
  */
 public class LocalUDPDataReciever
 {
@@ -106,14 +103,14 @@ public class LocalUDPDataReciever
 					try
 					{
 						if(ClientCoreSDK.DEBUG)
-							Log.d(TAG, "【IMCORE】本地UDP端口侦听中，端口="+ConfigEntity.localUDPPort+"...");
+							Log.d(TAG, "本地UDP端口侦听中，端口="+ConfigEntity.localUDPPort+"...");
 
 						//开始侦听
 						p2pListeningImpl();
 					}
 					catch (Exception eee)
 					{
-						Log.w(TAG, "【IMCORE】本地UDP监听停止了(socket被关闭了?),"+eee.getMessage(), eee);
+						Log.w(TAG, "本地UDP监听停止了(socket被关闭了?),"+eee.getMessage(), eee);
 					}
 				}
 			});
@@ -122,7 +119,7 @@ public class LocalUDPDataReciever
 		}
 		catch (Exception e)
 		{
-			Log.w(TAG, "【IMCORE】本地UDPSocket监听开启时发生异常,"+e.getMessage(), e);
+			Log.w(TAG, "本地UDPSocket监听开启时发生异常,"+e.getMessage(), e);
 		}
 	}
 
@@ -185,12 +182,12 @@ public class LocalUDPDataReciever
 				// ## 如果该消息是需要QoS支持的包
 				if(pFromServer.isQoS())
 				{
-					// 且已经存在于接收列表中（及意味着可能是之前发给对方的应
+					// 且已经存在于接收列表中（即意味着可能是之前发给对方的应
 					// 答包因网络或其它情况丢了，对方又因QoS机制重新发过来了）
 					if(QoS4ReciveDaemon.getInstance(context).hasRecieved(pFromServer.getFp()))
 					{
 						if(ClientCoreSDK.DEBUG)
-							Log.d(TAG, "【IMCORE】【QoS机制】"+pFromServer.getFp()+"已经存在于发送列表中，这是重复包，通知应用层收到该包罗！");
+							Log.d(TAG, "【QoS机制】"+pFromServer.getFp()+"已经存在于发送列表中，这是重复包，通知应用层收到该包咯！");
 						
 						//------------------------------------------------------------------------------ [1]代码与[2]处相同的哦 S
 						// 【【C2C、C2S、S2C模式下的QoS机制2/4步：将收到的包存入QoS接收方暂存队列中（用于防重复）】】
@@ -233,7 +230,7 @@ public class LocalUDPDataReciever
 					case ProtocalType.S.FROM_SERVER_TYPE_OF_RESPONSE$KEEP$ALIVE:
 					{
 						if(ClientCoreSDK.DEBUG)
-							Log.d(TAG, "【IMCORE】收到服务端回过来的Keep Alive心跳响应包.");
+							Log.d(TAG, "收到服务端回过来的Keep Alive心跳响应包.");
 						// 更新服务端的最新响应时间（该时间将作为计算网络是否断开的依据）
 						KeepAliveDaemon.getInstance(context).updateGetKeepAliveResponseFromServerTimstamp();
 						break;
@@ -244,7 +241,7 @@ public class LocalUDPDataReciever
 						// 应答包的消息内容即为之前收到包的指纹id
 						String theFingerPrint = pFromServer.getDataContent();
 						if(ClientCoreSDK.DEBUG)
-							Log.d(TAG, "【IMCORE】【QoS】收到"+pFromServer.getFrom()+"发过来的指纹为"+theFingerPrint+"的应答包.");
+							Log.d(TAG, "【QoS】收到"+pFromServer.getFrom()+"发过来的指纹为"+theFingerPrint+"的应答包.");
 						
 						// 将收到的应答事件通知事件处理者
 						if(ClientCoreSDK.getInstance().getMessageQoSEvent() != null)
@@ -345,7 +342,7 @@ public class LocalUDPDataReciever
 							// 
 							ClientCoreSDK.getInstance().setLoginHasInit(false);
 							
-							Log.e(TAG, "【IMCORE】收到服务端的“尚未登陆”的错误消息，心跳线程将停止，请应用层重新登陆.");
+							Log.e(TAG, "收到服务端的“尚未登陆”的错误消息，心跳线程将停止，请应用层重新登陆.");
 							// 停止心跳
 							KeepAliveDaemon.getInstance(context).stop();
 							
@@ -372,13 +369,13 @@ public class LocalUDPDataReciever
 					}
 					
 					default:
-						Log.w(TAG, "【IMCORE】收到的服务端消息类型："+pFromServer.getType()+"，但目前该类型客户端不支持解析和处理！");
+						Log.w(TAG, "收到的服务端消息类型："+pFromServer.getType()+"，但目前该类型客户端不支持解析和处理！");
 						break;
 				}
 			}
 			catch (Exception e)
 			{
-				Log.w(TAG, "【IMCORE】处理消息的过程中发生了错误.", e);
+				Log.w(TAG, "处理消息的过程中发生了错误.", e);
 			}
 		}
 		
@@ -396,13 +393,13 @@ public class LocalUDPDataReciever
 					protected void onPostExecute(Integer code)
 					{
 						if(ClientCoreSDK.DEBUG)
-							Log.d(TAG, "【IMCORE】【QoS】向"+pFromServer.getFrom()+"发送"+pFromServer.getFp()+"包的应答包成功,from="+pFromServer.getTo()+"！");
+							Log.d(TAG, "【QoS】向"+pFromServer.getFrom()+"发送"+pFromServer.getFp()+"包的应答包成功,from="+pFromServer.getTo()+"！");
 					}
 				}.execute();
 			}
 			else
 			{
-				Log.w(TAG, "【IMCORE】【QoS】收到"+pFromServer.getFrom()+"发过来需要QoS的包，但它的指纹码却为null！无法发应答包！");
+				Log.w(TAG, "【QoS】收到"+pFromServer.getFrom()+"发过来需要QoS的包，但它的指纹码却为null！无法发应答包！");
 			}
 		}
 	}

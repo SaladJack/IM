@@ -19,9 +19,6 @@ package net.openmob.mobileimsdk.android.event;
  * #setChatTransDataEvent(ChatTransDataEvent)}
  * 方法设置之，可实现回调事件的通知和处理。
  * 
- * @author Jack Jiang, 2013-10-08
- * @version 1.0
- * @see net.openmob.mobileimsdk.android.ClientCoreSDK
  */
 public interface ChatTransDataEvent
 {

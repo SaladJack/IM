@@ -74,36 +74,36 @@ public class LoginActivity extends Activity
 		initForLogin();
 	}
 	
-	/** 
+	private void initViews()
+	{
+		editServerIp = (EditText)this.findViewById(R.id.serverIP_editText);
+		editServerPort = (EditText)this.findViewById(R.id.serverPort_editText);
+
+		btnLogin = (Button)this.findViewById(R.id.login_btn);
+		editLoginName = (EditText)this.findViewById(R.id.loginName_editText);
+		editLoginPsw = (EditText)this.findViewById(R.id.loginPsw_editText);
+		viewVersion = (TextView)this.findViewById(R.id.demo_version);
+
+		// Demo程序的版本号
+		viewVersion.setText(getProgrammVersion());
+
+		this.setTitle("MobileIMSDK Demo登陆");
+	}
+
+	/**
 	 * 捕获back键，实现调用 {@link #doExit(Context)}方法.
 	 */
 	@Override
 	public void onBackPressed()
 	{
 		super.onBackPressed();
-		
+
 		// ** 注意：Android程序要么就别处理，要处理就一定
 		//			要退干净，否则会有意想不到的问题哦！
 		finish();
 		System.exit(0);
 	}
-	
-	private void initViews()
-	{
-		editServerIp = (EditText)this.findViewById(R.id.serverIP_editText);
-		editServerPort = (EditText)this.findViewById(R.id.serverPort_editText);
-		
-		btnLogin = (Button)this.findViewById(R.id.login_btn);
-		editLoginName = (EditText)this.findViewById(R.id.loginName_editText);
-		editLoginPsw = (EditText)this.findViewById(R.id.loginPsw_editText);
-		viewVersion = (TextView)this.findViewById(R.id.demo_version);
-		
-		// Demo程序的版本号
-		viewVersion.setText(getProgrammVersion());
-		
-		this.setTitle("MobileIMSDK Demo登陆");
-	}
-	
+
 	private void initListeners()
 	{
 		btnLogin.setOnClickListener(new OnClickListener(){
@@ -114,7 +114,7 @@ public class LoginActivity extends Activity
 			}
 		});
 	}
-	
+
 	private void initForLogin()
 	{
 		// 实例化登陆进度提示封装类
