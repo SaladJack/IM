@@ -28,7 +28,7 @@ public class ConfigEntity
 	 * 全局设置：服务端IP或域名。
 	 * 
 	 * <p>
-	 * 如需设置本参数，请在登陆前调用，否则将不起效。
+	 * 如需设置本参数，请在登录前调用，否则将不起效。
 	 */
 	public static String serverIP = "rbcore.openmob.net";
 	
@@ -36,7 +36,7 @@ public class ConfigEntity
 	 * 全局设置：服务端UDP服务侦听端口号。
 	 * 
 	 * <p>
-	 * 如需设置本参数，请在登陆前调用，否则将不起效。
+	 * 如需设置本参数，请在登录前调用，否则将不起效。
 	 */
 	public static int serverUDPPort = 7901;
 	
@@ -44,7 +44,7 @@ public class ConfigEntity
 	 * 全局设置：本地UDP数据发送和侦听端口。默认是0。
 	 * 
 	 * <p>
-	 * 如需设置本参数，请在登陆前调用，否则将不起效。
+	 * 如需设置本参数，请在登录前调用，否则将不起效。
 	 * 
 	 * <p>
 	 * 本参数为0时表示由系统自动分配端口（这意味着同时开启两个及以上本SDK
@@ -58,7 +58,7 @@ public class ConfigEntity
      * 设置MobileIMSDK即时通讯核心框架预设的敏感度模式。
      * 
      * <p>
-     * 请在登陆前调用，否则将不起效.
+     * 请在登录前调用，否则将不起效.
      * 
      * <p>
      * <b>重要说明：</b><u>客户端本模式的设定必须要与服务端的模式设制保持一致</u>，否则

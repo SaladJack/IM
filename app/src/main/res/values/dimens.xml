@@ -5,4 +5,7 @@
     <dimen name="friend_name_textsize">16sp</dimen>
     <dimen name="friend_latest_content_textsize">20sp</dimen>
     <dimen name="titlebar_tv_size">20sp</dimen>
+    <dimen name="mine_item_tv_marginLeft">20dp</dimen>
+    <dimen name="user_id_tv_size">20sp</dimen>
+    <dimen name="mine_item_img_marginLeft">15dp</dimen>
 </resources>

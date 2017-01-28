@@ -23,6 +23,6 @@ public class RegisterPresenter implements RegisterIPresenter {
     }
 
     @Override public void registerFailed() {
-        view.onRegisterFailure();
+        view.onRegisterFail();
     }
 }

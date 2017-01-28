@@ -46,6 +46,6 @@ public class ChatTransDataEventImpl implements ChatTransDataEvent
 	public void onErrorResponse(int errorCode, String errorMsg)
 	{
 		Log.d(TAG, "【DEBUG_UI】收到服务端错误消息，errorCode="+errorCode+", errorMsg="+errorMsg);
-		this.chatView.showIMInfo_red("Server反馈错误码："+errorCode+",errorMsg="+errorMsg);
+		this.chatView.onDisconnect("Server反馈错误码："+errorCode+",errorMsg="+errorMsg);
 	}
 }

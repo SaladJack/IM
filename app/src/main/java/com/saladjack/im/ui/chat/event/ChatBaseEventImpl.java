@@ -11,80 +11,62 @@
  */
 package com.saladjack.im.ui.chat.event;
 
-import java.util.Observer;
-
 
 import com.saladjack.im.event.ChatBaseEvent;
-import com.saladjack.im.ui.chat.ChatActivity;
 import com.saladjack.im.ui.chat.ChatView;
+import com.saladjack.im.ui.login.LoginView;
 
 import android.util.Log;
 
-public class ChatBaseEventImpl implements ChatBaseEvent
-{
+public class ChatBaseEventImpl implements ChatBaseEvent {
 private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 	
 	private ChatView chatView = null;
-	
-	// 本Observer目前仅用于登陆时（因为登陆与收到服务端的登陆验证结果
-	// 是异步的，所以有此观察者来完成收到验证后的处理）
-	private Observer loginOkForLaunchObserver = null;
-	
-	@Override
-	public void onLoginMessage(int dwUserId, int dwErrorCode)
-	{
-		if (dwErrorCode == 0) 
-		{
-//			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+dwUserId);
-			
-			// TODO 以下代码仅用于DEMO哦
-			if(this.chatView != null)
-			{
-				this.chatView.refreshMyid();
-				this.chatView.showIMInfo_green("登录成功,id="+dwUserId);
-			}
-		}
-		else 
-		{
-			Log.e(TAG, "【DEBUG_UI】登录失败，错误代码：" + dwErrorCode);
 
-			// TODO 以下代码仅用于DEMO哦
-			if(this.chatView != null)
-			{
-				this.chatView.refreshMyid();
-				this.chatView.showIMInfo_red("登录失败,code="+dwErrorCode);
+	private LoginView loginView = null;
+
+
+	@Override public void onLoginMessage(int userId, int responseCode,String username)
+	{
+		if (responseCode == 0) {
+//			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId);
+			if(this.chatView != null) {
+				this.chatView.showIMInfo_green("登录成功,id="+userId);
+			}
+			if(loginView != null){
+				loginView.onLoginSuccess(userId,username);
+				loginView = null;
 			}
 		}
-		
-		// 此观察者只有开启程序首次使用登陆界面时有用
-		if(loginOkForLaunchObserver != null)
-		{
-			loginOkForLaunchObserver.update(null, dwErrorCode);
-			loginOkForLaunchObserver = null;
+		else {
+			Log.e(TAG, "【DEBUG_UI】登录失败，错误代码：" + responseCode);
+			if(this.chatView != null) {
+				this.chatView.onDisconnect("登录失败,code="+responseCode);
+			}
+			if(loginView != null){
+				loginView.onLoginFail(responseCode);
+			}
 		}
+
+
+
+
 	}
 
-	@Override
-	public void onLinkCloseMessage(int dwErrorCode)
-	{
-		Log.e(TAG, "【DEBUG_UI】网络连接出错关闭了，error：" + dwErrorCode);
+	@Override public void onLinkCloseMessage(int errcode) {
+		Log.e(TAG, "【DEBUG_UI】网络连接出错关闭了，error：" + errcode);
 		
 		// TODO 以下代码仅用于DEMO哦
-		if(this.chatView != null)
-		{
-			this.chatView.refreshMyid();
-			this.chatView.showIMInfo_red("服务器连接已断开,error="+dwErrorCode);
+		if(this.chatView != null) {
+			this.chatView.onDisconnect("服务器连接已断开,error="+errcode);
 		}
 	}
 	
-	public void setLoginOkForLaunchObserver(Observer loginOkForLaunchObserver)
-	{
-		this.loginOkForLaunchObserver = loginOkForLaunchObserver;
+	public void setLoginView(LoginView loginView) {
+		this.loginView = loginView;
 	}
 	
-	public ChatBaseEventImpl setChatView(ChatActivity chatView)
-	{
+	public void setChatView(ChatView chatView) {
 		this.chatView = chatView;
-		return this;
 	}
 }

@@ -5,7 +5,11 @@ package com.saladjack.im.ui.login;
  */
 
 public interface LoginView {
-    void loginFail();
+    void onSendMsgSuccess();
 
-    void loginSuccess();
+    void onSendMsgFail(int code);
+
+    void onLoginSuccess(int userId,String userName);
+
+    void onLoginFail(int errorcode);
 }

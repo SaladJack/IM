@@ -6,9 +6,9 @@ import android.content.Context;
  * Created by saladjack on 17/1/27.
  */
 public interface LoginIPresenter {
-    void loginFail();
+    void onSendMsgFail(int code);
 
-    void loginSuccess();
+    void onSendMsgSuccess();
 
     void login(Context context, String account, String password, String serverIP, int serverPort);
 }

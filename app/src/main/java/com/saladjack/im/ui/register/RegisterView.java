@@ -6,5 +6,5 @@ package com.saladjack.im.ui.register;
 
 public interface RegisterView {
     void onRegisterSuccess();
-    void onRegisterFailure();
+    void onRegisterFail();
 }

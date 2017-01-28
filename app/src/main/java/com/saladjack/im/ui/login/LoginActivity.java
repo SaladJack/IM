@@ -1,11 +1,8 @@
 package com.saladjack.im.ui.login;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import com.saladjack.im.IMClientManager;
-import com.saladjack.im.ui.BaseActivity;
-import com.saladjack.im.ui.friend.FriendActivity;
+import com.saladjack.im.ui.base.BaseActivity;
+import com.saladjack.im.ui.message.MessageActivity;
 import com.saladjack.im.utils.AppUtils;
 
 import android.app.Activity;
@@ -16,14 +13,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager.BadTokenException;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import net.openmob.mobilesdk.android.R;
+import com.saladjack.im.R;
+
+import scut.saladjack.core.bean.UserBean;
+import scut.saladjack.core.db.dao.UserDao;
 
 /**
  * Created by saladjack on 17/1/27.
@@ -35,36 +34,28 @@ public class LoginActivity extends BaseActivity implements LoginView
 
 	private EditText editServerIp = null;
 	private EditText editServerPort = null;
-	
+
 	private EditText accountEt = null;
 	private EditText pwdEt = null;
 	private Button btnLogin = null;
 	private TextView viewVersion = null;
-	/** 登陆进度提示 */
+	/** 登录进度提示 */
 	private OnLoginProgress onLoginProgress = null;
-	/** 收到服务端的登陆完成反馈时要通知的观察者（因登陆是异步实现，本观察者将由
-	 *  ChatBaseEvent 事件的处理者在收到服务端的登陆反馈后通知之） */
-	private Observer onLoginSucessObserver = null;
+
 	private LoginIPresenter presenter;
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
 		//
 		this.setContentView(R.layout.demo_login_activity_layout);
 		presenter = new LoginPresenter(this);
 		// 界面UI基本设置
 		initViews();
-		initListeners();
-		
-		// 确保MobileIMSDK被初始化哦（整个APP生生命周期中只需调用一次哦）
-		IMClientManager.getInstance(this).initMobileIMSDK();
-		
-		// 登陆有关的初始化工作
-		initForLogin();
+
+
 	}
-	
+
 	private void initViews() {
 		editServerIp = (EditText)this.findViewById(R.id.serverIP_editText);
 		editServerPort = (EditText)this.findViewById(R.id.serverPort_editText);
@@ -76,66 +67,11 @@ public class LoginActivity extends BaseActivity implements LoginView
 		viewVersion.setText(AppUtils.getProgrammVersion(this));
 
 		this.setTitle("登录");
+		btnLogin.setOnClickListener(v -> doLogin());
 	}
 
 	/**
-	 * 捕获back键，实现调用 {@link #doExit()}方法.
-	 */
-	@Override
-	public void onBackPressed()
-	{
-		super.onBackPressed();
-
-		// ** 注意：Android程序要么就别处理，要处理就一定
-		//			要退干净，否则会有意想不到的问题哦！
-		finish();
-		System.exit(0);
-	}
-
-	private void initListeners()
-	{
-		btnLogin.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{
-				doLogin();
-			}
-		});
-	}
-
-	private void initForLogin()
-	{
-		// 实例化登陆进度提示封装类
-		onLoginProgress = new OnLoginProgress(this);
-		// 准备好异步登陆结果回调观察者（将在登陆方法中使用）
-		onLoginSucessObserver = new Observer(){
-			@Override public void update(Observable observable, Object data) {
-				// * 已收到服务端登陆反馈则当然应立即取消显示登陆进度条
-				onLoginProgress.showProgressing(false);
-				// 服务端返回的登陆结果值
-				int code = (Integer)data;
-				// 登陆成功
-				if(code == 0) {
-					//** 提示：登陆MobileIMSDK服务器成功后的事情在此实现即可
-					// 进入主界面
-					FriendActivity.open(LoginActivity.this);
-					// 同时关闭登陆界面
-					finish();
-				}
-				// 登陆失败
-				else {
-					new AlertDialog.Builder(LoginActivity.this)
-						.setTitle("友情提示")  
-						.setMessage("Sorry，登陆失败，错误码="+code)
-						.setPositiveButton("知道了", null) 
-				.show(); 
-				}
-			}
-		};
-	}
-	
-	/**
-	 * 登陆处理。
+	 * 登录处理。
 	 */
 	private void doLogin()
 	{
@@ -159,11 +95,10 @@ public class LoginActivity extends BaseActivity implements LoginView
 				return;
 			}
 
-			// 发送登陆数据包
+			// 发送登录数据包
 			if(!TextUtils.isEmpty(account)) {
 				onLoginProgress.showProgressing(true);
-				// * 设置好服务端反馈的登陆结果观察者（当客户端收到服务端反馈过来的登陆消息时将被通知）
-				IMClientManager.getInstance(this).getBaseEventListener().setLoginOkForLaunchObserver(onLoginSucessObserver);
+				IMClientManager.getInstance(this).getBaseEventListener().setLoginView(this);
 				presenter.login(this,account,password,serverIP,port);
 			}
 		}
@@ -174,27 +109,45 @@ public class LoginActivity extends BaseActivity implements LoginView
 	}
 
 
-	@Override public void loginSuccess() {
+	@Override public void onSendMsgSuccess() {
+		showToast(R.string.send_msg_success);
+	}
+
+	@Override public void onSendMsgFail(int code) {
+		onLoginProgress.showProgressing(false);
+		showToast(getString(R.string.send_msg_fail) + code);
+	}
+
+	@Override public void onLoginSuccess(int userId,String userName) {
+		onLoginProgress.showProgressing(false);
+		// 登录成功
+
+		UserBean userBean = new UserBean(userId,userName,accountEt.getText().toString().trim(),pwdEt.getText().toString().trim());
+		UserDao userDao = new UserDao();
+		userDao.updateUser(userBean);
+		userDao.close();
+
+		MessageActivity.open(this);
+		finish();
 
 	}
 
-
-	@Override public void loginFail() {
-		onLoginProgress.showProgressing(false);
+	@Override public void onLoginFail(int errorCode) {
+		showToast(R.string.login_fail);
 	}
 
 	//-------------------------------------------------------------------------- inner classes
 	/**
-	 * 登陆进度提示和超时检测封装实现类.
+	 * 登录进度提示和超时检测封装实现类.
 	 */
 	private class OnLoginProgress {
-		/** 登陆的超时时间定义 */
+		/** 登录的超时时间定义 */
 		private final static int RETRY_DELAY = 6000;
-		
+
 		private Handler handler = null;
 		private Runnable runnable = null;
 
-		
+
 		private ProgressDialog progressDialogForPairing = null;
 		private Activity parentActivity = null;
 
@@ -206,10 +159,10 @@ public class LoginActivity extends BaseActivity implements LoginView
 		private void init() {
 			progressDialogForPairing = new ProgressDialog(parentActivity);
 			progressDialogForPairing.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialogForPairing.setTitle("登陆中"); 
-			progressDialogForPairing.setMessage("正在登陆中，请稍候。。。"); 
+			progressDialogForPairing.setTitle(getString(R.string.logining));
+			progressDialogForPairing.setMessage(getString(R.string.logining_please_wait));
 			progressDialogForPairing.setCanceledOnTouchOutside(false);
-			
+
 			handler = new Handler();
 			runnable = new Runnable(){
 				@Override
@@ -220,33 +173,33 @@ public class LoginActivity extends BaseActivity implements LoginView
 		}
 
 		/**
-		 * 登陆超时后要调用的方法。
+		 * 登录超时后要调用的方法。
 		 */
 		private void onTimeout() {
-			// 本观察者中由用户选择是否重试登陆或者取消登陆重试
+			// 本观察者中由用户选择是否重试登录或者取消登录重试
 			new AlertDialog.Builder(LoginActivity.this)
-				.setTitle("超时了")  
-				.setMessage("登陆超时，可能是网络故障或服务器无法连接，是否重试？")
-				.setPositiveButton("重试！", new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface dialog,int which) {
-						// 确认要重试时（再次尝试登陆）
-						doLogin();
-					}
-				}) 
-				.setNegativeButton("取消" , new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface dialog,int which) {
-						// 不需要重试则要停止“登陆中”的进度提示哦
-						OnLoginProgress.this.showProgressing(false);
-					}
-				})
-			.show(); 
+					.setTitle("超时了")
+					.setMessage("登录超时，可能是网络故障或服务器无法连接，是否重试？")
+					.setPositiveButton("重试！", new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface dialog,int which) {
+							// 确认要重试时（再次尝试登录）
+							doLogin();
+						}
+					})
+					.setNegativeButton("取消" , new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface dialog,int which) {
+							// 不需要重试则要停止“登录中”的进度提示哦
+							OnLoginProgress.this.showProgressing(false);
+						}
+					})
+					.show();
 		}
 
 		/**
 		 * 显示进度提示.
-		 * 
+		 *
 		 * @param show
 		 */
 		public void showProgressing(boolean show) {
@@ -263,18 +216,17 @@ public class LoginActivity extends BaseActivity implements LoginView
 			else {
 				// 无条件停掉延迟重试任务
 				handler.removeCallbacks(runnable);
-
 				showLoginProgressGUI(false);
 			}
 		}
 
 		/**
 		 * 进度提示时要显示或取消显示的GUI内容。
-		 * 
-		 * @param show true表示显示gui内容，否则表示结速gui内容显示
+		 *
+		 * @param show true表示显示gui内容，否则表示结束gui内容显示
 		 */
 		private void showLoginProgressGUI(boolean show) {
-			// 显示登陆提示信息
+			// 显示登录提示信息
 			if(show) {
 				try{
 					if(parentActivity != null && !parentActivity.isFinishing())
@@ -284,12 +236,26 @@ public class LoginActivity extends BaseActivity implements LoginView
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			// 关闭登陆提示信息
+			// 关闭登录提示信息
 			else {
-				// 此if语句是为了保证延迟线程里不会因Activity已被关闭而此处却要非法地执行show的情况（此判断可趁为安全的show方法哦！）
+				// 此if语句是为了保证延迟线程里不会因Activity已被关闭而此处却要非法地执行show的情况（此判断可趁为安全的show方法！）
 				if(parentActivity != null && !parentActivity.isFinishing())
 					progressDialogForPairing.dismiss();
 			}
 		}
 	}
+
+	/**
+	 * 捕获back键
+	 */
+	@Override public void onBackPressed()
+	{
+		super.onBackPressed();
+
+		// ** 注意：Android程序要么就别处理，要处理就一定
+		//			要退干净，否则会有意想不到的问题哦！
+		finish();
+		System.exit(0);
+	}
+
 }

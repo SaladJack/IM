@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/main_layout_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:padding="15dp"
+        style="@style/mine_item_style">
+        <ImageView
+            android:id="@+id/avatar"
+            android:src="@drawable/avatar"
+            android:layout_marginLeft="@dimen/mine_item_img_marginLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/avatar"
+            android:text="@string/user_name"
+            android:textSize="@dimen/user_id_tv_size"
+            style="@style/deep_tv_style" />
+    </RelativeLayout>
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_posts"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/my_posts"-->
+            <!--android:src="@mipmap/my_post"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/my_posts"-->
+            <!--android:text="@string/my_post"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_origination"-->
+        <!--android:padding="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/my_origination"-->
+            <!--android:src="@mipmap/my_origination"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/my_origination"-->
+            <!--android:text="@string/my_origination"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_collection"-->
+        <!--android:padding="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/collection"-->
+            <!--android:src="@mipmap/collection"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/collection"-->
+            <!--android:text="@string/collection"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_clear_cache"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/clear_cache"-->
+            <!--android:src="@mipmap/clear_cache"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/clear_cache"-->
+            <!--android:text="@string/clear_cache"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_feedback"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/feedback"-->
+            <!--android:src="@mipmap/feedback"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/feedback"-->
+            <!--android:text="@string/feedback"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/mine_about_us"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--style="@style/mine_item_style">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/about_us"-->
+            <!--android:src="@mipmap/about_us"-->
+            <!--style="@style/mine_item_img_style"/>-->
+        <!--<TextView-->
+            <!--android:layout_toRightOf="@id/about_us"-->
+            <!--android:text="@string/about_us"-->
+            <!--style="@style/mine_item_tv_style" />-->
+    <!--</RelativeLayout>-->
+</LinearLayout>

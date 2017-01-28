@@ -14,7 +14,7 @@ package com.saladjack.im.event;
 import com.saladjack.im.ClientCoreSDK;
 
 /**
- * MobileIMSDK的基础通信消息的回调事件接口（如：登陆成功事件
+ * MobileIMSDK的基础通信消息的回调事件接口（如：登录成功事件
  * 通知、掉线事件通知等）。
  * <br>
  * 实现此接口后，通过 {@link ClientCoreSDK
@@ -25,14 +25,14 @@ import com.saladjack.im.ClientCoreSDK;
 public interface ChatBaseEvent
 {
 	/**
-	 * 本地用户的登陆结果回调事件通知。
+	 * 本地用户的登录结果回调事件通知。
 	 * 
-	 * @param dwUserId 当回调参数dwErrorCode=0时，本回调参数值表示登陆成功后服务
+	 * @param dwUserId 当回调参数dwErrorCode=0时，本回调参数值表示登录成功后服务
 	 * 端分配的用户id，否则本回调参数值无意义
-	 * @param dwErrorCode 服务端反馈的登录结果：0 表示登陆成功，否则为服务端自定义
+	 * @param dwErrorCode 服务端反馈的登录结果：0 表示登录成功，否则为服务端自定义
 	 * 的出错代码（按照约定通常为>=1025的数）
 	 */
-    public void onLoginMessage(int dwUserId, int dwErrorCode);
+    public void onLoginMessage(int dwUserId, int dwErrorCode,String username);
     
 	/**
 	 * 与服务端的通信断开的回调事件通知。

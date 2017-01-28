@@ -19,11 +19,11 @@ public class LoginPresenter implements LoginIPresenter {
         model.login(context,account,password,serverIP,serverPort);
     }
 
-    @Override public void loginFail() {
-        view.loginFail();
+    @Override public void onSendMsgFail(int code) {
+        view.onSendMsgFail(code);
     }
 
-    @Override public void loginSuccess() {
-        view.loginSuccess();
+    @Override public void onSendMsgSuccess() {
+        view.onSendMsgSuccess();
     }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.IMClientManager;
-import com.saladjack.im.entity.Friend;
+import scut.saladjack.core.bean.FriendAcount;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,7 +40,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.openmob.mobilesdk.android.R;
+import com.saladjack.im.R;
 
 /**
  * Created by saladjack on 17/1/27.
@@ -48,7 +48,7 @@ import net.openmob.mobilesdk.android.R;
 
 public class ChatActivity extends Activity implements ChatView
 {
-	public static void open(Context context,Friend friend){
+	public static void open(Context context,FriendAcount friend){
 
 
 	}
@@ -95,20 +95,14 @@ public class ChatActivity extends Activity implements ChatView
 			@Override
 			public void onClick(View v)
 			{
-				// 退出登陆
+				// 退出登录
 				doLogout();
 				// 退出程序
 				doExit();
 			}
 		});
 
-		btnSend.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{
-				doSendMessage();
-			}
-		});
+		btnSend.setOnClickListener(v-> doSendMessage());
 	}
 
 	private void initOthers()
@@ -131,7 +125,7 @@ public class ChatActivity extends Activity implements ChatView
 		
 		// ** 注意：Android程序要么就别处理，要处理就一定
 		//			要退干净，否则会有意想不到的问题哦！
-		// 退出登陆
+		// 退出登录
 		doLogout();
 		// 退出程序
 		doExit();
@@ -180,7 +174,7 @@ public class ChatActivity extends Activity implements ChatView
 	
 	private void doLogout()
 	{
-		// 发出退出登陆请求包（Android系统要求必须要在独立的线程中发送哦）
+		// 发出退出登录请求包（Android系统要求必须要在独立的线程中发送哦）
 		new AsyncTask<Object, Integer, Integer>(){
 			@Override
 			protected Integer doInBackground(Object... params)
@@ -201,9 +195,9 @@ public class ChatActivity extends Activity implements ChatView
 			{
 				refreshMyid();
 				if(code == 0)
-					Log.d(ChatActivity.class.getSimpleName(), "注销登陆请求已完成！");
+					Log.d(ChatActivity.class.getSimpleName(), "注销登录请求已完成！");
 				else
-					Toast.makeText(getApplicationContext(), "注销登陆请求发送失败。错误码是："+code+"！", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "注销登录请求发送失败。错误码是："+code+"！", Toast.LENGTH_SHORT).show();
 			}
 		}.execute();
 	}
@@ -215,20 +209,16 @@ public class ChatActivity extends Activity implements ChatView
 	}
 	
 	//--------------------------------------------------------------- 各种信息输出方法 START
-	@Override public void showIMInfo_black(String txt)
-	{
+	@Override public void showIMInfo_black(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
 	}
-	@Override public void showIMInfo_blue(String txt)
-	{
+	@Override public void showIMInfo_blue(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.blue);
 	}
-	@Override public void showIMInfo_brightred(String txt)
-	{
+	@Override public void showIMInfo_brightred(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.brightred);
 	}
-	@Override public void showIMInfo_red(String txt)
-	{
+	@Override public void onDisconnect(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.red);
 	}
 	@Override public void showIMInfo_green(String txt)

@@ -1,6 +1,6 @@
 package com.saladjack.im.ui.friend;
 
-import com.saladjack.im.ui.BaseFragment;
+import com.saladjack.im.ui.base.BaseFragment;
 
 /**
  * Created by saladjack on 17/1/28.

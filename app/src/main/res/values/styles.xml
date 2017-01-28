@@ -38,4 +38,25 @@
     </style>
 
 
+
+    <style name="mine_item_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/shadow_bg_mine</item>
+    </style>
+
+    <style name="mine_item_tv_style" parent="normal_tv_style">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textSize">@dimen/mine_item_tv_marginLeft</item>
+    </style>
+
+    <style name="mine_item_img_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/mine_item_img_marginLeft</item>
+    </style>
+
+
+
 </resources>

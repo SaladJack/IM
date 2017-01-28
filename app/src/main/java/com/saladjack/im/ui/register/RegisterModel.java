@@ -1,7 +1,7 @@
 package com.saladjack.im.ui.register;
 
-import com.saladjack.im.http.RxUtils;
-import com.saladjack.im.entity.RegisterResult;
+import scut.saladjack.core.http.RxUtils;
+import scut.saladjack.core.bean.RegisterResult;
 
 
 import retrofit2.http.GET;

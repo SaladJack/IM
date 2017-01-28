@@ -12,10 +12,9 @@ public interface ChatView {
 
     void showIMInfo_brightred(String txt);
 
-    void showIMInfo_red(String txt);
+    void onDisconnect(String txt);
 
     void showIMInfo_green(String txt);
 
-    void refreshMyid();
     
 }

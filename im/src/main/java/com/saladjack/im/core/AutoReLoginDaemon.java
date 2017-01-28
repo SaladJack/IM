@@ -22,7 +22,7 @@ import com.saladjack.im.conf.ConfigEntity;
 
 
 /**
- * 与服务端通信中断后的自动登陆（重连）独立线程。
+ * 与服务端通信中断后的自动登录（重连）独立线程。
  * <br>
  * 鉴于无线网络的不可靠性和特殊性，移动端的即时通讯经常存在网络通信断断续续的
  * 状况，可能的原因有（但不限于）：无线网络信号不稳定、WiFi与2G/3G/4G等同开情
@@ -31,7 +31,7 @@ import com.saladjack.im.conf.ConfigEntity;
  * <p>
  * 本类的存在使得MobileIMSDK框架拥有通信自动治愈的能力。
  * <p>
- * <b>注意：</b>自动登陆（重连）只可能发生在登陆成功后与服务端的网络通信断开时。
+ * <b>注意：</b>自动登录（重连）只可能发生在登录成功后与服务端的网络通信断开时。
  * <p>
  * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
  */
@@ -40,10 +40,10 @@ public class AutoReLoginDaemon
 	private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
 	
 	/** 
-	 * 自动重新登陆时间间隔（单位：毫秒），默认2000毫秒。
+	 * 自动重新登录时间间隔（单位：毫秒），默认2000毫秒。
 	 * <p>
 	 * 此参数只会影响断线后与服务器连接的即时性，不受任何配置参数
-	 * 的影响。请基于重连（重登陆）即时性和手机能耗上作出权衡。
+	 * 的影响。请基于重连（重登录）即时性和手机能耗上作出权衡。
 	 * <p>
 	 * 除非对MobileIMSDK的整个即时通讯算法非常了解，否则请勿尝试单独设置本参数。如
 	 * 需调整心跳频率请见 {@link ConfigEntity
@@ -92,13 +92,13 @@ public class AutoReLoginDaemon
 						{
 							_excuting = true;
 							if(ClientCoreSDK.DEBUG)
-								Log.d(TAG, "自动重新登陆线程执行中, autoReLogin?"+ClientCoreSDK.autoReLogin+"...");
+								Log.d(TAG, "自动重新登录线程执行中, autoReLogin?"+ClientCoreSDK.autoReLogin+"...");
 							int code = -1;
-							// 是否允许自动重新登陆哦
+							// 是否允许自动重新登录哦
 							if(ClientCoreSDK.autoReLogin)
 							{
 								code = LocalUDPDataSender.getInstance(context).sendLogin(
-										ClientCoreSDK.getInstance().getCurrentLoginName()
+										ClientCoreSDK.getInstance().getCurrentAccount()
 										, ClientCoreSDK.getInstance().getCurrentLoginPsw()
 										, ClientCoreSDK.getInstance().getCurrentLoginExtra());
 							}
@@ -111,11 +111,11 @@ public class AutoReLoginDaemon
 							if(result == 0)
 							{
 								// *********************** 同样的代码也存在于LocalUDPDataSender.SendLoginDataAsync中的代码
-								// 登陆消息成功发出后就启动本地消息侦听线程：
-								// 第1）种情况：首次使用程序时，登陆信息发出时才启动本地监听线程是合理的；
+								// 登录消息成功发出后就启动本地消息侦听线程：
+								// 第1）种情况：首次使用程序时，登录信息发出时才启动本地监听线程是合理的；
 								// 第2）种情况：因网络原因（比如服务器关闭或重启）而导致本地监听线程中断的问题：
-								//      当首次登陆后，因服务端或其它网络原因导致本地监听出错，将导致中断本地监听线程，
-								//	          所以在此处在自动登陆重连或用户自已手机尝试再次登陆时重启监听线程就可以恢复本地
+								//      当首次登录后，因服务端或其它网络原因导致本地监听出错，将导致中断本地监听线程，
+								//	          所以在此处在自动登录重连或用户自已手机尝试再次登录时重启监听线程就可以恢复本地
 								//	          监听线程的运行。
 								LocalUDPDataReciever.getInstance(context).startup();
 							}

@@ -11,7 +11,6 @@
  */
 package com.saladjack.im;
 
-import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.conf.ConfigEntity;
 import com.saladjack.im.ui.chat.event.ChatBaseEventImpl;
 import com.saladjack.im.ui.chat.event.ChatTransDataEventImpl;
@@ -47,10 +46,10 @@ public class IMClientManager
 	private IMClientManager(Context context)
 	{
 		this.context = context;
-		initMobileIMSDK();
+		initIM();
 	}
 
-	public void initMobileIMSDK()
+	public void initIM()
 	{
 		if(!init)
 		{
@@ -68,7 +67,7 @@ public class IMClientManager
 			// 开启/关闭DEBUG信息输出
 //	    	ClientCoreSDK.DEBUG = false;
 			
-			// 【特别注意】请确保首先进行核心库的初始化（这是不同于iOS和Java端的地方)
+
 			ClientCoreSDK.getInstance().init(this.context);
 	    
 			// 设置事件回调

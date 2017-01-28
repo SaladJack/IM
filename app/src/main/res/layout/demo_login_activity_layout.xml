@@ -71,7 +71,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/edittext_bg"
                 android:ems="10"
-                android:hint="登陆账号"
+                android:hint="登录账号"
                 android:singleLine="true"
                 android:paddingLeft="6dp"
                 android:paddingRight="6dp"
@@ -89,7 +89,7 @@
                 android:password="true"
                 android:ems="10"
                 android:singleLine="true"
-                android:hint="登陆密码"
+                android:hint="登录密码"
                 android:paddingLeft="6dp"
                 android:paddingRight="6dp"
                 android:textSize="14sp" />

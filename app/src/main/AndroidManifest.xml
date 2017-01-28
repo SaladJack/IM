@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.openmob.mobilesdk.android">
+    package="com.saladjack.im">
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RESTART_PACKAGES" />
@@ -10,7 +10,7 @@
         android:label="@string/app_name" android:supportsRtl="true" android:theme="@style/AppTheme">
 
         <activity
-            android:name="ui.login.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ui.chat.ChatActivity"
+            android:name=".ui.chat.ChatActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
