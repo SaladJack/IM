@@ -18,20 +18,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.IMClientManager;
-import scut.saladjack.core.bean.FriendAcount;
+import scut.saladjack.core.bean.FriendBean;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -48,14 +46,19 @@ import com.saladjack.im.R;
 
 public class ChatActivity extends Activity implements ChatView
 {
-	public static void open(Context context,FriendAcount friend){
-
-
-	}
 	private final static String TAG = ChatActivity.class.getSimpleName();
-	
+
+	private final static String FRIEND_BEAN = "friendBean";
+
+	public static void open(Context context, FriendBean friendBean){
+		Intent intent = new Intent(context,ChatActivity.class);
+		intent.putExtra(FRIEND_BEAN,friendBean);
+		context.startActivity(intent);
+	}
+	private ChatIPresenter presenter;
+
 	private Button btnLogout = null;
-	
+
 	private EditText editId = null;
 	private EditText editContent = null;
 	private TextView viewMyid = null;
@@ -63,16 +66,15 @@ public class ChatActivity extends Activity implements ChatView
 	
 	private ListView chatInfoListView;
 	private MyAdapter chatInfoListAdapter;
-	
+	private FriendBean friendBean;
+
 	/** Called when the activity is first created. */
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//
-		this.setContentView(R.layout.demo_main_activity_layout);
-		
+		this.setContentView(R.layout.chat_activity);
+		presenter = new ChatPresenter(this);
+		friendBean = (FriendBean) getIntent().getSerializableExtra(FRIEND_BEAN);
 		initViews();
-		initListeners();
 		initOthers();
 	}
 	private void initViews() {
@@ -81,135 +83,47 @@ public class ChatActivity extends Activity implements ChatView
 		editId = (EditText)this.findViewById(R.id.id_editText);
 		editContent = (EditText)this.findViewById(R.id.content_editText);
 		viewMyid = (TextView)this.findViewById(R.id.myid_view);
-
 		chatInfoListView = (ListView)this.findViewById(R.id.demo_main_activity_layout_listView);
 		chatInfoListAdapter = new MyAdapter(this);
 		chatInfoListView.setAdapter(chatInfoListAdapter);
-
+		btnSend.setOnClickListener(v-> {
+			showSendMessage(editContent.getText().toString().trim());
+			presenter.sendMessage(this,editContent.getText().toString().trim(),Integer.parseInt(editId.getText().toString().trim()),true);
+		});
 		this.setTitle("ChatActivity");
 	}
 
-	private void initListeners()
-	{
-		btnLogout.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v)
-			{
-				// 退出登录
-				doLogout();
-				// 退出程序
-				doExit();
-			}
-		});
 
-		btnSend.setOnClickListener(v-> doSendMessage());
-	}
-
-	private void initOthers()
-	{
-		// Refresh userId to show
-		refreshMyid();
-
+	private void initOthers() {
+		editId.setText(""+friendBean.getId());
 		// Set MainGUI instance refrence to listeners
 		IMClientManager.getInstance(this).getTransDataListener().setChatView(this);
 		IMClientManager.getInstance(this).getBaseEventListener().setChatView(this);
 		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(this);
 	}
-	/** 
-	 * 捕获back键，实现调用 {@link #doExit()}方法.
-	 */
-	@Override
-	public void onBackPressed()
-	{
-		super.onBackPressed();
-		
-		// ** 注意：Android程序要么就别处理，要处理就一定
-		//			要退干净，否则会有意想不到的问题哦！
-		// 退出登录
-		doLogout();
-		// 退出程序
-		doExit();
-	}
-	
-	protected void onDestroy()
-	{
-		// 释放IM占用资源
-		IMClientManager.getInstance(this).release();
-		//
+
+	@Override protected void onDestroy() {
 		super.onDestroy();
+		IMClientManager.getInstance(this).getTransDataListener().setChatView(null);
+		IMClientManager.getInstance(this).getBaseEventListener().setChatView(null);
+		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(null);
 	}
-	
 
 	
-	public void refreshMyid()
-	{
-		int myid = ClientCoreSDK.getInstance().getCurrentUserId();
-		this.viewMyid.setText(myid == -1 ? "连接断开" :""+myid);
-	}
-	
-	private void doSendMessage()
-	{
-		String msg = editContent.getText().toString().trim();
-		if(msg.length() > 0)
-		{
-			int friendId = Integer.parseInt(editId.getText().toString().trim());
-			showIMInfo_black("我对"+friendId+"说："+msg);
-			
-			// 发送消息（Android系统要求必须要在独立的线程中发送哦）
-		    new LocalUDPDataSender.SendCommonDataAsync(ChatActivity.this, msg, friendId, true)
-			{
-				@Override
-				protected void onPostExecute(Integer code)
-				{
-					if(code == 0)
-						Log.d(ChatActivity.class.getSimpleName(), "2数据已成功发出！");
-					else
-						Toast.makeText(getApplicationContext(), "数据发送失败。错误码是："+code+"！", Toast.LENGTH_SHORT).show();
-				}
-			}.execute();  		
-		}
-		else
-			Log.e(ChatActivity.class.getSimpleName(), "txt2.len="+(msg.length()));
-	}
-	
-	private void doLogout()
-	{
-		// 发出退出登录请求包（Android系统要求必须要在独立的线程中发送哦）
-		new AsyncTask<Object, Integer, Integer>(){
-			@Override
-			protected Integer doInBackground(Object... params)
-			{
-				int code = -1;
-				try{
-					code = LocalUDPDataSender.getInstance(ChatActivity.this).sendLoginout();
-				}
-				catch (Exception e){
-					Log.w(TAG, e);
-				}
-				
-				return code;
-			}
+//	private void doExit()
+//	{
+//		finish();
+//		System.exit(0);
+//	}
 
-			@Override
-			protected void onPostExecute(Integer code)
-			{
-				refreshMyid();
-				if(code == 0)
-					Log.d(ChatActivity.class.getSimpleName(), "注销登录请求已完成！");
-				else
-					Toast.makeText(getApplicationContext(), "注销登录请求发送失败。错误码是："+code+"！", Toast.LENGTH_SHORT).show();
-			}
-		}.execute();
-	}
-	
-	private void doExit()
-	{
-		finish();
-		System.exit(0);
-	}
-	
+
+
 	//--------------------------------------------------------------- 各种信息输出方法 START
-	@Override public void showIMInfo_black(String txt) {
+	@Override public void showSendMessage(String txt) {
+		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
+	}
+
+	@Override public void showResponseMessage(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
 	}
 	@Override public void showIMInfo_blue(String txt) {
@@ -221,9 +135,16 @@ public class ChatActivity extends Activity implements ChatView
 	@Override public void onDisconnect(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.red);
 	}
-	@Override public void showIMInfo_green(String txt)
-	{
+	@Override public void showIMInfo_green(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.green);
+	}
+
+	@Override public void onSendMessageSuccess() {
+		//发送成功不显示错误logo即可,此接口留着以后用
+	}
+
+	@Override public void onSendMessageFail(Integer code) {
+
 	}
 	//--------------------------------------------------------------- 各种信息输出方法 END
 	
@@ -276,7 +197,7 @@ public class ChatActivity extends Activity implements ChatView
         public View getView(int position, View convertView, ViewGroup parent) 
         {
             ViewHolder holder = null;
-            if (convertView == null) 
+            if (convertView == null)
             {
                 holder=new ViewHolder();  
                 convertView = mInflater.inflate(R.layout.demo_main_activity_list_item_layout, null);
@@ -292,8 +213,7 @@ public class ChatActivity extends Activity implements ChatView
             holder.content.setText((String)mData.get(position).get("__content__"));
 			holder.time.setText((String)mData.get(position).get("__time__"));
             ChatInfoColorType colorType = (ChatInfoColorType)mData.get(position).get("__color__");
-            switch(colorType)
-            {
+            switch(colorType) {
 	            case blue:
 	            	holder.content.setTextColor(Color.rgb(0,0,255));  
 	            	break;

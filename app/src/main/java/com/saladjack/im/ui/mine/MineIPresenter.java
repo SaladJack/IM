@@ -8,4 +8,7 @@ import scut.saladjack.core.bean.UserBean;
 public interface MineIPresenter {
     void fetchUserInfo();
     void onFetchUserInfoSuccess(UserBean userBean);
+    void signout();
+    void onSignoutSuccess();
+    void onSignoutFail(int code);
 }

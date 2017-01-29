@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">App</string>
+    <string name="app_name">IM</string>
     <string name="registerFail">注册失败,账号已存在!</string>
     <string name="registerSuccess">注册成功</string>
     <string name="network_not_work">请检查网络是否已连接</string>
@@ -8,10 +8,11 @@
     <string name="chat">chat</string>
     <string name="mine">mine</string>
     <string name="friends">friends</string>
-    <string name="logining_please_wait">logining...please wait for seconds</string>
-    <string name="logining">logining</string>
+    <string name="signining_please_wait">signining...please wait for seconds</string>
+    <string name="signining">signining</string>
     <string name="user_name">userName</string>
     <string name="send_msg_success">数据发送成功！</string>
     <string name="send_msg_fail">数据发送失败。错误码是：</string>
-    <string name="login_fail">login fail!recheck your account and password</string>
+    <string name="signin_fail">signin fail!recheck your account and password</string>
+    <string name="signout">sign out</string>
 </resources>

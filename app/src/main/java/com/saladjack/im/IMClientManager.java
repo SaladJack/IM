@@ -82,8 +82,7 @@ public class IMClientManager
 		}
 	}
 
-	public void release()
-	{
+	public void release() {
 		ClientCoreSDK.getInstance().release();
 	}
 

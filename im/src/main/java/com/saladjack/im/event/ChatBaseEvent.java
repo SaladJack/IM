@@ -32,7 +32,7 @@ public interface ChatBaseEvent
 	 * @param dwErrorCode 服务端反馈的登录结果：0 表示登录成功，否则为服务端自定义
 	 * 的出错代码（按照约定通常为>=1025的数）
 	 */
-    public void onLoginMessage(int dwUserId, int dwErrorCode,String username);
+    public void onSigninMessage(int dwUserId, int dwErrorCode, String username);
     
 	/**
 	 * 与服务端的通信断开的回调事件通知。

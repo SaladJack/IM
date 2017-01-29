@@ -118,7 +118,7 @@ public class ConfigEntity
     		KeepAliveDaemon.NETWORK_CONNECTION_TIME_OUT = networkConnectionTimeout;
     	}
 //	    // 与服务端掉线后的重连尝试间隔
-//	    AutoReLoginDaemon.AUTO_RE$LOGIN_INTERVAL = 2 * 1000;// 5s
+//	    AutoReSigninDaemon.AUTO_RE$signin_INTERVAL = 2 * 1000;// 5s
     }
 	
 	/**

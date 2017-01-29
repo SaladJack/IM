@@ -33,7 +33,7 @@ public class UserDao extends BaseDao {
         sb.append(COLUMN_UID + " INTEGER PRIMARY KEY,");
         sb.append(COLUMN_USERNAME + " varchar(50),");
         sb.append(COLUMN_USERACCOUNT + " varchar(50), ");
-        sb.append(COLUMN_USERPWD + " varchar(50), ");
+        sb.append(COLUMN_USERPWD + " varchar(50)");
         sb.append(");");
         return sb.toString();
     }

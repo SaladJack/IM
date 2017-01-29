@@ -32,4 +32,14 @@ public class MineFragment extends BaseFragment implements MineView{
     @Override public void updateUserInfo(UserBean userBean) {
         userName.setText(userBean.getUserName());
     }
+
+    @Override public void onSingoutSuccess() {
+
+    }
+
+    @Override public void onSignoutFail(int code) {
+
+    }
+
+
 }

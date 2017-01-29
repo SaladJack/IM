@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.saladjack.im.R;
-import scut.saladjack.core.bean.FriendAcount;
+import scut.saladjack.core.bean.FriendBean;
 import com.saladjack.im.ui.chat.ChatActivity;
 
 import java.util.List;
@@ -19,11 +19,10 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter {
 
-    private List<FriendAcount> array;
-    private View.OnClickListener clickListener;
+    private List<FriendBean> array;
     private Context context;
 
-    public MessageAdapter(List<FriendAcount> array) {
+    public MessageAdapter(List<FriendBean> array) {
         this.array = array;
     }
 
@@ -33,21 +32,19 @@ public class MessageAdapter extends RecyclerView.Adapter {
         return new VH(view);
     }
 
-    @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        holder = (VH) holder;
-        FriendAcount friend = array.get(position);
-        ((VH) holder).name.setText(friend.getName());
-        ((VH) holder).latestContent.setText(friend.getLatestContent());
-        ((VH) holder).friendLayout.setOnClickListener((view)-> ChatActivity.open(context,friend));
+    @Override public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        VH holder = (VH) viewHolder;
+        FriendBean friendBean = array.get(position);
+        holder.name.setText(friendBean.getName());
+        holder.latestContent.setText(friendBean.getLatestContent());
+        holder.friendLayout.setOnClickListener((view)-> ChatActivity.open(context,friendBean));
     }
 
     @Override public int getItemCount() {
         return array.size();
     }
 
-    public void setOnItemClickListener(View.OnClickListener clickListener){
-        this.clickListener = clickListener;
-    }
+
 
     static class VH extends RecyclerView.ViewHolder{
         View friendLayout;

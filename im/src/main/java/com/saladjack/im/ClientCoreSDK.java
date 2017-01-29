@@ -11,7 +11,7 @@
  */
 package com.saladjack.im;
 
-import com.saladjack.im.core.AutoReLoginDaemon;
+import com.saladjack.im.core.AutoReSigninDaemon;
 import com.saladjack.im.core.KeepAliveDaemon;
 import com.saladjack.im.core.LocalUDPDataReciever;
 import com.saladjack.im.core.LocalUDPSocketProvider;
@@ -52,7 +52,7 @@ public class ClientCoreSDK
 	 * <p>
 	 * <b>本参数的设置将实时生效。</b> 
 	 */
-	public static boolean autoReLogin = true;
+	public static boolean autoResignin = true;
 	
 	private static ClientCoreSDK instance = null;
 	
@@ -104,7 +104,7 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private boolean loginHasInit = false;
+	private boolean signinHasInit = false;
 	
 	/** 
 	 * 本字段存放的是用户成功登录后，服务端分配的id号。
@@ -132,7 +132,7 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private String currentLoginPsw = null;
+	private String currentsigninPsw = null;
 	/**
 	 * 本字段在登录信息成功发出后就会被设置，将在掉线后自动重连时使用。
 	 * <br>
@@ -141,7 +141,7 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private String currentLoginExtra = null;
+	private String currentsigninExtra = null;
 	
 	/** 框架基础通信消息的回调事件（如：登录成功事件通知、掉线事件通知） */
 	private ChatBaseEvent chatBaseEvent = null;
@@ -184,10 +184,10 @@ public class ClientCoreSDK
 	 * <b><font color="red">注意：</font></b>因Andriod系统在处理网络变动广播
 	 * 事件的特殊性，本方法应在MobileIMSDK的登录信息被发出前已被开发者调用完成。
 	 * 且越早被调用越好（如放在Application的onCreate()方法中或者登录Activity的
-	 * onCreate()方法中）。具体原因详见：LocalUDPDataSender.SendLoginDataAsync
+	 * onCreate()方法中）。具体原因详见：LocalUDPDataSender.SendSigninDataAsync
 	 * 中由Jack Jiang编写的技术要点备忘录。
 	 * 
-	 * @see {@link com.cngeeker.MobileIMSDK.java.core.LocalUDPDataSender.SendLoginDataAsync}
+	 * @see {@link com.cngeeker.MobileIMSDK.java.core.LocalUDPDataSender.SendsigninDataAsync}
 	 */
 	public void init(Context _context)
 	{
@@ -236,9 +236,9 @@ public class ClientCoreSDK
 	 * <p>
 	 * 本方法建议在退出登录（或退出APP时）时调用。调用时将尝试关闭所有
 	 * MobileIMSDK框架的后台守护线程并同设置核心框架init=false、
-	 * {@link #loginHasInit}=false、{@link #connectedToServer}=false。
+	 * {@link #signinHasInit}=false、{@link #connectedToServer}=false。
 	 * 
-	 * @see AutoReLoginDaemon#stop()
+	 * @see AutoReSigninDaemon#stop()
 	 * @see QoS4SendDaemon#stop()
 	 * @see KeepAliveDaemon#stop()
 	 * @see LocalUDPDataReciever#stop()
@@ -248,7 +248,7 @@ public class ClientCoreSDK
 	public void release()
 	{
 		// 尝试停掉掉线重连线程（如果线程正在运行的话）
-	    AutoReLoginDaemon.getInstance(context).stop(); // 2014-11-08 add by Jack Jiang
+	    AutoReSigninDaemon.getInstance(context).stop(); // 2014-11-08 add by Jack Jiang
 		// 尝试停掉QoS质量保证（发送）心跳线程
 		QoS4SendDaemon.getInstance(context).stop();
 		// 尝试停掉Keep Alive心跳线程
@@ -274,7 +274,7 @@ public class ClientCoreSDK
 		_init = false;
 		
 		//
-		this.setLoginHasInit(false);
+		this.setsigninHasInit(false);
 		this.setConnectedToServer(false);
 	}
 	
@@ -336,9 +336,9 @@ public class ClientCoreSDK
 	 * 
 	 * @return
 	 */
-	public String getCurrentLoginPsw()
+	public String getCurrentsigninPsw()
 	{
-		return currentLoginPsw;
+		return currentsigninPsw;
 	}
 	/**
 	 * 登录信息成功发出后就会设置本字段（即登录密码），登录密码也将
@@ -346,12 +346,12 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentLoginPsw
+	 * @param currentsigninPsw
 	 * @return
 	 */
-	public void setCurrentLoginPsw(String currentLoginPsw)
+	public void setCurrentsigninPsw(String currentsigninPsw)
 	{
-		this.currentLoginPsw = currentLoginPsw;
+		this.currentsigninPsw = currentsigninPsw;
 	}
 	
 	/**
@@ -363,9 +363,9 @@ public class ClientCoreSDK
 	 * @return
 	 * @since 2.1.6
 	 */
-	public String getCurrentLoginExtra()
+	public String getCurrentsigninExtra()
 	{
-		return currentLoginExtra;
+		return currentsigninExtra;
 	}
 	/**
 	 * 登录信息成功发出后就会设置本字段（即登录额外信息，其是由调用者自行设置，不设置则为null），登录额外信息也将
@@ -373,13 +373,13 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentLoginExtra
+	 * @param currentsigninExtra
 	 * @return
 	 * @since 2.1.6
 	 */
-	public ClientCoreSDK setCurrentLoginExtra(String currentLoginExtra)
+	public ClientCoreSDK setCurrentsigninExtra(String currentsigninExtra)
 	{
-		this.currentLoginExtra = currentLoginExtra;
+		this.currentsigninExtra = currentsigninExtra;
 		return this;
 	}
 
@@ -389,9 +389,9 @@ public class ClientCoreSDK
 	 * 
 	 * @return
 	 */
-	public boolean isLoginHasInit()
+	public boolean issigninHasInit()
 	{
-		return loginHasInit;
+		return signinHasInit;
 	}
 	/**
 	 * 当且仅当用户从登录界面成功登录后设置本字段为true，
@@ -399,16 +399,16 @@ public class ClientCoreSDK
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param loginHasInit
+	 * @param signinHasInit
 	 * @return
 	 */
-	public ClientCoreSDK setLoginHasInit(boolean loginHasInit)
+	public ClientCoreSDK setsigninHasInit(boolean signinHasInit)
 	{
-		this.loginHasInit = loginHasInit;
-//		if(!logined)
+		this.signinHasInit = signinHasInit;
+//		if(!signined)
 //		{
 //			currentAccount = null;
-//			currentLoginPsw = null;
+//			currentsigninPsw = null;
 //		}
 		return this;
 	}

@@ -23,28 +23,21 @@ public class ChatTransDataEventImpl implements ChatTransDataEvent
 	
 	private ChatView chatView = null;
 	
-	@Override
-	public void onTransBuffer(String fingerPrintOfProtocal, int dwUserid, String dataContent)
-	{
+	@Override public void onTransBuffer(String fingerPrintOfProtocal, int dwUserid, String dataContent) {
 		Log.d(TAG, "【DEBUG_UI】收到来自用户"+dwUserid+"的消息:"+dataContent);
 		
 		//！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-		if(chatView != null)
-		{
+		if(chatView != null) {
 //			Toast.makeText(chatView, dwUserid+"说："+dataContent, Toast.LENGTH_SHORT).show();
-			this.chatView.showIMInfo_black(dwUserid+"说："+dataContent);
+			this.chatView.showResponseMessage(dwUserid+"说："+dataContent);
 		}
 	}
 	
-	public ChatTransDataEventImpl setChatView(ChatView chatView)
-	{
+	public void setChatView(ChatView chatView) {
 		this.chatView = chatView;
-		return this;
 	}
 
-	@Override
-	public void onErrorResponse(int errorCode, String errorMsg)
-	{
+	@Override public void onErrorResponse(int errorCode, String errorMsg) {
 		Log.d(TAG, "【DEBUG_UI】收到服务端错误消息，errorCode="+errorCode+", errorMsg="+errorMsg);
 		this.chatView.onDisconnect("Server反馈错误码："+errorCode+",errorMsg="+errorMsg);
 	}

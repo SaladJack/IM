@@ -1,5 +1,7 @@
 package com.saladjack.im.ui.home;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.saladjack.im.IMClientManager;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.chat.ChatFragment;
 import com.saladjack.im.ui.friend.FriendFragment;
+import com.saladjack.im.ui.message.MessageFragment;
 import com.saladjack.im.ui.mine.MineFragment;
 
 import com.saladjack.im.R;
@@ -34,7 +38,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private View chat_ll;
     private View friend_ll;
     private View mine_ll;
-    private SparseArray<Fragment> fragmentList;
+    private HomePagerAdapter adapter;
+    private SparseArray<Fragment> fragmentList = new SparseArray<>();
+
+    public static void open(Context context){
+        Intent intent = new Intent(context,HomeActivity.class);
+        context.startActivity(intent);
+    }
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +61,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         mine_ll = findViewById(R.id.mine_ll);
         mViewPager = (ViewPager) findViewById(R.id.home_pager);
         mViewPager.setOnPageChangeListener(vpSlide);
+        toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
         chat_ll.setOnClickListener(this);
         friend_ll.setOnClickListener(this);
         mine_ll.setOnClickListener(this);
+
+
+        adapter = new HomePagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(adapter);
+    }
+
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        // 释放IM占用资源
+        IMClientManager.getInstance(this).release();
+        System.exit(0);
     }
 
     public ViewPager.OnPageChangeListener vpSlide = new ViewPager.OnPageChangeListener() {
@@ -208,7 +231,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
             }
             switch (position) {
                 case 0:
-                    fragment = new ChatFragment();
+                    fragment = new MessageFragment();
                     break;
                 case 1:
                     fragment = new FriendFragment();
@@ -216,7 +239,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                 case 2:
                     fragment = new MineFragment();
                     break;
-                
             }
             fragmentList.put(position,fragment);
             return fragment;

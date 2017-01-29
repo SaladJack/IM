@@ -12,6 +12,7 @@
         <TextView
             android:id="@+id/toolbar_title"
             style="@style/titlebar_tv_style"
+            android:text="@string/chat"
             android:layout_gravity="center"
             />
     </android.support.v7.widget.Toolbar>

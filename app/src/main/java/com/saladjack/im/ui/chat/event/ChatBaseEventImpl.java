@@ -14,7 +14,7 @@ package com.saladjack.im.ui.chat.event;
 
 import com.saladjack.im.event.ChatBaseEvent;
 import com.saladjack.im.ui.chat.ChatView;
-import com.saladjack.im.ui.login.LoginView;
+import com.saladjack.im.ui.signin.SigninView;
 
 import android.util.Log;
 
@@ -23,19 +23,19 @@ private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 	
 	private ChatView chatView = null;
 
-	private LoginView loginView = null;
+	private SigninView signinView = null;
 
 
-	@Override public void onLoginMessage(int userId, int responseCode,String username)
+	@Override public void onSigninMessage(int userId, int responseCode, String username)
 	{
 		if (responseCode == 0) {
-//			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId);
+			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId+ "kong:" + String.valueOf(signinView!=null));
 			if(this.chatView != null) {
 				this.chatView.showIMInfo_green("登录成功,id="+userId);
 			}
-			if(loginView != null){
-				loginView.onLoginSuccess(userId,username);
-				loginView = null;
+			if(signinView != null){
+				signinView.onSigninSuccess(userId,username);
+				signinView = null;
 			}
 		}
 		else {
@@ -43,8 +43,8 @@ private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 			if(this.chatView != null) {
 				this.chatView.onDisconnect("登录失败,code="+responseCode);
 			}
-			if(loginView != null){
-				loginView.onLoginFail(responseCode);
+			if(signinView != null){
+				signinView.onsigninFail(responseCode);
 			}
 		}
 
@@ -62,8 +62,8 @@ private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 		}
 	}
 	
-	public void setLoginView(LoginView loginView) {
-		this.loginView = loginView;
+	public void setSigninView(SigninView signinView) {
+		this.signinView = signinView;
 	}
 	
 	public void setChatView(ChatView chatView) {

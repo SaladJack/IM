@@ -16,7 +16,7 @@ import com.saladjack.im.R;
 public class ChatFragment extends BaseFragment  {
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.demo_login_activity_layout,container,false);
+        View view = inflater.inflate(R.layout.demo_signin_activity_layout,container,false);
         return view;
     }
 

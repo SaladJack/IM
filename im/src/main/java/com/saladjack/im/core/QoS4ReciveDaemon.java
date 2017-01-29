@@ -142,7 +142,7 @@ public class QoS4ReciveDaemon
 	 * <p>
 	 * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
 	 * 
-	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$LOGIN_INTERVAL}
+	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$signin_INTERVAL}
 	 * 执行间隔的到来才进行首次作业的执行
 	 */
 	public void startup(boolean immediately)

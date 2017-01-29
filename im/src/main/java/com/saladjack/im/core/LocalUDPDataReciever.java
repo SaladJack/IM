@@ -257,18 +257,18 @@ public class LocalUDPDataReciever
 					case ProtocalType.S.FROM_SERVER_TYPE_OF_RESPONSE$LOGIN:
 					{
 						// 解析服务端反馈过来的登录消息
-						PLoginInfoResponse loginInfoRes = ProtocalFactory.parsePLoginInfoResponse(pFromServer.getDataContent());
+						PLoginInfoResponse signinInfoRes = ProtocalFactory.parsePLoginInfoResponse(pFromServer.getDataContent());
 						// 登录成功了！
-						if(loginInfoRes.getCode() == 0)
+						if(signinInfoRes.getCode() == 0)
 						{
 							// 记录用户登录信息（因为此处不太好记录用户登录名和密
 							// 码，所以登录名和密码现在是在登录消息发出时就记录了）
 							ClientCoreSDK.getInstance()
-								.setLoginHasInit(true)
-								.setCurrentUserId(loginInfoRes.getUser_id());
+								.setsigninHasInit(true)
+								.setCurrentUserId(signinInfoRes.getUser_id());
 							
 							// 尝试关闭自动重新登录线程（如果该线程正在运行的话）
-							AutoReLoginDaemon.getInstance(context).stop();
+							AutoReSigninDaemon.getInstance(context).stop();
 							
 							// 立即开启Keepalive心跳线程
 							KeepAliveDaemon.getInstance(context).setNetworkConnectionLostObserver(new Observer(){
@@ -291,7 +291,7 @@ public class LocalUDPDataReciever
 									// 通知回调实现类
 									ClientCoreSDK.getInstance().getChatBaseEvent().onLinkCloseMessage(-1);
 									// 网络断开后即刻开启自动重新登录线程从而尝试重新登录（以便网络恢复时能即时自动登录）
-									AutoReLoginDaemon.getInstance(context).start(true);
+									AutoReSigninDaemon.getInstance(context).start(true);
 								}
 							});
 							// ** 2015-02-10 by Jack Jiang：收到登录成功反馈后，无需立即就发起心跳，因为刚刚才与服务端
@@ -308,7 +308,7 @@ public class LocalUDPDataReciever
 							ClientCoreSDK.getInstance().setConnectedToServer(true);
 						}
 						else {
-//							Log.d(TAG, "登录验证失败，错误码="+loginInfoRes.getCode()+"！");
+//							Log.d(TAG, "登录验证失败，错误码="+signinInfoRes.getCode()+"！");
 							// 设置中否正常连接（登录）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
 							ClientCoreSDK.getInstance().setConnectedToServer(false);
 							ClientCoreSDK.getInstance().setCurrentUserId(-1);
@@ -317,8 +317,8 @@ public class LocalUDPDataReciever
 						// 用户登录认证情况通知回调
 						if(ClientCoreSDK.getInstance().getChatBaseEvent() != null)
 						{
-							ClientCoreSDK.getInstance().getChatBaseEvent().onLoginMessage(
-								loginInfoRes.getUser_id(), loginInfoRes.getCode(),/*username*/"user-name");
+							ClientCoreSDK.getInstance().getChatBaseEvent().onSigninMessage(
+								signinInfoRes.getUser_id(), signinInfoRes.getCode(),/*username*/"user-name");
 						}
 						
 						break;
@@ -338,7 +338,7 @@ public class LocalUDPDataReciever
 						if(errorRes.getErrorCode() == ErrorCode.ForS.RESPONSE_FOR_UNLOGIN)
 						{
 							// 
-							ClientCoreSDK.getInstance().setLoginHasInit(false);
+							ClientCoreSDK.getInstance().setsigninHasInit(false);
 							
 							Log.e(TAG, "收到服务端的“尚未登录”的错误消息，心跳线程将停止，请应用层重新登录.");
 							// 停止心跳
@@ -354,7 +354,7 @@ public class LocalUDPDataReciever
 							// ** 却再也没有机会启动起来，那么这个客户端将会因此而永远（直到登录程序后再登录）
 							// ** 无法重新登录而一直处于离线状态，这就不对了。以下的启动重新登录时机在此正
 							// ** 可解决此种情况，而使得重新登录机制更强壮哦！
-							AutoReLoginDaemon.getInstance(context).start(false);
+							AutoReSigninDaemon.getInstance(context).start(false);
 						}
 						
 						// 收到错误响应消息的回调

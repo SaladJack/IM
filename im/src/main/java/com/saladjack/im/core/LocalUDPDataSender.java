@@ -47,6 +47,10 @@ public class LocalUDPDataSender
 			instance = new LocalUDPDataSender(context);
 		return instance;
 	}
+
+	public static LocalUDPDataSender getInstance(){
+		return instance;
+	}
 	
 	private LocalUDPDataSender(Context context)
 	{
@@ -59,27 +63,27 @@ public class LocalUDPDataSender
 	 * <b>注意：</b>本库的启动入口就是登录过程触发的，因而要使本库能正常工作，
 	 * 请确保首先进行登录操作。
 	 * <p>
-	 * 实现登录操作时推荐使用本类默认的 {@link SendLoginDataAsync}类或者类似实现。
+	 * 实现登录操作时推荐使用本类默认的 {@link SendSigninDataAsync}类或者类似实现。
 	 * 否则，在调用本方法前请确保核心库的初始化方法{@link ClientCoreSDK#init(Context)}
 	 * 已被调用（从而保证核心类库的初始化），且本方法调用后登录被成功发出后还需调用
 	 * {@link LocalUDPDataReciever#startup()}以便启动本地端口监听，否则将收到任何消息 。
 	 * 
-	 * @param loginName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-	 * @param loginPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+	 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+	 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 	 * @param extra 额外信息字符串，可为null。本字段目前为保留字段，供上层应用自行放置需要的内容
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	// 不推荐直接调用本方法实现“登录”流程，请使用SendLoginAsync（此异步线程中包含发送登录包之外的处理和逻辑）
-	int sendLogin(String loginName, String loginPsw, String extra)
+	// 不推荐直接调用本方法实现“登录”流程，请使用SendsigninAsync（此异步线程中包含发送登录包之外的处理和逻辑）
+	int sendsignin(String signinName, String signinPsw, String extra)
 	{
-		byte[] b = ProtocalFactory.createPLoginInfo(loginName, loginPsw, extra).toBytes();
+		byte[] b = ProtocalFactory.createPLoginInfo(signinName, signinPsw, extra).toBytes();
 		int code = send(b, b.length);
 		// 登录信息成功发出时就把登录名存下来
 		if(code == 0) {
-			ClientCoreSDK.getInstance().setCurrentAccount(loginName);
-			ClientCoreSDK.getInstance().setCurrentLoginPsw(loginPsw);
-			ClientCoreSDK.getInstance().setCurrentLoginExtra(extra);
+			ClientCoreSDK.getInstance().setCurrentAccount(signinName);
+			ClientCoreSDK.getInstance().setCurrentsigninPsw(signinPsw);
+			ClientCoreSDK.getInstance().setCurrentsigninExtra(extra);
 			// TODO: 17/1/28 server端规定字段
 		}
 		
@@ -97,10 +101,10 @@ public class LocalUDPDataSender
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	public int sendLoginout()
+	public int sendSignout()
 	{
 		int code = ErrorCode.COMMON_CODE_OK;
-		if(ClientCoreSDK.getInstance().isLoginHasInit())
+		if(ClientCoreSDK.getInstance().issigninHasInit())
 		{
 			byte[] b = ProtocalFactory.createPLoginoutInfo(ClientCoreSDK.getInstance().getCurrentUserId()
 					, ClientCoreSDK.getInstance().getCurrentAccount()).toBytes();
@@ -111,7 +115,7 @@ public class LocalUDPDataSender
 	//			// 发出退出登录的消息同时也关闭心跳线程
 	//			KeepAliveDaemon.getInstance(context).stop();
 	//			// 重置登录标识
-	//			ClientCoreSDK.getInstance().setLoginHasInit(false);
+	//			ClientCoreSDK.getInstance().setsigninHasInit(false);
 			}
 		}
 		
@@ -240,8 +244,8 @@ public class LocalUDPDataSender
 			Log.e(TAG, "本地网络不能工作，send数据没有继续!");
 			return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
 		}
-//		if(!ClientCoreSDK.getInstance().isLogined())
-//			return ErrorCode.COMMON_NO_LOGIN;
+//		if(!ClientCoreSDK.getInstance().issignined())
+//			return ErrorCode.COMMON_NO_signin;
 		
 //		System.out.println("\n---------------------------------------------------------[1]");
 		// 获得UDPSocket实例
@@ -354,7 +358,7 @@ public class LocalUDPDataSender
 		protected abstract void onPostExecute(Integer code);
 	}
 	
-	// 【* 关于不能在SendLoginDataAsync中进行ClientCoreSDK的init初始化的备忘】
+	// 【* 关于不能在SendsigninDataAsync中进行ClientCoreSDK的init初始化的备忘】
 	//   请确保首先进行核心库的初始化（这是不同于iOS和Java平台的地方，差异的原因源自Android系统里
 	//   的网络连接/断开广播事件：当APP中首次注册广播事件监听时，系统会无条件向此监听者广播一条事件出来（
 	//   而此时手机根本就不存在断开/连接事件的发生，其实连接本来就没有变动），且此广播是异步的。也就是说如果
@@ -378,7 +382,7 @@ public class LocalUDPDataSender
 	/**
 	 * 登录异步线程实现类。
 	 * <br>
-	 * 子类需自行实现 {@link #fireAfterSendLogin(int)}方法，以便实现登录发出后的UI处理。
+	 * 子类需自行实现 {@link #fireAfterSendsignin(int)}方法，以便实现登录发出后的UI处理。
 	 * 
 	 * <p>
 	 * 此类为本库的默认实现类，非必须要使用，使用者也可自行设计异步登录过程（如使用{@link AsyncTask}）。
@@ -388,43 +392,43 @@ public class LocalUDPDataSender
 	 * 所以在发送登录发前，请确保{@link ClientCoreSDK#init(Context)}已经被调用过，且越早被调用越好（如
 	 * 放在Application的onCreate()方法中或者登录Activity的onCreate()方法中）。
 	 * 
-	 * @see AutoReLoginDaemon
-	 * @see LocalUDPDataSender#sendLogin(String, String)
+	 * @see AutoReSigninDaemon
+	 * @see LocalUDPDataSender#sendsignin(String, String)
 	 * @see LocalUDPDataReciever#startup()
 	 */
-	public static abstract class SendLoginDataAsync extends AsyncTask<Object, Integer, Integer>
+	public static abstract class SendSigninDataAsync extends AsyncTask<Object, Integer, Integer>
 	{
 		protected Context context = null;
-		protected String loginName = null;
-		protected String loginPsw = null;
+		protected String signinName = null;
+		protected String signinPsw = null;
 		protected String extra = null;
 
 		/**
 		 * 构造方法(默认extra字段为null)。
 		 * 
 		 * @param context
-		 * @param loginName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-		 * @param loginPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 		 */
-		public SendLoginDataAsync(Context context
-				, String loginName, String loginPsw)
+		public SendSigninDataAsync(Context context
+				, String signinName, String signinPsw)
 		{
-			this(context, loginName, loginPsw, null);
+			this(context, signinName, signinPsw, null);
 		}
 		/**
 		 * 构造方法。
 		 * 
 		 * @param context
-		 * @param loginName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-		 * @param loginPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 		 * @param extra 额外信息字符串，可为null。本字段目前为保留字段，供上层应用自行放置需要的内容
 		 */
-		public SendLoginDataAsync(Context context
-				, String loginName, String loginPsw, String extra)
+		public SendSigninDataAsync(Context context
+				, String signinName, String signinPsw, String extra)
 		{
 			this.context = context;
-			this.loginName = loginName;
-			this.loginPsw = loginPsw;
+			this.signinName = signinName;
+			this.signinPsw = signinPsw;
 			this.extra = extra;
 			
 			//### Bug Fix 2015-11-07 by Jack Jiang
@@ -436,14 +440,14 @@ public class LocalUDPDataSender
 		@Override
 		protected Integer doInBackground(Object... params)
 		{
-			int code = LocalUDPDataSender.getInstance(context).sendLogin(loginName, loginPsw, this.extra);
+			int code = LocalUDPDataSender.getInstance(context).sendsignin(signinName, signinPsw, this.extra);
 			return code;
 		}
 
 		@Override
 		protected void onPostExecute(Integer code)
 		{
-			// *********************** 同样的代码也存在于AutoReLoginDaemon中的代码
+			// *********************** 同样的代码也存在于AutoResigninDaemon中的代码
 			if(code == 0)
 			{
 				// 登录消息成功发出后就启动本地消息侦听线程：
@@ -460,7 +464,7 @@ public class LocalUDPDataSender
 			}
 			
 			//
-			fireAfterSendLogin(code);
+			fireAfterSendsignin(code);
 		}
 		
 		/**
@@ -468,7 +472,7 @@ public class LocalUDPDataSender
 		 * 
 		 * @param code 0表示数据发出成功，否则返回的是错误码
 		 */
-		protected void fireAfterSendLogin(int code)
+		protected void fireAfterSendsignin(int code)
 		{
 			// default do nothing
 		}

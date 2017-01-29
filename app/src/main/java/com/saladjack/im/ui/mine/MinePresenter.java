@@ -16,6 +16,9 @@ public class MinePresenter implements MineIPresenter {
         model = new MineModel(this);
     }
 
+    @Override public void signout() {
+        model.signout();
+    }
 
     @Override public void fetchUserInfo() {
         model.fetchUserInfo();
@@ -23,6 +26,14 @@ public class MinePresenter implements MineIPresenter {
 
     @Override public void onFetchUserInfoSuccess(UserBean userBean) {
         view.updateUserInfo(userBean);
+    }
+
+    @Override public void onSignoutSuccess() {
+        view.onSingoutSuccess();
+    }
+
+    @Override public void onSignoutFail(int code) {
+        view.onSignoutFail(code);
     }
 
 }

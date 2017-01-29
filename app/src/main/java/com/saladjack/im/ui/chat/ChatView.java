@@ -5,8 +5,9 @@ package com.saladjack.im.ui.chat;
  */
 
 public interface ChatView {
+    void showSendMessage(String txt);
 
-    void showIMInfo_black(String txt);
+    void showResponseMessage(String txt);
 
     void showIMInfo_blue(String txt);
 
@@ -15,6 +16,10 @@ public interface ChatView {
     void onDisconnect(String txt);
 
     void showIMInfo_green(String txt);
+
+    void onSendMessageSuccess();
+
+    void onSendMessageFail(Integer code);
 
     
 }
