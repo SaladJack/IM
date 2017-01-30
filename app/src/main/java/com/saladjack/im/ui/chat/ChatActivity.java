@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.IMClientManager;
 import scut.saladjack.core.bean.FriendBean;
 
@@ -27,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +34,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.saladjack.im.R;
 
@@ -46,15 +43,15 @@ import com.saladjack.im.R;
 
 public class ChatActivity extends Activity implements ChatView
 {
-	private final static String TAG = ChatActivity.class.getSimpleName();
-
-	private final static String FRIEND_BEAN = "friendBean";
-
 	public static void open(Context context, FriendBean friendBean){
 		Intent intent = new Intent(context,ChatActivity.class);
 		intent.putExtra(FRIEND_BEAN,friendBean);
 		context.startActivity(intent);
 	}
+
+	private final static String TAG = ChatActivity.class.getSimpleName();
+
+	private final static String FRIEND_BEAN = "friendBean";
 	private ChatIPresenter presenter;
 
 	private Button btnLogout = null;
@@ -68,7 +65,6 @@ public class ChatActivity extends Activity implements ChatView
 	private MyAdapter chatInfoListAdapter;
 	private FriendBean friendBean;
 
-	/** Called when the activity is first created. */
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.chat_activity);
@@ -83,20 +79,21 @@ public class ChatActivity extends Activity implements ChatView
 		editId = (EditText)this.findViewById(R.id.id_editText);
 		editContent = (EditText)this.findViewById(R.id.content_editText);
 		viewMyid = (TextView)this.findViewById(R.id.myid_view);
-		chatInfoListView = (ListView)this.findViewById(R.id.demo_main_activity_layout_listView);
+		chatInfoListView = (ListView)this.findViewById(R.id.chat_lv);
 		chatInfoListAdapter = new MyAdapter(this);
 		chatInfoListView.setAdapter(chatInfoListAdapter);
 		btnSend.setOnClickListener(v-> {
-			showSendMessage(editContent.getText().toString().trim());
-			presenter.sendMessage(this,editContent.getText().toString().trim(),Integer.parseInt(editId.getText().toString().trim()),true);
+			String content = editContent.getText().toString().trim();
+			if(content.length() > 0) {
+				showSendMessage(editContent.getText().toString().trim());
+				presenter.sendMessage(this, content, Integer.parseInt(editId.getText().toString().trim()), true);
+			}
 		});
-		this.setTitle("ChatActivity");
 	}
 
 
 	private void initOthers() {
 		editId.setText(""+friendBean.getId());
-		// Set MainGUI instance refrence to listeners
 		IMClientManager.getInstance(this).getTransDataListener().setChatView(this);
 		IMClientManager.getInstance(this).getBaseEventListener().setChatView(this);
 		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(this);
@@ -122,10 +119,10 @@ public class ChatActivity extends Activity implements ChatView
 	@Override public void showSendMessage(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
 	}
-
 	@Override public void showResponseMessage(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
 	}
+
 	@Override public void showIMInfo_blue(String txt) {
 		chatInfoListAdapter.addItem(txt, ChatInfoColorType.blue);
 	}
@@ -152,20 +149,17 @@ public class ChatActivity extends Activity implements ChatView
 	/**
 	 * 各种显示列表Adapter实现类。
 	 */
-	public class MyAdapter extends BaseAdapter
-	{
+	public class MyAdapter extends BaseAdapter {
 		private List<Map<String, Object>> mData;
         private LayoutInflater mInflater;
         private SimpleDateFormat hhmmDataFormat = new SimpleDateFormat("HH:mm:ss");
          
-        public MyAdapter(Context context)
-        {
+        public MyAdapter(Context context){
             this.mInflater = LayoutInflater.from(context);
-            mData = new ArrayList<Map<String, Object>>();
+            mData = new ArrayList<>();
         }
         
-        public void addItem(String content, ChatInfoColorType color)
-        {
+        public void addItem(String content, ChatInfoColorType color) {
         	Map<String, Object> it = new HashMap<String, Object>();
         	it.put("__content__", content);
 			it.put("__time__",hhmmDataFormat.format(new Date()));
@@ -194,19 +188,16 @@ public class ChatActivity extends Activity implements ChatView
         }
  
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) 
-        {
+        public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
-            if (convertView == null)
-            {
+            if (convertView == null) {
                 holder=new ViewHolder();  
-                convertView = mInflater.inflate(R.layout.demo_main_activity_list_item_layout, null);
-                holder.content = (TextView)convertView.findViewById(R.id.demo_main_activity_list_item_layout_tvcontent);
+                convertView = mInflater.inflate(R.layout.chat_item_layout, null);
+                holder.content = (TextView)convertView.findViewById(R.id.chat_content_tv);
 				holder.time = (TextView)convertView.findViewById(R.id.time);
                 convertView.setTag(holder);
             }
-            else 
-            {
+            else {
                 holder = (ViewHolder)convertView.getTag();
             }
              
@@ -235,8 +226,7 @@ public class ChatActivity extends Activity implements ChatView
             return convertView;
         }
         
-        public final class ViewHolder
-        {
+        public final class ViewHolder {
             public TextView content;
 			public TextView time;
 		}
@@ -245,8 +235,7 @@ public class ChatActivity extends Activity implements ChatView
 	/**
 	 * 信息颜色常量定义。
 	 */
-	public enum ChatInfoColorType
-    {
+	public enum ChatInfoColorType {
     	black,
     	blue,
     	brightred,

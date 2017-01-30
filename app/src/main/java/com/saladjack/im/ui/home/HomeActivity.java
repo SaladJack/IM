@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.saladjack.im.IMClientManager;
 import com.saladjack.im.ui.base.BaseActivity;
-import com.saladjack.im.ui.chat.ChatFragment;
 import com.saladjack.im.ui.friend.FriendFragment;
 import com.saladjack.im.ui.message.MessageFragment;
 import com.saladjack.im.ui.mine.MineFragment;
@@ -50,9 +49,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        chatImg = (ImageView) findViewById(R.id.chat_img);
-        chatTv = (TextView)findViewById(R.id.chat_tv);
-        chat_ll = findViewById(R.id.chat_ll);
+        chatImg = (ImageView) findViewById(R.id.message_img);
+        chatTv = (TextView)findViewById(R.id.message_tv);
+        chat_ll = findViewById(R.id.message_ll);
         friendImg = (ImageView) findViewById(R.id.friend_img);
         friendTv = (TextView)findViewById(R.id.friend_tv);
         friend_ll = findViewById(R.id.friend_ll);
@@ -115,17 +114,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private void changeImg(int position) {
         switch (position) {
             case 0:
-                chatImg.setImageResource(R.drawable.chat_pressed);
+                chatImg.setImageResource(R.drawable.message_pressed);
                 friendImg.setImageResource(R.drawable.friend_normal);
                 mineImg.setImageResource(R.drawable.mine_normal);
                 break;
             case 1:
-                chatImg.setImageResource(R.drawable.chat_normal);
+                chatImg.setImageResource(R.drawable.message_normal);
                 friendImg.setImageResource(R.drawable.friend_pressed);
                 mineImg.setImageResource(R.drawable.mine_normal);
                 break;
             case 2:
-                chatImg.setImageResource(R.drawable.chat_normal);
+                chatImg.setImageResource(R.drawable.message_normal);
                 friendImg.setImageResource(R.drawable.friend_normal);
                 mineImg.setImageResource(R.drawable.mine_pressed);
                 break;
@@ -159,7 +158,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     private void changeTitle(int position){
         switch (position){
             case 0:
-                toolbarTitle.setText(getString(R.string.chat));
+                toolbarTitle.setText(getString(R.string.message));
                 break;
             case 1:
                 toolbarTitle.setText(getString(R.string.friends));
@@ -180,7 +179,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
 
     @Override public void onClick(View v) {
         switch (v.getId()){
-            case R.id.chat_ll:
+            case R.id.message_ll:
                 changeImg(0);
                 changeTv(0);
                 changeTitle(0);

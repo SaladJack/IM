@@ -75,7 +75,7 @@ public class LocalUDPDataSender
 	 * @see #send(byte[], int)
 	 */
 	// 不推荐直接调用本方法实现“登录”流程，请使用SendsigninAsync（此异步线程中包含发送登录包之外的处理和逻辑）
-	int sendsignin(String signinName, String signinPsw, String extra)
+	public int sendSignin(String signinName, String signinPsw, String extra)
 	{
 		byte[] b = ProtocalFactory.createPLoginInfo(signinName, signinPsw, extra).toBytes();
 		int code = send(b, b.length);
@@ -131,8 +131,7 @@ public class LocalUDPDataSender
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	int sendKeepAlive()
-	{
+	int sendKeepAlive() {
 		byte[] b = ProtocalFactory.createPKeepAlive(ClientCoreSDK.getInstance().getCurrentUserId()).toBytes();
 		return send(b, b.length);
 	}
@@ -267,9 +266,9 @@ public class LocalUDPDataSender
 				// 务端UDP貌似不太一样，普通UDP时客户端无需先connect可以直接send设置好远程ip和端口的DataPragramPackage）
 //				ds.connect(InetAddress.getByName(_Utils.REMOTE_SERVER_LISTENING_IP), _Utils.REMOTE_SERVER_LISTENING_PORT);
 
-//				ds.connect(InetAddress.getByName(ConfigEntity.serverIP), ConfigEntity.serverUDPPort);
+
 				ds.connect(new InetSocketAddress(ConfigEntity.serverIP,ConfigEntity.serverUDPPort));
-//				FIXME: 因为connect是异步的，为了在尽可能保证在send前就已connect，所以最好在socketProvider里Bind后就connect!
+
 			}
 			catch (Exception e)
 			{
@@ -315,18 +314,15 @@ public class LocalUDPDataSender
 		protected Context context = null;
 		protected Protocal p = null;
 		
-		public SendCommonDataAsync(Context context, byte[] dataContent, int dataLen, int to_user_id)
-		{
+		public SendCommonDataAsync(Context context, byte[] dataContent, int dataLen, int to_user_id) {
 			this(context, CharsetHelper.getString(dataContent, dataLen), to_user_id);
 		}
 		public SendCommonDataAsync(Context context, String dataContentWidthStr, int to_user_id
-				, boolean QoS)
-		{
+				, boolean QoS) {
 			this(context, dataContentWidthStr, to_user_id, QoS, null);
 		}
 		public SendCommonDataAsync(Context context, String dataContentWidthStr, int to_user_id
-				, boolean QoS, String fingerPrint)
-		{
+				, boolean QoS, String fingerPrint) {
 			this(context, ProtocalFactory.createCommonData(dataContentWidthStr
 					, ClientCoreSDK.getInstance().getCurrentUserId(), to_user_id, QoS, fingerPrint));
 		}
@@ -335,10 +331,8 @@ public class LocalUDPDataSender
 			this(context, ProtocalFactory.createCommonData(dataContentWidthStr
 					, ClientCoreSDK.getInstance().getCurrentUserId(), to_user_id));
 		}
-		public SendCommonDataAsync(Context context, Protocal p)
-		{
-			if(p == null)
-			{
+		public SendCommonDataAsync(Context context, Protocal p) {
+			if(p == null) {
 				Log.w(TAG, "无效的参数p==null!");
 				return;
 			}
@@ -347,8 +341,7 @@ public class LocalUDPDataSender
 		}
 
 		@Override
-		protected Integer doInBackground(Object... params)
-		{
+		protected Integer doInBackground(Object... params) {
 			if(p != null)
 				return LocalUDPDataSender.getInstance(context).sendCommonData(p);//dataContentWidthStr, to_user_id);
 			return -1;
@@ -393,7 +386,7 @@ public class LocalUDPDataSender
 	 * 放在Application的onCreate()方法中或者登录Activity的onCreate()方法中）。
 	 * 
 	 * @see AutoReSigninDaemon
-	 * @see LocalUDPDataSender#sendsignin(String, String)
+	 * @see LocalUDPDataSender#sendSignin(String, String)
 	 * @see LocalUDPDataReciever#startup()
 	 */
 	public static abstract class SendSigninDataAsync extends AsyncTask<Object, Integer, Integer>
@@ -424,8 +417,7 @@ public class LocalUDPDataSender
 		 * @param extra 额外信息字符串，可为null。本字段目前为保留字段，供上层应用自行放置需要的内容
 		 */
 		public SendSigninDataAsync(Context context
-				, String signinName, String signinPsw, String extra)
-		{
+				, String signinName, String signinPsw, String extra) {
 			this.context = context;
 			this.signinName = signinName;
 			this.signinPsw = signinPsw;
@@ -438,15 +430,13 @@ public class LocalUDPDataSender
 		}
 
 		@Override
-		protected Integer doInBackground(Object... params)
-		{
-			int code = LocalUDPDataSender.getInstance(context).sendsignin(signinName, signinPsw, this.extra);
+		protected Integer doInBackground(Object... params) {
+			int code = LocalUDPDataSender.getInstance(context).sendSignin(signinName, signinPsw, this.extra);
 			return code;
 		}
 
 		@Override
-		protected void onPostExecute(Integer code)
-		{
+		protected void onPostExecute(Integer code) {
 			// *********************** 同样的代码也存在于AutoResigninDaemon中的代码
 			if(code == 0)
 			{
@@ -458,8 +448,7 @@ public class LocalUDPDataSender
 				//	          监听线程的运行。
 				LocalUDPDataReciever.getInstance(context).startup();
 			}
-			else
-			{
+			else {
 				Log.d(TAG, "数据发送失败, 错误码是："+code+"！");
 			}
 			
@@ -472,8 +461,7 @@ public class LocalUDPDataSender
 		 * 
 		 * @param code 0表示数据发出成功，否则返回的是错误码
 		 */
-		protected void fireAfterSendsignin(int code)
-		{
+		protected void fireAfterSendsignin(int code) {
 			// default do nothing
 		}
 	}

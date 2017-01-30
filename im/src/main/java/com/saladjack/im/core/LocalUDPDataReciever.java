@@ -93,23 +93,18 @@ public class LocalUDPDataReciever
 		//
 		stop();
 		
-		try
-		{
-			//
+		try {
 			thread = new Thread(new Runnable()
 			{
 				public void run()
 				{
-					try
-					{
+					try {
 						if(ClientCoreSDK.DEBUG)
 							Log.d(TAG, "本地UDP端口侦听中，端口="+ ConfigEntity.localUDPPort+"...");
-
 						//开始侦听
 						p2pListeningImpl();
 					}
-					catch (Exception eee)
-					{
+					catch (Exception eee) {
 						Log.w(TAG, "本地UDP监听停止了(socket被关闭了?),"+eee.getMessage(), eee);
 					}
 				}
@@ -117,8 +112,7 @@ public class LocalUDPDataReciever
 			//启动线程,开始侦听
 			thread.start();
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Log.w(TAG, "本地UDPSocket监听开启时发生异常,"+e.getMessage(), e);
 		}
 	}
@@ -128,10 +122,8 @@ public class LocalUDPDataReciever
 	 * 
 	 * @throws Exception
 	 */
-	private void p2pListeningImpl() throws Exception
-	{
-		while (true)
-		{
+	private void p2pListeningImpl() throws Exception {
+		while (true) {
 			// 缓冲区
 			byte[] data = new byte[1024];
 			// 接收数据报的包

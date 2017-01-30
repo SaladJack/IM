@@ -5,14 +5,14 @@
     <string name="network_not_work">请检查网络是否已连接</string>
     <string name="confirm_ip_port_not_null">请确保服务端地址和端口号都不为空</string>
     <string name="confirm_port_legal">请输入合法的端口号！</string>
-    <string name="chat">chat</string>
+    <string name="message">message</string>
     <string name="mine">mine</string>
     <string name="friends">friends</string>
-    <string name="signining_please_wait">signining...please wait for seconds</string>
-    <string name="signining">signining</string>
+    <string name="signining_please_wait">Sign in...</string>
+    <string name="signining">Sign in</string>
     <string name="user_name">userName</string>
-    <string name="send_msg_success">数据发送成功！</string>
-    <string name="send_msg_fail">数据发送失败。错误码是：</string>
-    <string name="signin_fail">signin fail!recheck your account and password</string>
+    <string name="send_msg_success">Send Message Success</string>
+    <string name="send_msg_fail">Send Message Fail!Error Code is :</string>
+    <string name="signin_fail">Sign in fail!Recheck your ACCOUNT and PASSWORD!</string>
     <string name="signout">sign out</string>
 </resources>

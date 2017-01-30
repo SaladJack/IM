@@ -5,6 +5,10 @@ import android.content.Context;
 import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.conf.ConfigEntity;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 
 /**
  * Created by saladjack on 17/1/27.
@@ -33,11 +37,15 @@ public class SigninModel implements SigninIModel {
              */
             @Override
             protected void fireAfterSendsignin(int code) {
-                if(code == 0)
-                    presenter.onSendMsgSuccess();
-                else
-                    presenter.onSendMsgFail(code);
+                if(code == 0) presenter.onSendMsgSuccess();
+                else          presenter.onSendMsgFail(code);
             }
         }.execute();
+
+        Observable.create((Observable.OnSubscribe<Integer>) subscriber ->subscriber.onNext(LocalUDPDataSender.getInstance().sendSignin(account,password,null)))
+
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 }
