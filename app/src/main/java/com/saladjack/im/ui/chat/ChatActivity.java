@@ -54,11 +54,8 @@ public class ChatActivity extends Activity implements ChatView
 	private final static String FRIEND_BEAN = "friendBean";
 	private ChatIPresenter presenter;
 
-	private Button btnLogout = null;
-
 	private EditText editId = null;
 	private EditText editContent = null;
-	private TextView viewMyid = null;
 	private Button btnSend = null;
 	
 	private ListView chatInfoListView;
@@ -74,11 +71,9 @@ public class ChatActivity extends Activity implements ChatView
 		initOthers();
 	}
 	private void initViews() {
-		btnLogout = (Button)this.findViewById(R.id.logout_btn);
 		btnSend = (Button)this.findViewById(R.id.send_btn);
-		editId = (EditText)this.findViewById(R.id.id_editText);
 		editContent = (EditText)this.findViewById(R.id.content_editText);
-		viewMyid = (TextView)this.findViewById(R.id.myid_view);
+
 		chatInfoListView = (ListView)this.findViewById(R.id.chat_lv);
 		chatInfoListAdapter = new MyAdapter(this);
 		chatInfoListView.setAdapter(chatInfoListAdapter);
@@ -86,14 +81,13 @@ public class ChatActivity extends Activity implements ChatView
 			String content = editContent.getText().toString().trim();
 			if(content.length() > 0) {
 				showSendMessage(editContent.getText().toString().trim());
-				presenter.sendMessage(this, content, Integer.parseInt(editId.getText().toString().trim()), true);
+				presenter.sendMessage(this, content,friendBean.getId(), true);
 			}
 		});
 	}
 
 
 	private void initOthers() {
-		editId.setText(""+friendBean.getId());
 		IMClientManager.getInstance(this).getTransDataListener().setChatView(this);
 		IMClientManager.getInstance(this).getBaseEventListener().setChatView(this);
 		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(this);

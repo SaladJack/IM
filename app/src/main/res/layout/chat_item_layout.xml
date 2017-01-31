@@ -18,7 +18,6 @@
         android:layout_marginBottom="1dp"
         android:layout_marginTop="1dp"
         android:gravity="center_vertical"
-        android:background="@color/colorPrimary"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
         android:text="[20:10]收到一条消息！"

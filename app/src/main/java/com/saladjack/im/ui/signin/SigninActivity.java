@@ -3,13 +3,15 @@ package com.saladjack.im.ui.signin;
 import com.saladjack.im.IMClientManager;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.home.HomeActivity;
-import com.saladjack.im.ui.message.MessageFragment;
+import com.saladjack.im.ui.signup.SignUpActivity;
 import com.saladjack.im.utils.AppUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -28,8 +30,13 @@ import scut.saladjack.core.db.dao.UserDao;
  * Created by saladjack on 17/1/27.
  */
 
-public class SigninActivity extends BaseActivity implements SigninView
-{
+public class SigninActivity extends BaseActivity implements SigninView {
+
+	public static void open(Context context) {
+		Intent intent = new Intent(context,SigninActivity.class);
+		context.startActivity(intent);
+	}
+
 	private static final String TAG = "SigninActivity";
 
 	private EditText editServerIp = null;
@@ -46,8 +53,8 @@ public class SigninActivity extends BaseActivity implements SigninView
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//
-		this.setContentView(R.layout.demo_signin_activity_layout);
+		IMClientManager.getInstance(this).initIM();
+		this.setContentView(R.layout.signin_activity);
 		presenter = new SigninPresenter(this);
 		// 界面UI基本设置
 		initViews();
@@ -65,7 +72,10 @@ public class SigninActivity extends BaseActivity implements SigninView
 		onSigninProgress = new OnSigninProgress(this);
 		this.setTitle("登录");
 		btnsignin.setOnClickListener(v -> doSignin());
+		findViewById(R.id.signup_btn).setOnClickListener(v-> SignUpActivity.open(this));
 	}
+
+
 
 	/**
 	 * 登录处理。
@@ -131,6 +141,8 @@ public class SigninActivity extends BaseActivity implements SigninView
 	@Override public void onsigninFail(int errorCode) {
 		showToast(R.string.signin_fail);
 	}
+
+
 
 	//-------------------------------------------------------------------------- inner classes
 	/**

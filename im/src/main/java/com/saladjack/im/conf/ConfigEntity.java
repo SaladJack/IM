@@ -30,7 +30,8 @@ public class ConfigEntity
 	 * <p>
 	 * 如需设置本参数，请在登录前调用，否则将不起效。
 	 */
-	public static String serverIP = "rbcore.openmob.net";
+//	public static String serverIP = "rbcore.openmob.net";
+	public static String serverIP = "123";
 	
 	/**
 	 * 全局设置：服务端UDP服务侦听端口号。

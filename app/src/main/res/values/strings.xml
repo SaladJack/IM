@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">IM</string>
-    <string name="registerFail">注册失败,账号已存在!</string>
+    <string name="register_fail_for_account_already_exist">Account Already Exist!</string>
     <string name="registerSuccess">注册成功</string>
     <string name="network_not_work">请检查网络是否已连接</string>
     <string name="confirm_ip_port_not_null">请确保服务端地址和端口号都不为空</string>
@@ -15,4 +15,14 @@
     <string name="send_msg_fail">Send Message Fail!Error Code is :</string>
     <string name="signin_fail">Sign in fail!Recheck your ACCOUNT and PASSWORD!</string>
     <string name="signout">sign out</string>
+    <string name="signout_fail">sign out fail!Error code is:</string>
+    <!--<string name="default_ip">rbcore.52im.net</string>-->
+    <string name="default_ip">10.0.2.2</string>
+    <string name="register_fail_for_network">Please Recheck Your Netwok!</string>
+    <string name="signup">Sign Up</string>
+    <string name="signin">Sign In</string>
+    <string name="signup_username">username</string>
+    <string name="signup_account">account</string>
+    <string name="signup_password">password</string>
+    <string name="signup_info_wrong">Illegal Sign Up Information</string>
 </resources>

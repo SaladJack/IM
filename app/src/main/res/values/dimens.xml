@@ -8,4 +8,5 @@
     <dimen name="mine_item_tv_marginLeft">20dp</dimen>
     <dimen name="user_id_tv_size">20sp</dimen>
     <dimen name="mine_item_img_marginLeft">15dp</dimen>
+    <dimen name="signup_tv_size">16sp</dimen>
 </resources>

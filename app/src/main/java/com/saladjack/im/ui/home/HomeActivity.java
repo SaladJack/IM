@@ -75,7 +75,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         super.onDestroy();
         // 释放IM占用资源
         IMClientManager.getInstance(this).release();
-        System.exit(0);
+//        System.exit(0);
     }
 
     public ViewPager.OnPageChangeListener vpSlide = new ViewPager.OnPageChangeListener() {
