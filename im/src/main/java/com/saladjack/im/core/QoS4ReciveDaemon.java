@@ -142,7 +142,7 @@ public class QoS4ReciveDaemon
 	 * <p>
 	 * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
 	 * 
-	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$LOGIN_INTERVAL}
+	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$signin_INTERVAL}
 	 * 执行间隔的到来才进行首次作业的执行
 	 */
 	public void startup(boolean immediately)
@@ -152,7 +152,7 @@ public class QoS4ReciveDaemon
 		
 		// ** 如果列表不为空则尝试重置生成起始时间
 		// 当重启时列表可能是不为空的（此场景目前出现在掉线后重新恢复时），
-		// 那么为了防止在网络状况不好的情况下，登陆能很快恢复时对方可能存在
+		// 那么为了防止在网络状况不好的情况下，登录能很快恢复时对方可能存在
 		// 的重传，此时也能一定程序避免消息重复的可能
 		if(recievedMessages != null && recievedMessages.size() > 0)
 		{

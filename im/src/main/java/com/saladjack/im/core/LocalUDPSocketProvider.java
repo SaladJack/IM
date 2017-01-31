@@ -147,7 +147,7 @@ public class LocalUDPSocketProvider
 			}
 			else
 			{
-				Log.d(TAG, "Socket处于未初化状态（可能是您还未登陆），无需关闭。");
+				Log.d(TAG, "Socket处于未初化状态（可能是您还未登录），无需关闭。");
 			}	
 		}
 		catch (Exception e)

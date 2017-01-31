@@ -47,6 +47,10 @@ public class LocalUDPDataSender
 			instance = new LocalUDPDataSender(context);
 		return instance;
 	}
+
+	public static LocalUDPDataSender getInstance(){
+		return instance;
+	}
 	
 	private LocalUDPDataSender(Context context)
 	{
@@ -54,64 +58,64 @@ public class LocalUDPDataSender
 	}
 	
 	/**
-	 * 发送登陆信息.
+	 * 发送登录信息.
 	 * <p>
-	 * <b>注意：</b>本库的启动入口就是登陆过程触发的，因而要使本库能正常工作，
-	 * 请确保首先进行登陆操作。
+	 * <b>注意：</b>本库的启动入口就是登录过程触发的，因而要使本库能正常工作，
+	 * 请确保首先进行登录操作。
 	 * <p>
-	 * 实现登陆操作时推荐使用本类默认的 {@link SendLoginDataAsync}类或者类似实现。
+	 * 实现登录操作时推荐使用本类默认的 {@link SendSigninDataAsync}类或者类似实现。
 	 * 否则，在调用本方法前请确保核心库的初始化方法{@link ClientCoreSDK#init(Context)}
-	 * 已被调用（从而保证核心类库的初始化），且本方法调用后登陆被成功发出后还需调用
+	 * 已被调用（从而保证核心类库的初始化），且本方法调用后登录被成功发出后还需调用
 	 * {@link LocalUDPDataReciever#startup()}以便启动本地端口监听，否则将收到任何消息 。
 	 * 
-	 * @param loginName 登陆时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-	 * @param loginPsw 登陆时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+	 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+	 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 	 * @param extra 额外信息字符串，可为null。本字段目前为保留字段，供上层应用自行放置需要的内容
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	// 不推荐直接调用本方法实现“登陆”流程，请使用SendLoginAsync（此异步线程中包含发送登陆包之外的处理和逻辑）
-	int sendLogin(String loginName, String loginPsw, String extra)
+	// 不推荐直接调用本方法实现“登录”流程，请使用SendsigninAsync（此异步线程中包含发送登录包之外的处理和逻辑）
+	public int sendSignin(String signinName, String signinPsw, String extra)
 	{
-		byte[] b = ProtocalFactory.createPLoginInfo(loginName, loginPsw, extra).toBytes();
+		byte[] b = ProtocalFactory.createPLoginInfo(signinName, signinPsw, extra).toBytes();
 		int code = send(b, b.length);
-		// 登陆信息成功发出时就把登陆名存下来
-		if(code == 0)
-		{
-			ClientCoreSDK.getInstance().setCurrentLoginName(loginName);
-			ClientCoreSDK.getInstance().setCurrentLoginPsw(loginPsw);
-			ClientCoreSDK.getInstance().setCurrentLoginExtra(extra);
+		// 登录信息成功发出时就把登录名存下来
+		if(code == 0) {
+			ClientCoreSDK.getInstance().setCurrentAccount(signinName);
+			ClientCoreSDK.getInstance().setCurrentsigninPsw(signinPsw);
+			ClientCoreSDK.getInstance().setCurrentsigninExtra(extra);
+			// TODO: 17/1/28 server端规定字段
 		}
 		
 		return code;
 	}
 	
 	/**
-	 * 发送注销登陆信息.
+	 * 发送注销登录信息.
 	 * <p>
 	 * <b>注意：</b>此方法的调用将被本库理解为退出库的使用，本方法将会额外调
 	 * 用资源释放方法{@link ClientCoreSDK#release()}，以保证资源释放。
 	 * <p>
-	 * 本方法调用后，除非再次进行登陆过程，否则核心库将处于初始未初始化状态。
+	 * 本方法调用后，除非再次进行登录过程，否则核心库将处于初始未初始化状态。
 	 * 
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	public int sendLoginout()
+	public int sendSignout()
 	{
 		int code = ErrorCode.COMMON_CODE_OK;
-		if(ClientCoreSDK.getInstance().isLoginHasInit())
+		if(ClientCoreSDK.getInstance().issigninHasInit())
 		{
 			byte[] b = ProtocalFactory.createPLoginoutInfo(ClientCoreSDK.getInstance().getCurrentUserId()
-					, ClientCoreSDK.getInstance().getCurrentLoginName()).toBytes();
+					, ClientCoreSDK.getInstance().getCurrentAccount()).toBytes();
 			code = send(b, b.length);
 			// 登出信息成功发出时
 			if(code == 0)
 			{
-	//			// 发出退出登陆的消息同时也关闭心跳线程
+	//			// 发出退出登录的消息同时也关闭心跳线程
 	//			KeepAliveDaemon.getInstance(context).stop();
-	//			// 重置登陆标识
-	//			ClientCoreSDK.getInstance().setLoginHasInit(false);
+	//			// 重置登录标识
+	//			ClientCoreSDK.getInstance().setsigninHasInit(false);
 			}
 		}
 		
@@ -127,8 +131,7 @@ public class LocalUDPDataSender
 	 * @return 0表示数据发出成功，否则返回的是错误码
 	 * @see #send(byte[], int)
 	 */
-	int sendKeepAlive()
-	{
+	int sendKeepAlive() {
 		byte[] b = ProtocalFactory.createPKeepAlive(ClientCoreSDK.getInstance().getCurrentUserId()).toBytes();
 		return send(b, b.length);
 	}
@@ -240,8 +243,8 @@ public class LocalUDPDataSender
 			Log.e(TAG, "本地网络不能工作，send数据没有继续!");
 			return ErrorCode.ForC.LOCAL_NETWORK_NOT_WORKING;
 		}
-//		if(!ClientCoreSDK.getInstance().isLogined())
-//			return ErrorCode.COMMON_NO_LOGIN;
+//		if(!ClientCoreSDK.getInstance().issignined())
+//			return ErrorCode.COMMON_NO_signin;
 		
 //		System.out.println("\n---------------------------------------------------------[1]");
 		// 获得UDPSocket实例
@@ -263,9 +266,9 @@ public class LocalUDPDataSender
 				// 务端UDP貌似不太一样，普通UDP时客户端无需先connect可以直接send设置好远程ip和端口的DataPragramPackage）
 //				ds.connect(InetAddress.getByName(_Utils.REMOTE_SERVER_LISTENING_IP), _Utils.REMOTE_SERVER_LISTENING_PORT);
 
-//				ds.connect(InetAddress.getByName(ConfigEntity.serverIP), ConfigEntity.serverUDPPort);
+
 				ds.connect(new InetSocketAddress(ConfigEntity.serverIP,ConfigEntity.serverUDPPort));
-//				FIXME: 因为connect是异步的，为了在尽可能保证在send前就已connect，所以最好在socketProvider里Bind后就connect!
+
 			}
 			catch (Exception e)
 			{
@@ -311,18 +314,15 @@ public class LocalUDPDataSender
 		protected Context context = null;
 		protected Protocal p = null;
 		
-		public SendCommonDataAsync(Context context, byte[] dataContent, int dataLen, int to_user_id)
-		{
+		public SendCommonDataAsync(Context context, byte[] dataContent, int dataLen, int to_user_id) {
 			this(context, CharsetHelper.getString(dataContent, dataLen), to_user_id);
 		}
 		public SendCommonDataAsync(Context context, String dataContentWidthStr, int to_user_id
-				, boolean QoS)
-		{
+				, boolean QoS) {
 			this(context, dataContentWidthStr, to_user_id, QoS, null);
 		}
 		public SendCommonDataAsync(Context context, String dataContentWidthStr, int to_user_id
-				, boolean QoS, String fingerPrint)
-		{
+				, boolean QoS, String fingerPrint) {
 			this(context, ProtocalFactory.createCommonData(dataContentWidthStr
 					, ClientCoreSDK.getInstance().getCurrentUserId(), to_user_id, QoS, fingerPrint));
 		}
@@ -331,10 +331,8 @@ public class LocalUDPDataSender
 			this(context, ProtocalFactory.createCommonData(dataContentWidthStr
 					, ClientCoreSDK.getInstance().getCurrentUserId(), to_user_id));
 		}
-		public SendCommonDataAsync(Context context, Protocal p)
-		{
-			if(p == null)
-			{
+		public SendCommonDataAsync(Context context, Protocal p) {
+			if(p == null) {
 				Log.w(TAG, "无效的参数p==null!");
 				return;
 			}
@@ -343,8 +341,7 @@ public class LocalUDPDataSender
 		}
 
 		@Override
-		protected Integer doInBackground(Object... params)
-		{
+		protected Integer doInBackground(Object... params) {
 			if(p != null)
 				return LocalUDPDataSender.getInstance(context).sendCommonData(p);//dataContentWidthStr, to_user_id);
 			return -1;
@@ -354,77 +351,76 @@ public class LocalUDPDataSender
 		protected abstract void onPostExecute(Integer code);
 	}
 	
-	// 【* 关于不能在SendLoginDataAsync中进行ClientCoreSDK的init初始化的备忘】
+	// 【* 关于不能在SendsigninDataAsync中进行ClientCoreSDK的init初始化的备忘】
 	//   请确保首先进行核心库的初始化（这是不同于iOS和Java平台的地方，差异的原因源自Android系统里
 	//   的网络连接/断开广播事件：当APP中首次注册广播事件监听时，系统会无条件向此监听者广播一条事件出来（
 	//   而此时手机根本就不存在断开/连接事件的发生，其实连接本来就没有变动），且此广播是异步的。也就是说如果
 	//   不能首先处理好这个”首次“广播，很可能会因异步产生的时间差而打乱MobileIMSDK的端口绑定情况。
 	// 【* 非要这么干会怎么样？】
 	//   如果像Java或ios平台一样，为了简化开发者的api使用，也把此行代码放到
-	//   登陆接口里去默认调用，则产生的问题会是：当此行代码被调用时，网络状态广播
+	//   登录接口里去默认调用，则产生的问题会是：当此行代码被调用时，网络状态广播
 	//   事件会立即被注册，而android系统接着会异步地推一条连接变动广播出来（注意：
-	//   此时的连接并没有变动，这只是android系统故意推出来的），那么可能导致登陆包
+	//   此时的连接并没有变动，这只是android系统故意推出来的），那么可能导致登录包
 	//   发出时本地刚开启的本地端口监听会因刚才的广播因异步时间差，恰在本监听做好后
 	//   被MobileIMSDK捕获到，而根据MobileIMSDK捕获到此事件的处理方法——立即重置Socket
 	//   （正常情况下，此广播的发生肯定是因为手机网络有变动发生，那么此重置显然是合理
-	//   且是必须的），那么势必会导致服务端反馈回来的登陆结果包无法被本地收到（因为刚才
+	//   且是必须的），那么势必会导致服务端反馈回来的登录结果包无法被本地收到（因为刚才
 	//   因那恶心的Android系统无厘头的广播已将本已启动好的本地Socket端口监听给重置了呢）。
 	//   所以：鉴于Android系统对网络变动事件在首次被注册时的无厘头表现，加上MobileIMSDK
 	//   对此事件的处理逻辑，最佳解决方案就是，无条件将本init方法放到APP在使用任何实际性
 	//   数据发送前就作为MobileIMSDK的必备条件尽可能优先被调用：如放在Application的
-	//	onCreate方法中、或者任意其它首次发送登陆包前，而不因等发送登陆包时（因为那个广播
-	//   时间差的存在，很可能就导致了此广播在本地包发出后且服务端登陆结果被反馈回来后才被
+	//	onCreate方法中、或者任意其它首次发送登录包前，而不因等发送登录包时（因为那个广播
+	//   时间差的存在，很可能就导致了此广播在本地包发出后且服务端登录结果被反馈回来后才被
 	//   APP捕获到）。
 	/**
-	 * 登陆异步线程实现类。
+	 * 登录异步线程实现类。
 	 * <br>
-	 * 子类需自行实现 {@link #fireAfterSendLogin(int)}方法，以便实现登陆发出后的UI处理。
+	 * 子类需自行实现 {@link #fireAfterSendsignin(int)}方法，以便实现登录发出后的UI处理。
 	 * 
 	 * <p>
-	 * 此类为本库的默认实现类，非必须要使用，使用者也可自行设计异步登陆过程（如使用{@link AsyncTask}）。
+	 * 此类为本库的默认实现类，非必须要使用，使用者也可自行设计异步登录过程（如使用{@link AsyncTask}）。
 	 * <p>
 	 * <b><font color="red">注意：</font></b>因Andriod系统在处理网络变动广播事件的特殊性，本类中没有
 	 * 像Java或iOS平台那样默认调用MobileIMSDK的核心库的初始化方法{@link ClientCoreSDK#init(Context)}，
-	 * 所以在发送登陆发前，请确保{@link ClientCoreSDK#init(Context)}已经被调用过，且越早被调用越好（如
-	 * 放在Application的onCreate()方法中或者登陆Activity的onCreate()方法中）。
+	 * 所以在发送登录发前，请确保{@link ClientCoreSDK#init(Context)}已经被调用过，且越早被调用越好（如
+	 * 放在Application的onCreate()方法中或者登录Activity的onCreate()方法中）。
 	 * 
-	 * @see AutoReLoginDaemon
-	 * @see LocalUDPDataSender#sendLogin(String, String)
+	 * @see AutoReSigninDaemon
+	 * @see LocalUDPDataSender#sendSignin(String, String)
 	 * @see LocalUDPDataReciever#startup()
 	 */
-	public static abstract class SendLoginDataAsync extends AsyncTask<Object, Integer, Integer>
+	public static abstract class SendSigninDataAsync extends AsyncTask<Object, Integer, Integer>
 	{
 		protected Context context = null;
-		protected String loginName = null;
-		protected String loginPsw = null;
+		protected String signinName = null;
+		protected String signinPsw = null;
 		protected String extra = null;
 
 		/**
 		 * 构造方法(默认extra字段为null)。
 		 * 
 		 * @param context
-		 * @param loginName 登陆时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-		 * @param loginPsw 登陆时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 		 */
-		public SendLoginDataAsync(Context context
-				, String loginName, String loginPsw)
+		public SendSigninDataAsync(Context context
+				, String signinName, String signinPsw)
 		{
-			this(context, loginName, loginPsw, null);
+			this(context, signinName, signinPsw, null);
 		}
 		/**
 		 * 构造方法。
 		 * 
 		 * @param context
-		 * @param loginName 登陆时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
-		 * @param loginPsw 登陆时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinName 登录时提交的用户名：此用户名对框架来说可以随意，具体意义由上层逻辑决即可
+		 * @param signinPsw 登录时提交的密码：此密码对框架来说可以随意，具体意义由上层逻辑决即可
 		 * @param extra 额外信息字符串，可为null。本字段目前为保留字段，供上层应用自行放置需要的内容
 		 */
-		public SendLoginDataAsync(Context context
-				, String loginName, String loginPsw, String extra)
-		{
+		public SendSigninDataAsync(Context context
+				, String signinName, String signinPsw, String extra) {
 			this.context = context;
-			this.loginName = loginName;
-			this.loginPsw = loginPsw;
+			this.signinName = signinName;
+			this.signinPsw = signinPsw;
 			this.extra = extra;
 			
 			//### Bug Fix 2015-11-07 by Jack Jiang
@@ -434,42 +430,38 @@ public class LocalUDPDataSender
 		}
 
 		@Override
-		protected Integer doInBackground(Object... params)
-		{
-			int code = LocalUDPDataSender.getInstance(context).sendLogin(loginName, loginPsw, this.extra);
+		protected Integer doInBackground(Object... params) {
+			int code = LocalUDPDataSender.getInstance(context).sendSignin(signinName, signinPsw, this.extra);
 			return code;
 		}
 
 		@Override
-		protected void onPostExecute(Integer code)
-		{
-			// *********************** 同样的代码也存在于AutoReLoginDaemon中的代码
+		protected void onPostExecute(Integer code) {
+			// *********************** 同样的代码也存在于AutoResigninDaemon中的代码
 			if(code == 0)
 			{
-				// 登陆消息成功发出后就启动本地消息侦听线程：
-				// 第1）种情况：首次使用程序时，登陆信息发出时才启动本地监听线程是合理的；
+				// 登录消息成功发出后就启动本地消息侦听线程：
+				// 第1）种情况：首次使用程序时，登录信息发出时才启动本地监听线程是合理的；
 				// 第2）种情况：因网络原因（比如服务器关闭或重启）而导致本地监听线程中断的问题：
-				//      当首次登陆后，因服务端或其它网络原因导致本地监听出错，将导致中断本地监听线程，
-				//	          所以在此处在自动登陆重连或用户自已手机尝试再次登陆时重启监听线程就可以恢复本地
+				//      当首次登录后，因服务端或其它网络原因导致本地监听出错，将导致中断本地监听线程，
+				//	          所以在此处在自动登录重连或用户自已手机尝试再次登录时重启监听线程就可以恢复本地
 				//	          监听线程的运行。
 				LocalUDPDataReciever.getInstance(context).startup();
 			}
-			else
-			{
+			else {
 				Log.d(TAG, "数据发送失败, 错误码是："+code+"！");
 			}
 			
 			//
-			fireAfterSendLogin(code);
+			fireAfterSendsignin(code);
 		}
 		
 		/**
-		 * 登陆请求包发出后的处理。
+		 * 登录请求包发出后的处理。
 		 * 
 		 * @param code 0表示数据发出成功，否则返回的是错误码
 		 */
-		protected void fireAfterSendLogin(int code)
-		{
+		protected void fireAfterSendsignin(int code) {
 			// default do nothing
 		}
 	}

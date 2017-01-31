@@ -5,17 +5,21 @@ package com.saladjack.im.ui.chat;
  */
 
 public interface ChatView {
+    void showSendMessage(String txt);
 
-    void showIMInfo_black(String txt);
+    void showResponseMessage(String txt);
 
     void showIMInfo_blue(String txt);
 
     void showIMInfo_brightred(String txt);
 
-    void showIMInfo_red(String txt);
+    void onDisconnect(String txt);
 
     void showIMInfo_green(String txt);
 
-    void refreshMyid();
+    void onSendMessageSuccess();
+
+    void onSendMessageFail(Integer code);
+
     
 }

@@ -11,7 +11,7 @@
  */
 package com.saladjack.im;
 
-import com.saladjack.im.core.AutoReLoginDaemon;
+import com.saladjack.im.core.AutoReSigninDaemon;
 import com.saladjack.im.core.KeepAliveDaemon;
 import com.saladjack.im.core.LocalUDPDataReciever;
 import com.saladjack.im.core.LocalUDPSocketProvider;
@@ -44,15 +44,15 @@ public class ClientCoreSDK
 	public static boolean DEBUG = true;
 	
 	/** 
-	 * 是否在登陆成功后掉线时自动重新登陆线程中实质性发起登陆请求，true表示将在线程
-	 * 运行周期中正常发起，否则不发起（即关闭实质性的重新登陆请求）。
+	 * 是否在登录成功后掉线时自动重新登录线程中实质性发起登录请求，true表示将在线程
+	 * 运行周期中正常发起，否则不发起（即关闭实质性的重新登录请求）。
 	 * <p>
 	 * 什么样的场景下，需要设置本参数为false？比如：上层应用可以在自已的节电逻辑中控
-	 * 制当网络长时断开时就不需要实质性发起登陆请求了，因为 网络请求是非常耗电的。
+	 * 制当网络长时断开时就不需要实质性发起登录请求了，因为 网络请求是非常耗电的。
 	 * <p>
 	 * <b>本参数的设置将实时生效。</b> 
 	 */
-	public static boolean autoReLogin = true;
+	public static boolean autoResignin = true;
 	
 	private static ClientCoreSDK instance = null;
 	
@@ -75,7 +75,7 @@ public class ClientCoreSDK
 	private boolean localDeviceNetworkOk = true;
 	
 	/**
-	 * 是否已成功连接到服务器（当然，前提是已成功发起过登陆请求后）.
+	 * 是否已成功连接到服务器（当然，前提是已成功发起过登录请求后）.
 	 * <p>
 	 * 此“成功”意味着可以正常与服务端通信（可以近似理解为Socket正常建立）
 	 * ，“不成功”意味着不能与服务端通信.
@@ -84,12 +84,12 @@ public class ClientCoreSDK
 	 * <p>
 	 * <b>本参数是整个MobileIMSDK框架中唯一可作为判断与MobileIMSDK服务器的通信是否正常的准确依据。</b>
 	 * <p>
-	 * 本参数将在收到服务端的登陆请求反馈后被设置为true，在与服务端的通信无法正常完成时被设置为false。
+	 * 本参数将在收到服务端的登录请求反馈后被设置为true，在与服务端的通信无法正常完成时被设置为false。
 	 * <br>
 	 * <u>那么MobileIMSDK如何判断与服务端的通信是否正常呢？</u> 判断方法如下：
 	 * <ul>
-	 * <li>登陆请求被正常反馈即意味着通信正常（包括首次登陆时和断掉后的自动重新时）；</li>
-	 * <li>首次登陆或断线后自动重连时登陆请求被发出后，没有收到服务端反馈时即意味着不正常；</li>
+	 * <li>登录请求被正常反馈即意味着通信正常（包括首次登录时和断掉后的自动重新时）；</li>
+	 * <li>首次登录或断线后自动重连时登录请求被发出后，没有收到服务端反馈时即意味着不正常；</li>
 	 * <li>与服务端通信正常后，在规定的超时时间内没有收到心跳包的反馈后即意味着与服务端的通信又中断了（即所谓的掉线）。</li>
 	 * </ul>
 	 * 
@@ -99,15 +99,15 @@ public class ClientCoreSDK
 	private boolean connectedToServer = true;
 	
 	/** 
-	 * 当且仅当用户从登陆界面成功登陆后设置本字段为true，系统退出
-	 * （登陆）时设置为false。
+	 * 当且仅当用户从登录界面成功登录后设置本字段为true，系统退出
+	 * （登录）时设置为false。
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private boolean loginHasInit = false;
+	private boolean signinHasInit = false;
 	
 	/** 
-	 * 本字段存放的是用户成功登陆后，服务端分配的id号。
+	 * 本字段存放的是用户成功登录后，服务端分配的id号。
 	 * <br>
 	 * 本字段只在 {@link #connectedToServer}==true 的情况下才有意义哦.
 	 * <br>
@@ -116,34 +116,34 @@ public class ClientCoreSDK
 	private int currentUserId = -1;
 	
 	/**
-	 * 本字段在登陆信息成功发出后就会被设置，将在掉线后自动重连时使用。
+	 * 本字段在登录信息成功发出后就会被设置，将在掉线后自动重连时使用。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段因只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段因只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private String currentLoginName = null;
+	private String currentAccount = null;
 	/**
-	 * 本字段在登陆信息成功发出后就会被设置，将在掉线后自动重连时使用。
+	 * 本字段在登录信息成功发出后就会被设置，将在掉线后自动重连时使用。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段应只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段应只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private String currentLoginPsw = null;
+	private String currentsigninPsw = null;
 	/**
-	 * 本字段在登陆信息成功发出后就会被设置，将在掉线后自动重连时使用。
+	 * 本字段在登录信息成功发出后就会被设置，将在掉线后自动重连时使用。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段应只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段应只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * <br>
 	 * <b>本参数由框架自动设置。</b>
 	 */
-	private String currentLoginExtra = null;
+	private String currentsigninExtra = null;
 	
-	/** 框架基础通信消息的回调事件（如：登陆成功事件通知、掉线事件通知） */
+	/** 框架基础通信消息的回调事件（如：登录成功事件通知、掉线事件通知） */
 	private ChatBaseEvent chatBaseEvent = null;
 	/** 通用数据通信消息的回调事件（如：收到聊天数据事件通知、服务端返回的错误信息事件通知） */
 	private ChatTransDataEvent chatTransDataEvent = null;
@@ -182,12 +182,12 @@ public class ClientCoreSDK
 	 * 本方法被调用后， {@link #isInitialed()}将返回true，否则返回false。
 	 * <p>
 	 * <b><font color="red">注意：</font></b>因Andriod系统在处理网络变动广播
-	 * 事件的特殊性，本方法应在MobileIMSDK的登陆信息被发出前已被开发者调用完成。
-	 * 且越早被调用越好（如放在Application的onCreate()方法中或者登陆Activity的
-	 * onCreate()方法中）。具体原因详见：LocalUDPDataSender.SendLoginDataAsync
+	 * 事件的特殊性，本方法应在MobileIMSDK的登录信息被发出前已被开发者调用完成。
+	 * 且越早被调用越好（如放在Application的onCreate()方法中或者登录Activity的
+	 * onCreate()方法中）。具体原因详见：LocalUDPDataSender.SendSigninDataAsync
 	 * 中由Jack Jiang编写的技术要点备忘录。
 	 * 
-	 * @see {@link com.cngeeker.MobileIMSDK.java.core.LocalUDPDataSender.SendLoginDataAsync}
+	 * @see {@link com.cngeeker.MobileIMSDK.java.core.LocalUDPDataSender.SendsigninDataAsync}
 	 */
 	public void init(Context _context)
 	{
@@ -206,9 +206,9 @@ public class ClientCoreSDK
 			{
 				//### Bug FIX: 2015-11-07 by Jack Jiang
 				// ** 此处一定要取到此APP的Application作为MobileIMSDK的上下文引用
-				// 之前不恰当的作法如：开发者在登陆界面首次调用登陆接口（此接口将自动调用本类的init方法从而为
-				// 整个MobileIMSDK初始化），使用的上下文是该登陆Activity的引用，则将会错误地导致init方法中的
-				// "CONNECTIVITY_ACTION"网络状态广播注册在此登陆Activity上。而接着登陆成功后此登陆Activity
+				// 之前不恰当的作法如：开发者在登录界面首次调用登录接口（此接口将自动调用本类的init方法从而为
+				// 整个MobileIMSDK初始化），使用的上下文是该登录Activity的引用，则将会错误地导致init方法中的
+				// "CONNECTIVITY_ACTION"网络状态广播注册在此登录Activity上。而接着登录成功后此登录Activity
 				// 随之被finish掉了，导致了MobileIMSDK所需要的"CONNECTIVITY_ACTION"网络状态广播无法
 				// 收听和处理，从而导致当手机的网络断开后，再次恢复时MobileIMSDK会因错过此广播而失去重置网络
 				// Socket的能力，从而导致的结局是永远无法实现自动重连的实现！
@@ -234,11 +234,11 @@ public class ClientCoreSDK
 	/**
 	 * 释放MobileIMSDK框架资源统一方法。
 	 * <p>
-	 * 本方法建议在退出登陆（或退出APP时）时调用。调用时将尝试关闭所有
+	 * 本方法建议在退出登录（或退出APP时）时调用。调用时将尝试关闭所有
 	 * MobileIMSDK框架的后台守护线程并同设置核心框架init=false、
-	 * {@link #loginHasInit}=false、{@link #connectedToServer}=false。
+	 * {@link #signinHasInit}=false、{@link #connectedToServer}=false。
 	 * 
-	 * @see AutoReLoginDaemon#stop()
+	 * @see AutoReSigninDaemon#stop()
 	 * @see QoS4SendDaemon#stop()
 	 * @see KeepAliveDaemon#stop()
 	 * @see LocalUDPDataReciever#stop()
@@ -248,7 +248,7 @@ public class ClientCoreSDK
 	public void release()
 	{
 		// 尝试停掉掉线重连线程（如果线程正在运行的话）
-	    AutoReLoginDaemon.getInstance(context).stop(); // 2014-11-08 add by Jack Jiang
+	    AutoReSigninDaemon.getInstance(context).stop(); // 2014-11-08 add by Jack Jiang
 		// 尝试停掉QoS质量保证（发送）心跳线程
 		QoS4SendDaemon.getInstance(context).stop();
 		// 尝试停掉Keep Alive心跳线程
@@ -274,12 +274,12 @@ public class ClientCoreSDK
 		_init = false;
 		
 		//
-		this.setLoginHasInit(false);
+		this.setsigninHasInit(false);
 		this.setConnectedToServer(false);
 	}
 	
 	/**
-	 * 返回用户成功登陆后，服务端分配的id号。
+	 * 返回用户成功登录后，服务端分配的id号。
 	 * <br>
 	 * 本字段只在 {@link #connectedToServer}==true 的情况下才有意义哦.
 	 * 
@@ -290,11 +290,11 @@ public class ClientCoreSDK
 		return currentUserId;
 	}
 	/**
-	 * 设置用户成功登陆后，服务端分配的id号。
+	 * 设置用户成功登录后，服务端分配的id号。
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentUserId 用户成功登陆后，服务端分配的id号
+	 * @param currentUserId 用户成功登录后，服务端分配的id号
 	 * @return
 	 */
 	public ClientCoreSDK setCurrentUserId(int currentUserId)
@@ -304,119 +304,117 @@ public class ClientCoreSDK
 	}
 	
 	/**
-	 * 返回登陆信息成功发出后被设置的登陆账号名。
+	 * 返回登录信息成功发出后被设置的登录账号名。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段因只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段因只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * 
 	 * @return
 	 */
-	public String getCurrentLoginName()
-	{
-		return currentLoginName;
+	public String getCurrentAccount() {
+		return currentAccount;
 	}
 	/**
-	 * 登陆信息成功发出后就会设置本字段（即登陆账号名），登陆账号名也将
+	 * 登录信息成功发出后就会设置本字段（即登录账号名），登录账号名也将
 	 * 在掉线后自动重连时使用。
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentLoginName
+	 * @param currentAccount
 	 * @return
 	 */
-	public ClientCoreSDK setCurrentLoginName(String currentLoginName)
-	{
-		this.currentLoginName = currentLoginName;
+	public ClientCoreSDK setCurrentAccount(String currentAccount) {
+		this.currentAccount = currentAccount;
 		return this;
 	}
 	
 	/**
-	 * 返回登陆信息成功发出后被设置的登陆密码。
+	 * 返回登录信息成功发出后被设置的登录密码。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段因只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段因只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * 
 	 * @return
 	 */
-	public String getCurrentLoginPsw()
+	public String getCurrentsigninPsw()
 	{
-		return currentLoginPsw;
+		return currentsigninPsw;
 	}
 	/**
-	 * 登陆信息成功发出后就会设置本字段（即登陆密码），登陆密码也将
+	 * 登录信息成功发出后就会设置本字段（即登录密码），登录密码也将
 	 * 在掉线后自动重连时使用。
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentLoginName
+	 * @param currentsigninPsw
 	 * @return
 	 */
-	public void setCurrentLoginPsw(String currentLoginPsw)
+	public void setCurrentsigninPsw(String currentsigninPsw)
 	{
-		this.currentLoginPsw = currentLoginPsw;
+		this.currentsigninPsw = currentsigninPsw;
 	}
 	
 	/**
-	 * 返回登陆信息成功发出后被设置的登陆额外信息（其是由调用者自行设置，不设置则为null）。
+	 * 返回登录信息成功发出后被设置的登录额外信息（其是由调用者自行设置，不设置则为null）。
 	 * <br>
-	 * 因不保证服务端正确收到和处理了该用户的登陆信息，所以本字段因只在
+	 * 因不保证服务端正确收到和处理了该用户的登录信息，所以本字段因只在
 	 * {@link #connectedToServer}==true 时才有意义.
 	 * 
 	 * @return
 	 * @since 2.1.6
 	 */
-	public String getCurrentLoginExtra()
+	public String getCurrentsigninExtra()
 	{
-		return currentLoginExtra;
+		return currentsigninExtra;
 	}
 	/**
-	 * 登陆信息成功发出后就会设置本字段（即登陆额外信息，其是由调用者自行设置，不设置则为null），登陆额外信息也将
+	 * 登录信息成功发出后就会设置本字段（即登录额外信息，其是由调用者自行设置，不设置则为null），登录额外信息也将
 	 * 在掉线后自动重连时使用。
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param currentLoginExtra
+	 * @param currentsigninExtra
 	 * @return
 	 * @since 2.1.6
 	 */
-	public ClientCoreSDK setCurrentLoginExtra(String currentLoginExtra)
+	public ClientCoreSDK setCurrentsigninExtra(String currentsigninExtra)
 	{
-		this.currentLoginExtra = currentLoginExtra;
+		this.currentsigninExtra = currentsigninExtra;
 		return this;
 	}
 
 	/**
-	 * 当且仅当用户从登陆界面成功登陆后设置本字段为true，
-	 * 服务端反馈会话被注销或系统退出（登陆）时自动被设置为false。
+	 * 当且仅当用户从登录界面成功登录后设置本字段为true，
+	 * 服务端反馈会话被注销或系统退出（登录）时自动被设置为false。
 	 * 
 	 * @return
 	 */
-	public boolean isLoginHasInit()
+	public boolean issigninHasInit()
 	{
-		return loginHasInit;
+		return signinHasInit;
 	}
 	/**
-	 * 当且仅当用户从登陆界面成功登陆后设置本字段为true，
-	 * 服务端反馈会话被注销或系统退出（登陆）时自动被设置为false。
+	 * 当且仅当用户从登录界面成功登录后设置本字段为true，
+	 * 服务端反馈会话被注销或系统退出（登录）时自动被设置为false。
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
-	 * @param loginHasInit
+	 * @param signinHasInit
 	 * @return
 	 */
-	public ClientCoreSDK setLoginHasInit(boolean loginHasInit)
+	public ClientCoreSDK setsigninHasInit(boolean signinHasInit)
 	{
-		this.loginHasInit = loginHasInit;
-//		if(!logined)
+		this.signinHasInit = signinHasInit;
+//		if(!signined)
 //		{
-//			currentLoginName = null;
-//			currentLoginPsw = null;
+//			currentAccount = null;
+//			currentsigninPsw = null;
 //		}
 		return this;
 	}
 	
 	/**
-	 * 是否已成功连接到服务器（当然，前提是已成功发起过登陆请求后）.
+	 * 是否已成功连接到服务器（当然，前提是已成功发起过登录请求后）.
 	 * <p>
 	 * 此“成功”意味着可以正常与服务端通信（可以近似理解为Socket正常建立）
 	 * ，“不成功”意味着不能与服务端通信.
@@ -425,12 +423,12 @@ public class ClientCoreSDK
 	 * <p>
 	 * <b>本参数是整个MobileIMSDK框架中唯一可作为判断与MobileIMSDK服务器的通信是否正常的准确依据。</b>
 	 * <p>
-	 * 本参数将在收到服务端的登陆请求反馈后被设置为true，在与服务端的通信无法正常完成时被设置为false。
+	 * 本参数将在收到服务端的登录请求反馈后被设置为true，在与服务端的通信无法正常完成时被设置为false。
 	 * <br>
 	 * <u>那么MobileIMSDK如何判断与服务端的通信是否正常呢？</u> 判断方法如下：
 	 * <ul>
-	 * <li>登陆请求被正常反馈即意味着通信正常（包括首次登陆时和断掉后的自动重新时）；</li>
-	 * <li>首次登陆或断线后自动重连时登陆请求被发出后，没有收到服务端反馈时即意味着不正常；</li>
+	 * <li>登录请求被正常反馈即意味着通信正常（包括首次登录时和断掉后的自动重新时）；</li>
+	 * <li>首次登录或断线后自动重连时登录请求被发出后，没有收到服务端反馈时即意味着不正常；</li>
 	 * <li>与服务端通信正常后，在规定的超时时间内没有收到心跳包的反馈后即意味着与服务端的通信又中断了（即所谓的掉线）。</li>
 	 * </ul>
 	 * 
@@ -442,7 +440,7 @@ public class ClientCoreSDK
 		return connectedToServer;
 	}
 	/**
-	 * 是否已成功连接到服务器（当然，前提是已成功发起过登陆请求后）.
+	 * 是否已成功连接到服务器（当然，前提是已成功发起过登录请求后）.
 	 * <br>
 	 * <b>本方法由框架自动调用，无需也不建议应用层调用。</b>
 	 * 
@@ -473,7 +471,7 @@ public class ClientCoreSDK
 
 	/**
 	 * 设置框架基础通信消息的回调事件通知实现对象（可能的通知
-	 * 有：登陆成功事件通知、掉线事件通知）
+	 * 有：登录成功事件通知、掉线事件通知）
 	 * 
 	 * @param chatBaseEvent 框架基础通信消息的回调事件通知实现对象引用
 	 */
@@ -483,7 +481,7 @@ public class ClientCoreSDK
 	}
 	/**
 	 * 返回框架基础通信消息的回调事件通知实现对象（可能的通知
-	 * 有：登陆成功事件通知、掉线事件通知）
+	 * 有：登录成功事件通知、掉线事件通知）
 	 * 
 	 * @return
 	 */
@@ -540,7 +538,7 @@ public class ClientCoreSDK
 	 * <p>
 	 * 接收本地网络状态变更的目的在于解决当正常的连接因本地网络改变（比如：网络断开了后，又连上了）
 	 * 而无法再次正常发送数据的问题（即使网络恢复后），解决的方法是：当检测到本地网络断开后就立即关停
-	 * 本地UDP Socket，这样当下次重新登陆或尝试发送数据时就会重新建立Socket从而达到重置Socket的目的，
+	 * 本地UDP Socket，这样当下次重新登录或尝试发送数据时就会重新建立Socket从而达到重置Socket的目的，
 	 * Socket重置后也就解决了这个问题。
 	 */
 	// The BroadcastReceiver that listens for discovered devices and
@@ -575,11 +573,11 @@ public class ClientCoreSDK
 				localDeviceNetworkOk = true;
 				
 				// ** 尝试关闭本地Socket（以便等网络恢复时能重新建立Socket，也就间接达到了重置网络的能力）
-				// 【此处可以解决以下场景问题：】当用户成功登陆后，本地网络断开了，则此时自动重连机制已启动，
-				// 而本地侦听的开启是在登陆信息成功发出时（本地网络连好后，信息是可以发出的）启动的，而
-				// 收到网络连接好的消息可能要滞后于真正的网络连接好（那此时间间隔内登陆数据可以成功发出）
+				// 【此处可以解决以下场景问题：】当用户成功登录后，本地网络断开了，则此时自动重连机制已启动，
+				// 而本地侦听的开启是在登录信息成功发出时（本地网络连好后，信息是可以发出的）启动的，而
+				// 收到网络连接好的消息可能要滞后于真正的网络连接好（那此时间间隔内登录数据可以成功发出）
 				// ，那么此时如果启动侦听则必须导致侦听不可能成功。以下代码保证在收到网络连接消息时，先无条件关闭
-				// 网络连接，当下一个自动登陆循环到来时自然就重新建立Socket了，那么此时重新登陆消息发出后再
+				// 网络连接，当下一个自动登录循环到来时自然就重新建立Socket了，那么此时重新登录消息发出后再
 				// 启动UDP侦听就ok了。--> 说到底，关闭网络连接就是为了在下次使用网络时无条件重置Socket，从而保证
 				// Socket被建立时是处于正常的网络状况下。
 				LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();

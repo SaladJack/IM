@@ -112,45 +112,38 @@ public class KeepAliveDaemon
 		handler = new Handler();
 		runnable = new Runnable(){
 			@Override
-			public void run()
-			{
+			public void run() {
 				// 极端情况下本次循环内可能执行时间超过了时间间隔，此处是防止在前一
-				// 次还没有运行完的情况下又重复过劲行，从而出现无法预知的错误
-				if(!_excuting)
-				{
+				// 次还没有运行完的情况下又重复过执行，从而出现无法预知的错误
+				if(!_excuting) {
 					// Handler的机制是在主线程中执行的，所以此处在放在另一个线程里，否则会报错哦
 					new AsyncTask<Object, Integer, Integer>()
 					{
 						private boolean willStop = false;
 						
 						@Override
-						protected Integer doInBackground(Object... params)
-						{
+						protected Integer doInBackground(Object... params) {
 							_excuting = true;
 							if(ClientCoreSDK.DEBUG)
 								Log.d(TAG, "心跳线程执行中...");
 							int code = LocalUDPDataSender.getInstance(context).sendKeepAlive();
-							
 							return code;
 						}
 
 						@Override
-						protected void onPostExecute(Integer code)
-						{
+						protected void onPostExecute(Integer code) {
 							// 首先执行Keep Alive心跳包时，把此时的时间作为第1次收到服务响应的时间（初始化）
 							boolean isInitialedForKeepAlive = (lastGetKeepAliveResponseFromServerTimstamp == 0);
 							if(code == 0 && lastGetKeepAliveResponseFromServerTimstamp == 0)
 								lastGetKeepAliveResponseFromServerTimstamp = System.currentTimeMillis();
 
 							// 首先启动心跳时就不判断了，否则就是逻辑有问题
-							if(!isInitialedForKeepAlive)
-							{
+							if(!isInitialedForKeepAlive) {
 								long now = System.currentTimeMillis();
 //								System.out.println(">>>> t1="+now+", t2="+lastGetKeepAliveResponseFromServerTimstamp+" -> 差："
 //										+(now - lastGetKeepAliveResponseFromServerTimstamp));
 								// 当当前时间与最近一次服务端的心跳响应包时间间隔>= 10秒就判定当前与服务端的网络连接已断开
-								if(now - lastGetKeepAliveResponseFromServerTimstamp >= NETWORK_CONNECTION_TIME_OUT)
-								{
+								if(now - lastGetKeepAliveResponseFromServerTimstamp >= NETWORK_CONNECTION_TIME_OUT) {
 									// 先停止心跳线程
 									stop();
 									// 再通知“网络连接已断开”
@@ -196,7 +189,7 @@ public class KeepAliveDaemon
 	 * <p>
 	 * <b>本线程的启停，目前属于MobileIMSDK算法的一部分，暂时无需也不建议由应用层自行调用。</b>
 	 * 
-	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$LOGIN_INTERVAL}
+	 * @param immediately true表示立即执行线程作业，否则直到 {@link #AUTO_RE$signin_INTERVAL}
 	 * 执行间隔的到来才进行首次作业的执行
 	 */
 	public void start(boolean immediately)

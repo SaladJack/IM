@@ -93,23 +93,18 @@ public class LocalUDPDataReciever
 		//
 		stop();
 		
-		try
-		{
-			//
+		try {
 			thread = new Thread(new Runnable()
 			{
 				public void run()
 				{
-					try
-					{
+					try {
 						if(ClientCoreSDK.DEBUG)
 							Log.d(TAG, "本地UDP端口侦听中，端口="+ ConfigEntity.localUDPPort+"...");
-
 						//开始侦听
 						p2pListeningImpl();
 					}
-					catch (Exception eee)
-					{
+					catch (Exception eee) {
 						Log.w(TAG, "本地UDP监听停止了(socket被关闭了?),"+eee.getMessage(), eee);
 					}
 				}
@@ -117,8 +112,7 @@ public class LocalUDPDataReciever
 			//启动线程,开始侦听
 			thread.start();
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Log.w(TAG, "本地UDPSocket监听开启时发生异常,"+e.getMessage(), e);
 		}
 	}
@@ -128,10 +122,8 @@ public class LocalUDPDataReciever
 	 * 
 	 * @throws Exception
 	 */
-	private void p2pListeningImpl() throws Exception
-	{
-		while (true)
-		{
+	private void p2pListeningImpl() throws Exception {
+		while (true) {
 			// 缓冲区
 			byte[] data = new byte[1024];
 			// 接收数据报的包
@@ -253,29 +245,28 @@ public class LocalUDPDataReciever
 						
 						break;
 					}
-					// ** 收到服务端反馈过来的登陆完成信息
+					// ** 收到服务端反馈过来的登录完成信息
 					case ProtocalType.S.FROM_SERVER_TYPE_OF_RESPONSE$LOGIN:
 					{
-						// 解析服务端反馈过来的登陆消息
-						PLoginInfoResponse loginInfoRes = ProtocalFactory.parsePLoginInfoResponse(pFromServer.getDataContent());
-						// 登陆成功了！
-						if(loginInfoRes.getCode() == 0)
+						// 解析服务端反馈过来的登录消息
+						PLoginInfoResponse signinInfoRes = ProtocalFactory.parsePLoginInfoResponse(pFromServer.getDataContent());
+						// 登录成功了！
+						if(signinInfoRes.getCode() == 0)
 						{
-							// 记录用户登陆信息（因为此处不太好记录用户登陆名和密
-							// 码，所以登陆名和密码现在是在登陆消息发出时就记录了）
+							// 记录用户登录信息（因为此处不太好记录用户登录名和密
+							// 码，所以登录名和密码现在是在登录消息发出时就记录了）
 							ClientCoreSDK.getInstance()
-								.setLoginHasInit(true)
-								.setCurrentUserId(loginInfoRes.getUser_id());
+								.setsigninHasInit(true)
+								.setCurrentUserId(signinInfoRes.getUser_id());
 							
-							// 尝试关闭自动重新登陆线程（如果该线程正在运行的话）
-							AutoReLoginDaemon.getInstance(context).stop();
+							// 尝试关闭自动重新登录线程（如果该线程正在运行的话）
+							AutoReSigninDaemon.getInstance(context).stop();
 							
 							// 立即开启Keepalive心跳线程
 							KeepAliveDaemon.getInstance(context).setNetworkConnectionLostObserver(new Observer(){
 								// 与服务端的网络断开后会由观察者调用本方法
 								@Override
-								public void update(Observable observable, Object data)
-								{
+								public void update(Observable observable, Object data) {
 									//【掉线后关掉QoS机制，为手机省电】
 									// 掉线时关闭QoS机制之发送列表重视机制（因为掉线了开启也没有意义）
 									// ** 关闭但不清空可能存在重传列表是合理的，防止在网络状况不好的情况下，登
@@ -286,41 +277,40 @@ public class LocalUDPDataReciever
 									// ** 陆能很快恢复时对方可能存在的重传，此时也能一定程序避免消息重复的可能
 									QoS4ReciveDaemon.getInstance(context).stop();
 									
-									// 设置中否正常连接（登陆）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
+									// 设置中否正常连接（登录）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
 									ClientCoreSDK.getInstance().setConnectedToServer(false);
 									ClientCoreSDK.getInstance().setCurrentUserId(-1);
 									// 通知回调实现类
 									ClientCoreSDK.getInstance().getChatBaseEvent().onLinkCloseMessage(-1);
-									// 网络断开后即刻开启自动重新登陆线程从而尝试重新登陆（以便网络恢复时能即时自动登陆）
-									AutoReLoginDaemon.getInstance(context).start(true);
+									// 网络断开后即刻开启自动重新登录线程从而尝试重新登录（以便网络恢复时能即时自动登录）
+									AutoReSigninDaemon.getInstance(context).start(true);
 								}
 							});
-							// ** 2015-02-10 by Jack Jiang：收到登陆成功反馈后，无需立即就发起心跳，因为刚刚才与服务端
-							// ** 成功通信了呢（刚收到服务器的登陆成功反馈），节省1次心跳，降低服务重启后的“雪崩”可能性
+							// ** 2015-02-10 by Jack Jiang：收到登录成功反馈后，无需立即就发起心跳，因为刚刚才与服务端
+							// ** 成功通信了呢（刚收到服务器的登录成功反馈），节省1次心跳，降低服务重启后的“雪崩”可能性
 //							KeepAliveDaemon.getInstance(context).start(true);
 							KeepAliveDaemon.getInstance(context).start(false);
 							
-							//【登陆成功后开启QoS机制】
+							//【登录成功后开启QoS机制】
 							// 启动QoS机制之发送列表重视机制
 							QoS4SendDaemon.getInstance(context).startup(true);
 							// 启动QoS机制之接收列表防重复机制
 							QoS4ReciveDaemon.getInstance(context).startup(true);
-							// 设置中否正常连接（登陆）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
+							// 设置中否正常连接（登录）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
 							ClientCoreSDK.getInstance().setConnectedToServer(true);
 						}
-						else
-						{
-//							Log.d(TAG, "登陆验证失败，错误码="+loginInfoRes.getCode()+"！");
-							// 设置中否正常连接（登陆）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
+						else {
+//							Log.d(TAG, "登录验证失败，错误码="+signinInfoRes.getCode()+"！");
+							// 设置中否正常连接（登录）到服务器的标识（注意：在要event事件通知前设置哦，因为应用中是在event中处理状态的）
 							ClientCoreSDK.getInstance().setConnectedToServer(false);
 							ClientCoreSDK.getInstance().setCurrentUserId(-1);
 						}
 						
-						// 用户登陆认证情况通知回调
+						// 用户登录认证情况通知回调
 						if(ClientCoreSDK.getInstance().getChatBaseEvent() != null)
 						{
-							ClientCoreSDK.getInstance().getChatBaseEvent().onLoginMessage(
-								loginInfoRes.getUser_id(), loginInfoRes.getCode());
+							ClientCoreSDK.getInstance().getChatBaseEvent().onSigninMessage(
+								signinInfoRes.getUser_id(), signinInfoRes.getCode(),/*username*/"user-name");
 						}
 						
 						break;
@@ -331,32 +321,32 @@ public class LocalUDPDataReciever
 						// 解析服务端反馈过来的消息
 						PErrorResponse errorRes = ProtocalFactory.parsePErrorResponse(pFromServer.getDataContent());
 						
-						// 收到的如果是“尚未登陆”的错误消息，则意味着该用户的会话可能已经超时了，
+						// 收到的如果是“尚未登录”的错误消息，则意味着该用户的会话可能已经超时了，
 						// 此时当然要停止心跳线程了，否则心跳有何意义！
 						// ** 【性能隐患】：因为与服务端是UDP无连接的，所以服务端回过来的此消息可能会网络状况
 						// ** 差等情况而导致延迟收到该包（收到时很可能与服务端的会话已经正常了），但目前来
 						// ** 没有办法保证完全的正确性，但起码保证用户与服务端的正常会话才是首位的，所以
-						// ** 有时候错误地终止了正常会话而启动重新登陆从而损失的一些性能因是可以下载解和合理的
+						// ** 有时候错误地终止了正常会话而启动重新登录从而损失的一些性能因是可以下载解和合理的
 						if(errorRes.getErrorCode() == ErrorCode.ForS.RESPONSE_FOR_UNLOGIN)
 						{
 							// 
-							ClientCoreSDK.getInstance().setLoginHasInit(false);
+							ClientCoreSDK.getInstance().setsigninHasInit(false);
 							
-							Log.e(TAG, "收到服务端的“尚未登陆”的错误消息，心跳线程将停止，请应用层重新登陆.");
+							Log.e(TAG, "收到服务端的“尚未登录”的错误消息，心跳线程将停止，请应用层重新登录.");
 							// 停止心跳
 							KeepAliveDaemon.getInstance(context).stop();
 							
-							// 此时尝试延迟开启自动登陆线程哦（注意不需要立即开启）
-							// ** 【说明】：为何此时要开启自动登陆呢？逻辑上讲，心跳时即是连接正常时，
-							// ** 上面的停止心跳即是登陆身份丢失时，那么此时再开启自动登陆线程
+							// 此时尝试延迟开启自动登录线程哦（注意不需要立即开启）
+							// ** 【说明】：为何此时要开启自动登录呢？逻辑上讲，心跳时即是连接正常时，
+							// ** 上面的停止心跳即是登录身份丢失时，那么此时再开启自动登录线程
 							// ** 则也是合理的。
-							// ** 其实此处开启自动登陆线程是更多是为了防止这种情况：当客户端并没有
-							// ** 触发网络断开（也就不会触发自动登陆）时，而此时却可能因延迟等错误或
-							// ** 时机不对的情况下却收到了“未登陆”回复时，就会关闭心跳，但自动重新登陆
-							// ** 却再也没有机会启动起来，那么这个客户端将会因此而永远（直到登陆程序后再登陆）
-							// ** 无法重新登陆而一直处于离线状态，这就不对了。以下的启动重新登陆时机在此正
-							// ** 可解决此种情况，而使得重新登陆机制更强壮哦！
-							AutoReLoginDaemon.getInstance(context).start(false);
+							// ** 其实此处开启自动登录线程是更多是为了防止这种情况：当客户端并没有
+							// ** 触发网络断开（也就不会触发自动登录）时，而此时却可能因延迟等错误或
+							// ** 时机不对的情况下却收到了“未登录”回复时，就会关闭心跳，但自动重新登录
+							// ** 却再也没有机会启动起来，那么这个客户端将会因此而永远（直到登录程序后再登录）
+							// ** 无法重新登录而一直处于离线状态，这就不对了。以下的启动重新登录时机在此正
+							// ** 可解决此种情况，而使得重新登录机制更强壮哦！
+							AutoReSigninDaemon.getInstance(context).start(false);
 						}
 						
 						// 收到错误响应消息的回调
