@@ -9,7 +9,7 @@ import scut.saladjack.core.bean.UserBean;
 public interface MineView {
     void updateUserInfo(UserBean userBean);
 
-    void onSingoutSuccess();
+    void onSignOutSuccess();
 
-    void onSignoutFail(int code);
+    void onSignOutFail(int code);
 }

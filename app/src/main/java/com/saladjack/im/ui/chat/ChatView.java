@@ -11,11 +11,11 @@ public interface ChatView {
 
     void showIMInfo_blue(String txt);
 
-    void showIMInfo_brightred(String txt);
+    void showSendMessageFail(String txt);
 
     void onDisconnect(String txt);
 
-    void showIMInfo_green(String txt);
+    void onReConnectSuccess(String txt);
 
     void onSendMessageSuccess();
 

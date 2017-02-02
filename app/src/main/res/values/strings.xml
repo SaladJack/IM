@@ -14,8 +14,8 @@
     <string name="send_msg_success">Send Message Success</string>
     <string name="send_msg_fail">Send Message Fail!Error Code is :</string>
     <string name="signin_fail">Sign in fail!Recheck your ACCOUNT and PASSWORD!</string>
-    <string name="signout">sign out</string>
-    <string name="signout_fail">sign out fail!Error code is:</string>
+    <string name="signout">Sign Out</string>
+    <string name="signout_fail">Sign Out Fail!Error code is:</string>
     <!--<string name="default_ip">rbcore.52im.net</string>-->
     <string name="default_ip">10.0.2.2</string>
     <string name="register_fail_for_network">Please Recheck Your Netwok!</string>
@@ -25,4 +25,8 @@
     <string name="signup_account">account</string>
     <string name="signup_password">password</string>
     <string name="signup_info_wrong">Illegal Sign Up Information</string>
+    <string name="find_friends_fail">Find Friends Fail!</string>
+    <string name="plz_input_username_to_find">Input username that you want to find</string>
+    <string name="find_friends">Find Friends</string>
+    <string name="find">Find!</string>
 </resources>

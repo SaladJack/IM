@@ -19,17 +19,16 @@ public class SignUpModel implements SignUpIModel {
     }
 
     @Override public void signUp(String userName, String account, String password) {
-
         RxUtils.createService(SignUpService.class)
                 .signUp(userName,account,password)
                 .map(SignUpResult::getCode)
                 .compose(RxUtils.<Integer>normalSchedulers())
                 .subscribe(code -> {
                     if(code == 0)
-                        presenter.signUpSuccess();
+                        presenter.onSignUpSuccess();
                     else if(code == 1026)
-                        presenter.signUpFailForAccountAlreadyExist();
-                },throwable -> presenter.signUpFailForNetWork());
+                        presenter.onSignUpFailForAccountAlreadyExist();
+                },throwable -> presenter.onSignUpFailForNetWork());
     }
 
     interface SignUpService {

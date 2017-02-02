@@ -17,12 +17,9 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager.BadTokenException;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.saladjack.im.R;
-
 import scut.saladjack.core.bean.UserBean;
 import scut.saladjack.core.db.dao.UserDao;
 
@@ -44,7 +41,6 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	private EditText accountEt = null;
 	private EditText pwdEt = null;
-	private Button btnsignin = null;
 	private TextView viewVersion = null;
 	/** 登录进度提示 */
 	private OnSigninProgress onSigninProgress = null;
@@ -58,12 +54,12 @@ public class SigninActivity extends BaseActivity implements SigninView {
 		presenter = new SigninPresenter(this);
 		// 界面UI基本设置
 		initViews();
+
 	}
 
 	private void initViews() {
 		editServerIp = (EditText)this.findViewById(R.id.serverIP_editText);
 		editServerPort = (EditText)this.findViewById(R.id.serverPort_editText);
-		btnsignin = (Button)this.findViewById(R.id.signin_btn);
 		accountEt = (EditText)this.findViewById(R.id.signinName_editText);
 		pwdEt = (EditText)this.findViewById(R.id.signinPsw_editText);
 		viewVersion = (TextView)this.findViewById(R.id.demo_version);
@@ -71,8 +67,9 @@ public class SigninActivity extends BaseActivity implements SigninView {
 		viewVersion.setText(AppUtils.getProgrammVersion(this));
 		onSigninProgress = new OnSigninProgress(this);
 		this.setTitle("登录");
-		btnsignin.setOnClickListener(v -> doSignin());
+		findViewById(R.id.signin_btn).setOnClickListener(v -> doSignin());
 		findViewById(R.id.signup_btn).setOnClickListener(v-> SignUpActivity.open(this));
+
 	}
 
 

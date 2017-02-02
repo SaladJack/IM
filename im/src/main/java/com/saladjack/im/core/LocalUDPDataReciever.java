@@ -309,7 +309,7 @@ public class LocalUDPDataReciever
 						// 用户登录认证情况通知回调
 						if(ClientCoreSDK.getInstance().getChatBaseEvent() != null)
 						{
-							ClientCoreSDK.getInstance().getChatBaseEvent().onSigninMessage(
+							ClientCoreSDK.getInstance().getChatBaseEvent().onSignInMessage(
 								signinInfoRes.getUser_id(), signinInfoRes.getCode(),/*username*/"user-name");
 						}
 						

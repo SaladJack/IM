@@ -31,9 +31,8 @@ public class MessageQoSEventImpl implements MessageQoSEvent
 	{
 		Log.d(TAG, "【DEBUG_UI】收到系统的未实时送达事件通知，当前共有"+lostMessages.size()+"个包QoS保证机制结束，判定为【无法实时送达】！");
 	
-		if(this.chatView != null)
-		{
-			this.chatView.showIMInfo_brightred("[消息未成功送达]共"+lostMessages.size()+"条!(网络状况不佳或对方id不存在)");
+		if(this.chatView != null) {
+			this.chatView.showSendMessageFail("[消息未成功送达]共"+lostMessages.size()+"条!(网络状况不佳或对方id不存在)");
 		}
 	}
 

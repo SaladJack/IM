@@ -38,8 +38,7 @@ public class LocalUDPSocketProvider
 	
 	private static LocalUDPSocketProvider instance= null;
 	
-	public static LocalUDPSocketProvider getInstance()
-	{
+	public static LocalUDPSocketProvider getInstance() {
 		if(instance == null)
 			instance = new LocalUDPSocketProvider();
 		return instance;

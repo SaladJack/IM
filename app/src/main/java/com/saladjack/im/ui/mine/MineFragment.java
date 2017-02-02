@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.saladjack.im.R;
 import com.saladjack.im.ui.base.BaseFragment;
+import com.saladjack.im.ui.findfriends.FindFriendsActivity;
 import com.saladjack.im.ui.signin.SigninActivity;
 
 import scut.saladjack.core.bean.UserBean;
@@ -21,15 +22,14 @@ public class MineFragment extends BaseFragment implements MineView{
 
     private MineIPresenter presenter;
     private TextView userName;
-    private View signout;
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.mine_fragment,container,false);
         presenter = new MinePresenter(this);
         presenter.fetchUserInfo();
         userName = (TextView)view.findViewById(R.id.user_name);
-        signout = view.findViewById(R.id.signout);
-        signout.setOnClickListener(v -> presenter.signout());
+        view.findViewById(R.id.signout).setOnClickListener(v -> presenter.signout());
+        view.findViewById(R.id.find_friends).setOnClickListener(v -> FindFriendsActivity.open(getContext()));
         return view;
     }
 
@@ -37,12 +37,12 @@ public class MineFragment extends BaseFragment implements MineView{
         userName.setText(userBean.getUserName());
     }
 
-    @Override public void onSingoutSuccess() {
+    @Override public void onSignOutSuccess() {
         getActivity().finish();
         SigninActivity.open(getContext());
     }
 
-    @Override public void onSignoutFail(int code) {
+    @Override public void onSignOutFail(int code) {
         showToast(R.string.signout_fail + code);
     }
 

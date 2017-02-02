@@ -33,6 +33,7 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity android:name=".ui.signup.SignUpActivity"/>
+        <activity android:name=".ui.findfriends.FindFriendsActivity"/>
     </application>
 
 </manifest>

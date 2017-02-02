@@ -26,12 +26,12 @@ private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 	private SigninView signinView = null;
 
 
-	@Override public void onSigninMessage(int userId, int responseCode, String username)
+	@Override public void onSignInMessage(int userId, int responseCode, String username)
 	{
 		if (responseCode == 0) {
 			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId+ "kong:" + String.valueOf(signinView!=null));
 			if(this.chatView != null) {
-				this.chatView.showIMInfo_green("登录成功,id="+userId);
+				this.chatView.onReConnectSuccess("Reconnect Success");
 			}
 			if(signinView != null){
 				signinView.onSigninSuccess(userId,username);

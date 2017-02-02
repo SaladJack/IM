@@ -24,8 +24,9 @@ import scut.saladjack.core.bean.FriendBean;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,13 +55,13 @@ public class ChatActivity extends Activity implements ChatView
 	private final static String FRIEND_BEAN = "friendBean";
 	private ChatIPresenter presenter;
 
-	private EditText editId = null;
-	private EditText editContent = null;
-	private Button btnSend = null;
+	private EditText editContent;
+	private Button btnSend;
 	
 	private ListView chatInfoListView;
 	private MyAdapter chatInfoListAdapter;
 	private FriendBean friendBean;
+	private RecyclerView chatInfoRv;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,23 +112,23 @@ public class ChatActivity extends Activity implements ChatView
 
 	//--------------------------------------------------------------- 各种信息输出方法 START
 	@Override public void showSendMessage(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
+		chatInfoListAdapter.addItem(txt,ContentType.SEND);
 	}
 	@Override public void showResponseMessage(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
+		chatInfoListAdapter.addItem(txt,ContentType.RECEIVE);
 	}
 
 	@Override public void showIMInfo_blue(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.blue);
+//		chatInfoListAdapter.addItem(txt, ChatInfoColorType.blue);
 	}
-	@Override public void showIMInfo_brightred(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.brightred);
+	@Override public void showSendMessageFail(String txt) {
+		chatInfoListAdapter.addItem(txt,ContentType.FAIL);
 	}
 	@Override public void onDisconnect(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.red);
+		chatInfoListAdapter.addItem(txt,ContentType.FAIL);
 	}
-	@Override public void showIMInfo_green(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.green);
+	@Override public void onReConnectSuccess(String txt) {
+		chatInfoListAdapter.addItem(txt,ContentType.FAIL);
 	}
 
 	@Override public void onSendMessageSuccess() {
@@ -135,7 +136,7 @@ public class ChatActivity extends Activity implements ChatView
 	}
 
 	@Override public void onSendMessageFail(Integer code) {
-
+//		showSendMessageFail();
 	}
 	//--------------------------------------------------------------- 各种信息输出方法 END
 	
@@ -147,17 +148,20 @@ public class ChatActivity extends Activity implements ChatView
 		private List<Map<String, Object>> mData;
         private LayoutInflater mInflater;
         private SimpleDateFormat hhmmDataFormat = new SimpleDateFormat("HH:mm:ss");
-         
-        public MyAdapter(Context context){
+		private SendVH sendVH;
+		private ReceiveVH receiveVH;
+		private FailVH failVH;
+
+		public MyAdapter(Context context){
             this.mInflater = LayoutInflater.from(context);
             mData = new ArrayList<>();
         }
         
-        public void addItem(String content, ChatInfoColorType color) {
+        public void addItem(String content,int type) {
         	Map<String, Object> it = new HashMap<String, Object>();
-        	it.put("__content__", content);
-			it.put("__time__",hhmmDataFormat.format(new Date()));
-        	it.put("__color__", color);
+        	it.put("content", content);
+			it.put("time",hhmmDataFormat.format(new Date()));
+			it.put("type",type);
         	mData.add(it);
         	this.notifyDataSetChanged();
         	chatInfoListView.setSelection(this.getCount());
@@ -170,71 +174,93 @@ public class ChatActivity extends Activity implements ChatView
         }
  
         @Override
-        public Object getItem(int arg0) 
+        public Map<String, Object> getItem(int position)
         {
-            return null;
+            return mData.get(position);
         }
+
+		@Override
+		public int getViewTypeCount() {
+			return 3;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public int getItemViewType(int position) {
+			return (int) mData.get(position).get("type");
+		}
+
+
  
         @Override
-        public long getItemId(int arg0) 
-        {
-            return 0;
-        }
- 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
-            if (convertView == null) {
-                holder=new ViewHolder();  
-                convertView = mInflater.inflate(R.layout.chat_item_layout, null);
-                holder.content = (TextView)convertView.findViewById(R.id.chat_content_tv);
-				holder.time = (TextView)convertView.findViewById(R.id.time);
-                convertView.setTag(holder);
-            }
-            else {
-                holder = (ViewHolder)convertView.getTag();
-            }
-             
-            holder.content.setText((String)mData.get(position).get("__content__"));
-			holder.time.setText((String)mData.get(position).get("__time__"));
-            ChatInfoColorType colorType = (ChatInfoColorType)mData.get(position).get("__color__");
-            switch(colorType) {
-	            case blue:
-	            	holder.content.setTextColor(Color.rgb(0,0,255));  
-	            	break;
-	            case brightred:
-	            	holder.content.setTextColor(Color.rgb(255,0,255));  
-	            	break;
-	            case red:
-	            	holder.content.setTextColor(Color.rgb(255,0,0));  
-	            	break;
-	            case green:
-	            	holder.content.setTextColor(Color.rgb(0,128,0));  
-	            	break;
-	            case black:
-	            default:
-	            	holder.content.setTextColor(Color.rgb(0, 0, 0));  
-	            	break;
-            }
-             
-            return convertView;
+        public View getView(int position, View view, ViewGroup parent) {
+			int type = getItemViewType(position);
+			switch (type){
+				case ContentType.SEND:
+					if (view == null) {
+						sendVH = new SendVH();
+						view = mInflater.inflate(R.layout.chat_item_send_layout, null);
+						sendVH.content = (TextView) view.findViewById(R.id.send_content);
+						sendVH.time = (TextView) view.findViewById(R.id.send_time);
+						view.setTag(sendVH);
+					}else{
+						sendVH = (SendVH) view.getTag();
+					}
+					sendVH.content.setText((String)mData.get(position).get("content"));
+					sendVH.time.setText((String)mData.get(position).get("time"));
+					break;
+				case ContentType.RECEIVE:
+					if (view == null) {
+						receiveVH = new ReceiveVH();
+						view = mInflater.inflate(R.layout.chat_item_receive_layout, null);
+						receiveVH.content = (TextView) view.findViewById(R.id.receive_content);
+						receiveVH.time = (TextView) view.findViewById(R.id.receive_time);
+						view.setTag(receiveVH);
+					}else{
+						receiveVH = (ReceiveVH) view.getTag();
+					}
+					sendVH.content.setText((String)mData.get(position).get("content"));
+					sendVH.time.setText((String)mData.get(position).get("time"));
+					break;
+				case ContentType.FAIL:
+					if (view == null) {
+						failVH = new FailVH();
+						view = mInflater.inflate(R.layout.chat_item_fail_layout, null);
+						failVH.content = (TextView) view.findViewById(R.id.fail_content);
+						view.setTag(failVH);
+					}else{
+						failVH = (FailVH) view.getTag();
+					}
+					failVH.content.setText((String)mData.get(position).get("content"));
+					break;
+			}
+
+            return view;
         }
         
-        public final class ViewHolder {
-            public TextView content;
-			public TextView time;
+        public final class SendVH {
+            public TextView content = null;
+			public TextView time = null;
+		}
+		public final class ReceiveVH {
+			public TextView content = null;
+			public TextView time = null;
+		}
+		public final class FailVH {
+			public TextView content = null;
 		}
     }
 	
-	/**
-	 * 信息颜色常量定义。
-	 */
-	public enum ChatInfoColorType {
-    	black,
-    	blue,
-    	brightred,
-    	red,
-    	green,
-    }
+
+
+	public class ContentType{
+		static final int SEND = 1;
+		static final int RECEIVE = 2;
+		static final int FAIL = 3;
+	}
 	//--------------------------------------------------------------- inner classes END
 }
