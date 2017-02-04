@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.saladjack.im.R;
 import scut.saladjack.core.bean.FriendBean;
+import scut.saladjack.core.bean.UserBean;
+
 import com.saladjack.im.ui.chat.ChatActivity;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.friend_item_layout,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.message_item_layout,parent,false);
         return new VH(view);
     }
 
@@ -37,7 +39,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         FriendBean friendBean = array.get(position);
         holder.name.setText(friendBean.getName());
         holder.latestContent.setText(friendBean.getLatestContent());
-        holder.friendLayout.setOnClickListener((view)-> ChatActivity.open(context,friendBean));
+        holder.friendLayout.setOnClickListener((view)-> ChatActivity.open(context,new UserBean(friendBean)));
     }
 
     @Override public int getItemCount() {

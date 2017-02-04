@@ -1,7 +1,7 @@
 package com.saladjack.im.ui.signup;
 
 import scut.saladjack.core.http.RxUtils;
-import scut.saladjack.core.bean.SignUpResult;
+import scut.saladjack.core.bean.NormalResult;
 
 
 import retrofit2.http.GET;
@@ -21,7 +21,7 @@ public class SignUpModel implements SignUpIModel {
     @Override public void signUp(String userName, String account, String password) {
         RxUtils.createService(SignUpService.class)
                 .signUp(userName,account,password)
-                .map(SignUpResult::getCode)
+                .map(NormalResult::getCode)
                 .compose(RxUtils.<Integer>normalSchedulers())
                 .subscribe(code -> {
                     if(code == 0)
@@ -33,7 +33,7 @@ public class SignUpModel implements SignUpIModel {
 
     interface SignUpService {
         @GET("user/register")
-        Observable<SignUpResult> signUp(@Query("username") String userName,
+        Observable<NormalResult> signUp(@Query("username") String userName,
                                         @Query("account") String account,
                                         @Query("password") String password);
     }

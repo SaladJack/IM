@@ -42,7 +42,6 @@ public class FindFriendsActivity extends BaseActivity implements FindFriendsView
         findFriendsRv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new FindFriendsAdapter(findFriendsList);
         findFriendsRv.setAdapter(adapter);
-
     }
 
     @Override public void onFindFriendsSuccess(List<FindFriendsResult> friendsResultList) {

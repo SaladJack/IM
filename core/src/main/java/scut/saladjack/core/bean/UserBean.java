@@ -1,31 +1,42 @@
 package scut.saladjack.core.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by saladjack on 17/1/28.
  */
 
-public class UserBean {
-    private int uid;
+public class UserBean implements Serializable {
+    private int userId;
     private String userName;
     private String account;
     private String password;
 
-    public UserBean(){
-
+    public UserBean() {
     }
-    public UserBean(int uid, String userName, String account, String password) {
-        this.uid = uid;
+
+    public UserBean(FindFriendsResult findFriendsResult){
+        userId = findFriendsResult.getUserId();
+        userName = findFriendsResult.getUserName();
+    }
+
+    public UserBean(FriendBean friendBean){
+        userId = friendBean.getId();
+        userName = friendBean.getName();
+    }
+    public UserBean(int userId, String userName, String account, String password) {
+        this.userId = userId;
         this.userName = userName;
         this.account = account;
         this.password = password;
     }
 
-    public int getUid() {
-        return uid;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUid(int uid) {
-        this.uid = uid;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUserName() {

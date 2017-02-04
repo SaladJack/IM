@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.saladjack.im.R;
+import com.saladjack.im.ui.profile.ProfileActivity;
 
 import java.util.List;
 
 import scut.saladjack.core.bean.FindFriendsResult;
+import scut.saladjack.core.bean.UserBean;
 
 /**
  * Created by SaladJack on 2017/2/2.
@@ -37,7 +39,7 @@ public class FindFriendsAdapter extends RecyclerView.Adapter {
         findFriendsResult = array.get(position);
         holder.userId.setText(String.format("ID Number: %d",findFriendsResult.getUserId()));
         holder.userName.setText("User Name: " + findFriendsResult.getUserName());
-//        holder.findFriendsLayout.setOnClickListener();
+        holder.findFriendsLayout.setOnClickListener( v -> ProfileActivity.open(context,new UserBean(findFriendsResult)));
     }
 
     @Override public int getItemCount() {
@@ -52,8 +54,8 @@ public class FindFriendsAdapter extends RecyclerView.Adapter {
         public VH(View itemView) {
             super(itemView);
             findFriendsLayout = itemView.findViewById(R.id.findfriends_item_layout);
-            userId = (TextView) itemView.findViewById(R.id.user_id);
-            userName = (TextView) itemView.findViewById(R.id.user_name);
+            userId = (TextView) itemView.findViewById(R.id.findfriend_item_user_id);
+            userName = (TextView) itemView.findViewById(R.id.findfriend_item_user_name);
         }
     }
 }

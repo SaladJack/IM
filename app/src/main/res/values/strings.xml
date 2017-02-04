@@ -5,9 +5,9 @@
     <string name="network_not_work">请检查网络是否已连接</string>
     <string name="confirm_ip_port_not_null">请确保服务端地址和端口号都不为空</string>
     <string name="confirm_port_legal">请输入合法的端口号！</string>
-    <string name="message">message</string>
-    <string name="mine">mine</string>
-    <string name="friends">friends</string>
+    <string name="message">Messages</string>
+    <string name="mine">Mine</string>
+    <string name="friends">Friends</string>
     <string name="signining_please_wait">Sign in...</string>
     <string name="signining">Sign in</string>
     <string name="user_name">userName</string>
@@ -17,7 +17,7 @@
     <string name="signout">Sign Out</string>
     <string name="signout_fail">Sign Out Fail!Error code is:</string>
     <!--<string name="default_ip">rbcore.52im.net</string>-->
-    <string name="default_ip">10.0.2.2</string>
+    <string name="default_ip">121.42.199.202</string>
     <string name="register_fail_for_network">Please Recheck Your Netwok!</string>
     <string name="signup">Sign Up</string>
     <string name="signin">Sign In</string>
@@ -29,4 +29,9 @@
     <string name="plz_input_username_to_find">Input username that you want to find</string>
     <string name="find_friends">Find Friends</string>
     <string name="find">Find!</string>
+    <string name="profile">profile</string>
+    <string name="add">Add</string>
+    <string name="load_friends_fail">Load Friends Fail</string>
+    <string name="add_friend_fail_by_friend_not_found">Friend Not Found!</string>
+    <string name="add_friend_fail_by_already_add">Already Add!</string>
 </resources>

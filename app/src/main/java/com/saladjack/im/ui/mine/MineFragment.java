@@ -27,7 +27,7 @@ public class MineFragment extends BaseFragment implements MineView{
         View view = inflater.inflate(R.layout.mine_fragment,container,false);
         presenter = new MinePresenter(this);
         presenter.fetchUserInfo();
-        userName = (TextView)view.findViewById(R.id.user_name);
+        userName = (TextView)view.findViewById(R.id.profile_user_name);
         view.findViewById(R.id.signout).setOnClickListener(v -> presenter.signout());
         view.findViewById(R.id.find_friends).setOnClickListener(v -> FindFriendsActivity.open(getContext()));
         return view;

@@ -72,7 +72,7 @@ public class UserDao extends BaseDao {
         String account = cursor.getString(cursor.getColumnIndex(COLUMN_USERACCOUNT));
         String password = cursor.getString(cursor.getColumnIndex(COLUMN_USERPWD));
 
-        userBean.setUid(uid);
+        userBean.setUserId(uid);
         userBean.setUserName(username);
         userBean.setAccount(account);
         userBean.setPassword(password);
@@ -86,7 +86,7 @@ public class UserDao extends BaseDao {
 
     public ContentValues setUserBean(UserBean userBean) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_UID, userBean.getUid());
+        values.put(COLUMN_UID, userBean.getUserId());
         values.put(COLUMN_USERACCOUNT,userBean.getAccount());
         values.put(COLUMN_USERNAME, userBean.getUserName());
         values.put(COLUMN_USERPWD, userBean.getPassword());

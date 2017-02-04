@@ -34,6 +34,7 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity android:name=".ui.signup.SignUpActivity"/>
         <activity android:name=".ui.findfriends.FindFriendsActivity"/>
+        <activity android:name=".ui.profile.ProfileActivity"/>
     </application>
 
 </manifest>

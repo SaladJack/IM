@@ -14,8 +14,6 @@ package com.saladjack.im.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
 import com.saladjack.im.ClientCoreSDK;
 import net.openmob.mobileimsdk.server.protocal.Protocal;
 import android.content.Context;
@@ -23,10 +21,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 
 /**
  * QoS机制中提供消息送达质量保证的守护线程。
@@ -119,8 +114,7 @@ public class QoS4SendDaemon
 	private Context context = null;
 
 	private static QoS4SendDaemon instance = null;
-	private Subscription cycleSubscribe;
-	private Subscription subscribe;
+
 
 	public static QoS4SendDaemon getInstance(Context context)
 	{
