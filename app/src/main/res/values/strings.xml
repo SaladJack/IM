@@ -34,4 +34,5 @@
     <string name="load_friends_fail">Load Friends Fail</string>
     <string name="add_friend_fail_by_friend_not_found">Friend Not Found!</string>
     <string name="add_friend_fail_by_already_add">Already Add!</string>
+    <string name="query_friend_fail">Query Friend Fail!</string>
 </resources>

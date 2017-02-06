@@ -17,26 +17,25 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import com.saladjack.im.IMClientManager;
 
 import scut.saladjack.core.bean.UserBean;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.saladjack.im.R;
 
 /**
@@ -45,7 +44,9 @@ import com.saladjack.im.R;
 
 public class ChatActivity extends Activity implements ChatView
 {
+
 	private ChatAdapter adapter;
+	private LinearLayoutManager linearLayoutManager;
 
 	public static void open(Context context, UserBean userBean){
 		Intent intent = new Intent(context,ChatActivity.class);
@@ -63,21 +64,43 @@ public class ChatActivity extends Activity implements ChatView
 	
 	private UserBean userBean;
 	private RecyclerView chatRv;
-
+	private BroadcastReceiver mChatReceiver;
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.chat_activity);
 		presenter = new ChatPresenter(this);
 		userBean = (UserBean) getIntent().getSerializableExtra(USER_BEAN);
+		mChatReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int code = bundle.getInt("contentType",-1);
+				String content = bundle.getString("content");
+				System.out.println("onReceive:"+content+code);
+				switch (code){
+					case ContentType.RESPONSE:
+						showResponseMessage(content);
+						break;
+					case ContentType.DISCONNECT:
+						showDisconnectMessage(content);
+						break;
+					case ContentType.RECONNECT:
+						showReConnectMessage(content);
+						break;
+
+				}
+			}
+		};
 		initViews();
-		initOthers();
+
 	}
 	private void initViews() {
 		btnSend = (Button)this.findViewById(R.id.send_btn);
 		editContent = (EditText)this.findViewById(R.id.content_editText);
 
 		chatRv = (RecyclerView)findViewById(R.id.chat_rv);
-		chatRv.setLayoutManager(new LinearLayoutManager(this));
+		linearLayoutManager = new LinearLayoutManager(this);
+		chatRv.setLayoutManager(linearLayoutManager);
 		adapter = new ChatAdapter();
 		chatRv.setAdapter(adapter);
 		btnSend.setOnClickListener(v-> {
@@ -90,17 +113,20 @@ public class ChatActivity extends Activity implements ChatView
 	}
 
 
-	private void initOthers() {
-		IMClientManager.getInstance(this).getTransDataListener().setChatView(this);
-		IMClientManager.getInstance(this).getBaseEventListener().setChatView(this);
-		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(this);
+	@Override protected void onStart() {
+		super.onStart();
+		IntentFilter filterChat = new IntentFilter("chat");
+		registerReceiver(mChatReceiver,filterChat);
+	}
+
+	@Override protected void onStop() {
+		super.onStop();
+		unregisterReceiver(mChatReceiver);
+
 	}
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
-		IMClientManager.getInstance(this).getTransDataListener().setChatView(null);
-		IMClientManager.getInstance(this).getBaseEventListener().setChatView(null);
-		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(null);
 	}
 
 	
@@ -111,22 +137,23 @@ public class ChatActivity extends Activity implements ChatView
 //	}
 
 	//--------------------------------------------------------------- 各种信息输出方法 START
-	@Override public void showSendMessage(String txt) {
+	 public void showSendMessage(String txt) {
 		adapter.addItem(txt,ContentType.SEND);
 	}
-	@Override public void showResponseMessage(String txt) {
+	public void showResponseMessage(String txt) {
 		adapter.addItem(txt,ContentType.RECEIVE);
 	}
 
-	@Override public void showIMInfo_blue(String txt) {
-	}
-	@Override public void showSendMessageFail(String txt) {
+	public void showIMInfo_blue(String txt) {
 		adapter.addItem(txt,ContentType.FAIL);
 	}
-	@Override public void onDisconnect(String txt) {
+	public void showSendMessageFail(String txt) {
 		adapter.addItem(txt,ContentType.FAIL);
 	}
-	@Override public void onReConnectSuccess(String txt) {
+	public void showDisconnectMessage(String txt) {
+		adapter.addItem(txt,ContentType.FAIL);
+	}
+	public void showReConnectMessage(String txt) {
 		adapter.addItem(txt,ContentType.FAIL);
 	}
 
@@ -159,6 +186,7 @@ public class ChatActivity extends Activity implements ChatView
 			it.put("type", type);
 			mData.add(it);
 			this.notifyDataSetChanged();
+			chatRv.smoothScrollToPosition(getItemCount());
 		}
 
 
@@ -187,15 +215,15 @@ public class ChatActivity extends Activity implements ChatView
 			if(holder == null) return;
 			if (holder instanceof SendVH) {
 				SendVH sendVH = (SendVH) holder;
-				sendVH.content.setText((String) mData.get(position).get("content"));
-				sendVH.time.setText((String) mData.get(position).get("time"));
+				if(sendVH.content != null) sendVH.content.setText((String) mData.get(position).get("content"));
+				if(sendVH.time != null)    sendVH.time.setText((String) mData.get(position).get("time"));
 			} else if (holder instanceof ReceiveVH) {
 				ReceiveVH receiveVH = (ReceiveVH) holder;
-				receiveVH.content.setText((String) mData.get(position).get("content"));
-				receiveVH.time.setText((String) mData.get(position).get("time"));
+				if(receiveVH.content != null)  receiveVH.content.setText((String) mData.get(position).get("content"));
+				if(receiveVH.time != null) 	   receiveVH.time.setText((String) mData.get(position).get("time"));
 			} else if (holder instanceof FailVH) {
 				FailVH failVH = (FailVH) holder;
-				failVH.content.setText((String) mData.get(position).get("content"));
+				if (failVH.content != null)    failVH.content.setText((String) mData.get(position).get("content"));
 			}
 
 		}
@@ -238,11 +266,7 @@ public class ChatActivity extends Activity implements ChatView
 		}
 
 	}
-	public class ContentType{
-		static final int SEND = 1;
-		static final int RECEIVE = 2;
-		static final int FAIL = 3;
-	}
+
 	//--------------------------------------------------------------- inner classes END
 }
 

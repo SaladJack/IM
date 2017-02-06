@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.saladjack.im.ClientCoreSDK;
+import com.saladjack.im.app.Constant;
 import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.ui.chat.ChatActivity;
 
@@ -44,7 +45,7 @@ public class MineModel implements MineIModel {
 
     private UserBean getUserBean(){
         UserDao userDao = new UserDao();
-        UserBean userBean = userDao.query(ClientCoreSDK.getInstance().getCurrentUserId());
+        UserBean userBean = userDao.query(Constant.USER_ID);
         userDao.close();
         return userBean;
     }

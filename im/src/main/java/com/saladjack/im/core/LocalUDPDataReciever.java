@@ -286,7 +286,7 @@ public class LocalUDPDataReciever
 									AutoReSigninDaemon.getInstance(context).start(true);
 								}
 							});
-							// ** 2015-02-10 by Jack Jiang：收到登录成功反馈后，无需立即就发起心跳，因为刚刚才与服务端
+							// ** 收到登录成功反馈后，无需立即就发起心跳，因为刚刚才与服务端
 							// ** 成功通信了呢（刚收到服务器的登录成功反馈），节省1次心跳，降低服务重启后的“雪崩”可能性
 //							KeepAliveDaemon.getInstance(context).start(true);
 							KeepAliveDaemon.getInstance(context).start(false);
@@ -307,8 +307,7 @@ public class LocalUDPDataReciever
 						}
 						
 						// 用户登录认证情况通知回调
-						if(ClientCoreSDK.getInstance().getChatBaseEvent() != null)
-						{
+						if(ClientCoreSDK.getInstance().getChatBaseEvent() != null) {
 							ClientCoreSDK.getInstance().getChatBaseEvent().onSignInMessage(
 								signinInfoRes.getUser_id(), signinInfoRes.getCode(),/*username*/"user-name");
 						}

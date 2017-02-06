@@ -45,4 +45,8 @@ public class AppUtils {
         return flag;
     }
 
+    public static String getPackageName(){
+        return "com.saladjack.im";
+    }
+
 }

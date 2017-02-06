@@ -11,6 +11,20 @@ public class FriendBean implements Serializable {
     private String name;
     private String latestContent;
 
+    public FriendBean() {
+    }
+
+    public FriendBean(int id, String name, String latestContent) {
+        this.id = id;
+        this.name = name;
+        this.latestContent = latestContent;
+    }
+
+    public FriendBean(UserBean userBean) {
+        id = userBean.getUserId();
+        name = userBean.getUserName();
+    }
+
     public int getId() {
         return id;
     }

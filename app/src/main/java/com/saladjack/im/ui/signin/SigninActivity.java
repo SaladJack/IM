@@ -1,6 +1,6 @@
 package com.saladjack.im.ui.signin;
 
-import com.saladjack.im.IMClientManager;
+import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.home.HomeActivity;
 import com.saladjack.im.ui.signup.SignUpActivity;
@@ -9,11 +9,14 @@ import com.saladjack.im.utils.AppUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager.BadTokenException;
@@ -28,6 +31,7 @@ import scut.saladjack.core.db.dao.UserDao;
  */
 
 public class SigninActivity extends BaseActivity implements SigninView {
+
 
 	public static void open(Context context) {
 		Intent intent = new Intent(context,SigninActivity.class);
@@ -46,15 +50,30 @@ public class SigninActivity extends BaseActivity implements SigninView {
 	private OnSigninProgress onSigninProgress = null;
 
 	private SigninIPresenter presenter;
+	private BroadcastReceiver mSignInSuccessReceiver;
+	private BroadcastReceiver mSignInFailReceiver;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		IMClientManager.getInstance(this).initIM();
 		this.setContentView(R.layout.signin_activity);
 		presenter = new SigninPresenter(this);
 		// 界面UI基本设置
 		initViews();
-
+		mSignInSuccessReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int userId = bundle.getInt("userId",-1);
+				String userName = bundle.getString("userName");
+				onSigninSuccess(userId,userName);
+			}
+		};
+		mSignInFailReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int errorCode = bundle.getInt("errorCode",-1);
+				onSigninFail(errorCode);
+			}
+		};
 	}
 
 	private void initViews() {
@@ -72,7 +91,23 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		IntentFilter filterSignInSucess = new IntentFilter("onSignInSuccess");
+		IntentFilter filterSignInFail = new IntentFilter("onSignInFail");
+		registerReceiver(mSignInSuccessReceiver,filterSignInSucess);
+		registerReceiver(mSignInFailReceiver,filterSignInFail);
 
+
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unregisterReceiver(mSignInSuccessReceiver);
+		unregisterReceiver(mSignInFailReceiver);
+	}
 
 	/**
 	 * 登录处理。
@@ -101,8 +136,9 @@ public class SigninActivity extends BaseActivity implements SigninView {
 			// 发送登录数据包
 			if(!TextUtils.isEmpty(account)) {
 				onSigninProgress.showProgressing(true);
-				IMClientManager.getInstance(this).getBaseEventListener().setSigninView(this);
 				presenter.signin(this,account,password,serverIP,port);
+				Constant.USER_ACCOUNT = account;
+				Constant.USER_PASSWORD = password;
 			}
 		}
 		else {
@@ -124,7 +160,8 @@ public class SigninActivity extends BaseActivity implements SigninView {
 	@Override public void onSigninSuccess(int userId, String userName) {
 		onSigninProgress.showProgressing(false);
 		// 登录成功
-
+		Constant.USER_ID = userId;
+		Constant.USER_NAME = userName;
 		UserBean userBean = new UserBean(userId,userName,accountEt.getText().toString().trim(),pwdEt.getText().toString().trim());
 		UserDao userDao = new UserDao();
 		userDao.updateUser(userBean);
@@ -135,7 +172,7 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	}
 
-	@Override public void onsigninFail(int errorCode) {
+	public void onSigninFail(int errorCode) {
 		showToast(R.string.signin_fail);
 	}
 

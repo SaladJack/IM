@@ -7,8 +7,8 @@ import android.support.annotation.StringRes;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.R;
+import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.chat.ChatActivity;
 
@@ -41,7 +41,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         ((TextView)findViewById(R.id.profile_user_name)).setText("Name: " + userBean.getUserName());
         addBtn = (Button)findViewById(R.id.profile_add);
         messagesBtn = (Button)findViewById(R.id.profile_messages);
-        addBtn.setOnClickListener(v-> presenter.addFriend(ClientCoreSDK.getInstance().getCurrentUserId(),userBean.getUserId()));
+        addBtn.setOnClickListener(v-> presenter.addFriend(Constant.USER_ID,userBean.getUserId()));
         messagesBtn.setOnClickListener(v -> ChatActivity.open(this,userBean));
     }
 

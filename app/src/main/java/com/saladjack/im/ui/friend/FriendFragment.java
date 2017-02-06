@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.R;
+import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class FriendFragment extends BaseFragment implements FriendView {
         friendRv.setLayoutManager(new LinearLayoutManager(getContext()));
         friendRv.setAdapter(adapter);
         presenter = new FriendPresenter(this);
-        presenter.loadFriends(ClientCoreSDK.getInstance().getCurrentUserId());
+        presenter.loadFriends(Constant.USER_ID);
         return view;
     }
 

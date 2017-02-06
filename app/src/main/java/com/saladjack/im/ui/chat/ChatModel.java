@@ -1,9 +1,11 @@
 package com.saladjack.im.ui.chat;
 
 import android.content.Context;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.saladjack.im.app.IMApp;
 import com.saladjack.im.core.LocalUDPDataSender;
 
 /**
@@ -20,13 +22,11 @@ public class ChatModel implements ChatIModel {
 
     @Override public void sendMessage(Context context, String message, int friendId, boolean qos) {
         if(message.length() > 0) {
-            new LocalUDPDataSender.SendCommonDataAsync(context, message, friendId, true) {
-                @Override
-                protected void onPostExecute(Integer code) {
-                    if(code == 0) presenter.onSendMessageSuccess();
-                    else presenter.onSendMessageFail(code);
-                }
-            }.execute();
+            try {
+                IMApp.getInstance().getBinder().sendMessage(message,friendId,qos);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
