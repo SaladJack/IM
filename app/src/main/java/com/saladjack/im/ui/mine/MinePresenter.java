@@ -17,7 +17,7 @@ public class MinePresenter implements MineIPresenter {
     }
 
     @Override public void signout() {
-        model.signout();
+        model.signOut();
     }
 
     @Override public void fetchUserInfo() {

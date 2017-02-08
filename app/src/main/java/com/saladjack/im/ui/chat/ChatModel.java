@@ -2,11 +2,8 @@ package com.saladjack.im.ui.chat;
 
 import android.content.Context;
 import android.os.RemoteException;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.saladjack.im.app.IMApp;
-import com.saladjack.im.core.LocalUDPDataSender;
 
 /**
  * Created by saladjack on 17/1/27.

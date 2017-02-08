@@ -9,5 +9,6 @@ interface IMAidl {
      * and return values in AIDL.
      */
     void signIn(String account,String password,String serverIP,int serverPort);
+    void signOut();
     void sendMessage(String message,int friendId,boolean qos);
 }

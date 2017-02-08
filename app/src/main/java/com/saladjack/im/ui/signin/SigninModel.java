@@ -4,12 +4,6 @@ import android.content.Context;
 import android.os.RemoteException;
 
 import com.saladjack.im.app.IMApp;
-import com.saladjack.im.core.LocalUDPDataSender;
-import com.saladjack.im.conf.ConfigEntity;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 /**

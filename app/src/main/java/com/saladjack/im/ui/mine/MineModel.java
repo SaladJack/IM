@@ -1,13 +1,10 @@
 package com.saladjack.im.ui.mine;
 
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
+import android.os.RemoteException;
 
-import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.app.Constant;
+import com.saladjack.im.app.IMApp;
 import com.saladjack.im.core.LocalUDPDataSender;
-import com.saladjack.im.ui.chat.ChatActivity;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -33,14 +30,12 @@ public class MineModel implements MineIModel {
                 .subscribe(userBean ->presenter.onFetchUserInfoSuccess(userBean));
     }
 
-    @Override public void signout() {
-        Observable.create((Observable.OnSubscribe<Integer>) subscriber -> subscriber.onNext(LocalUDPDataSender.getInstance().sendSignout()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(code -> {
-                    if(code == 0) presenter.onSignoutSuccess();
-                    else          presenter.onSignoutFail(code);
-                });
+    @Override public void signOut() {
+        try {
+            IMApp.getInstance().getBinder().signOut();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     private UserBean getUserBean(){

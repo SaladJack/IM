@@ -4,7 +4,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import scut.saladjack.core.bean.FriendBean;
-import scut.saladjack.core.bean.UserBean;
 import scut.saladjack.core.db.dao.FriendDao;
 
 /**
@@ -32,6 +31,8 @@ public class MessageModel implements MessageIModel {
         FriendBean friendBean = friendDao.query(friendId);
         friendBean.setLatestContent(content);
         friendDao.updateFriend(friendBean);
+        friendDao.close();
+        System.out.println(friendBean.toString());
         return friendBean;
     }
 }

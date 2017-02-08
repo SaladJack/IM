@@ -90,4 +90,8 @@
         <item name="android:background">@drawable/shadow_bg_mine</item>
     </style>
 
+    <style name="friend_item_tv_style" parent="normal_tv_style">
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:textSize">@dimen/mine_item_tv_marginLeft</item>
+    </style>
 </resources>

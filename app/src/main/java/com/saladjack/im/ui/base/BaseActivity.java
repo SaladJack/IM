@@ -1,6 +1,5 @@
 package com.saladjack.im.ui.base;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;

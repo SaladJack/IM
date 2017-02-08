@@ -274,7 +274,7 @@ public class ClientCoreSDK
 		_init = false;
 		
 		//
-		this.setsigninHasInit(false);
+		this.setSignInHasInit(false);
 		this.setConnectedToServer(false);
 	}
 	
@@ -389,7 +389,7 @@ public class ClientCoreSDK
 	 * 
 	 * @return
 	 */
-	public boolean issigninHasInit()
+	public boolean isSignInHasInit()
 	{
 		return signinHasInit;
 	}
@@ -402,7 +402,7 @@ public class ClientCoreSDK
 	 * @param signinHasInit
 	 * @return
 	 */
-	public ClientCoreSDK setsigninHasInit(boolean signinHasInit)
+	public ClientCoreSDK setSignInHasInit(boolean signinHasInit)
 	{
 		this.signinHasInit = signinHasInit;
 //		if(!signined)

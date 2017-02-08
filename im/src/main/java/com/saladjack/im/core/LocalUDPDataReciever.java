@@ -256,7 +256,7 @@ public class LocalUDPDataReciever
 							// 记录用户登录信息（因为此处不太好记录用户登录名和密
 							// 码，所以登录名和密码现在是在登录消息发出时就记录了）
 							ClientCoreSDK.getInstance()
-								.setsigninHasInit(true)
+								.setSignInHasInit(true)
 								.setCurrentUserId(signinInfoRes.getUser_id());
 							
 							// 尝试关闭自动重新登录线程（如果该线程正在运行的话）
@@ -329,7 +329,7 @@ public class LocalUDPDataReciever
 						if(errorRes.getErrorCode() == ErrorCode.ForS.RESPONSE_FOR_UNLOGIN)
 						{
 							// 
-							ClientCoreSDK.getInstance().setsigninHasInit(false);
+							ClientCoreSDK.getInstance().setSignInHasInit(false);
 							
 							Log.e(TAG, "收到服务端的“尚未登录”的错误消息，心跳线程将停止，请应用层重新登录.");
 							// 停止心跳

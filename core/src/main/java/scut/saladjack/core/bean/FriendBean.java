@@ -48,4 +48,13 @@ public class FriendBean implements Serializable {
     public void setLatestContent(String latestContent) {
         this.latestContent = latestContent;
     }
+
+    @Override
+    public String toString() {
+        return "FriendBean{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", latestContent='" + latestContent + '\'' +
+                '}';
+    }
 }

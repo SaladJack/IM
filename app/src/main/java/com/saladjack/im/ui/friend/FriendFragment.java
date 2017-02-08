@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.saladjack.im.ClientCoreSDK;
 import com.saladjack.im.R;
 import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseFragment;

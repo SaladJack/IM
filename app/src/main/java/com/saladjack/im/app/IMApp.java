@@ -1,13 +1,11 @@
 package com.saladjack.im.app;
 
-import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import com.saladjack.im.IMAidl;
-import com.saladjack.im.IMClientManager;
 import com.saladjack.im.service.IMService;
 
 import scut.saladjack.core.CoreApplication;
@@ -30,7 +28,7 @@ public class IMApp extends CoreApplication {
         String currentProcessName = getCurrentProcessName();
         System.out.println(currentProcessName + "IMApp Application onCreate");
         if(currentProcessName.endsWith(":imservice")) {
-            return;
+
         }else{
             ServiceConnection connection = new ServiceConnection() {
                 @Override

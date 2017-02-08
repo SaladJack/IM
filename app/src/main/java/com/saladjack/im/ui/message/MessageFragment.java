@@ -40,13 +40,14 @@ public class MessageFragment extends BaseFragment implements MessageView {
         friendRv.setLayoutManager(new LinearLayoutManager(getContext()));
         friendList = new ArrayList<>();
         int id = Constant.USER_ID;
-        friendList.add(createFriend(id,id+"号","什么鬼"));
+        friendList.add(createFriend(id,"Self",""));
 
         adapter = new MessageAdapter(friendList);
         friendRv.setAdapter(adapter);
 
         mMessagReceiver = new BroadcastReceiver() {
             @Override public void onReceive(Context context, Intent intent) {
+                abortBroadcast();
                 Bundle bundle = intent.getBundleExtra("bundle");
                 int friendId = bundle.getInt("friendId");
                 String content = bundle.getString("content");
@@ -61,6 +62,7 @@ public class MessageFragment extends BaseFragment implements MessageView {
     @Override public void onResume() {
         super.onResume();
         IntentFilter filterMessage = new IntentFilter("chat");
+        filterMessage.setPriority(60);
         getActivity().registerReceiver(mMessagReceiver,filterMessage);
     }
 

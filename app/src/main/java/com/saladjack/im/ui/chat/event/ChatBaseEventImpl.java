@@ -1,14 +1,3 @@
-/*
- * Copyright (C) 2016 即时通讯网(52im.net) The MobileIMSDK Project. 
- * All rights reserved.
- * Project URL:https://github.com/JackJiang2011/MobileIMSDK
- *  
- * 即时通讯网(52im.net) - 即时通讯技术社区! PROPRIETARY/CONFIDENTIAL.
- * Use is subject to license terms.
- * 
- * ChatBaseEventImpl.java at 2016-2-20 11:20:18, code by Jack Jiang.
- * You can contact author with jack.jiang@52im.net or jb2011@163.com.
- */
 package com.saladjack.im.ui.chat.event;
 
 
@@ -30,9 +19,6 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
 	private final static String TAG = ChatBaseEventImpl.class.getSimpleName();
 	private final Context context;
 
-	private ChatView chatView = null;
-
-	private SigninView signinView = null;
 
 	public ChatBaseEventImpl(Context context) {
 		this.context = context;
@@ -45,7 +31,7 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
 		if (responseCode == 0) {
 
 
-			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId+ "kong:" + String.valueOf(signinView!=null));
+			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId);
 //			if(this.chatView != null) {
 //				this.chatView.showReConnectMessage("Reconnect Success");
 //			}
@@ -90,7 +76,5 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
 	
 
 	
-	public void setChatView(ChatView chatView) {
-		this.chatView = chatView;
-	}
+
 }

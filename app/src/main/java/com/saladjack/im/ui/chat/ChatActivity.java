@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.saladjack.im.IMClientManager;
-
 import scut.saladjack.core.bean.UserBean;
 
 import android.app.Activity;
@@ -61,7 +59,7 @@ public class ChatActivity extends Activity implements ChatView
 
 	private EditText editContent;
 	private Button btnSend;
-	
+	private int friendId;
 	private UserBean userBean;
 	private RecyclerView chatRv;
 	private BroadcastReceiver mChatReceiver;
@@ -73,10 +71,12 @@ public class ChatActivity extends Activity implements ChatView
 		mChatReceiver = new BroadcastReceiver() {
 			@Override public void onReceive(Context context, Intent intent) {
 
+				abortBroadcast();
 				Bundle bundle = intent.getBundleExtra("bundle");
+				int _friendId = bundle.getInt("friendId",friendId);
+				if(_friendId != friendId) return;
 				int code = bundle.getInt("contentType",-1);
 				String content = bundle.getString("content");
-				System.out.println("onReceive:"+content+code);
 				switch (code){
 					case ContentType.RESPONSE:
 						showResponseMessage(content);
@@ -110,12 +110,15 @@ public class ChatActivity extends Activity implements ChatView
 				presenter.sendMessage(this, content, userBean.getUserId(), true);
 			}
 		});
+		friendId = userBean.getUserId();
+		((TextView)findViewById(R.id.toolbar_title)).setText(userBean.getUserName());
 	}
 
 
 	@Override protected void onStart() {
 		super.onStart();
 		IntentFilter filterChat = new IntentFilter("chat");
+		filterChat.setPriority(70);
 		registerReceiver(mChatReceiver,filterChat);
 	}
 

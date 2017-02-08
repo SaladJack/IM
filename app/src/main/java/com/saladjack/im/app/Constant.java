@@ -9,4 +9,6 @@ public class Constant {
     public static String USER_NAME = "";
     public static String USER_ACCOUNT = "";
     public static String USER_PASSWORD = "";
+
+    public static final String ACTION_CHAT = "chat";
 }

@@ -1,15 +1,10 @@
 package com.saladjack.im;
 
-import android.util.Log;
-
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.schedulers.Schedulers;
 
 import static org.junit.Assert.*;
 

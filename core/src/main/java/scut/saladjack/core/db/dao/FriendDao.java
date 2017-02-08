@@ -11,9 +11,9 @@ import scut.saladjack.core.bean.FriendBean;
 
 public class FriendDao extends BaseDao {
 
-    private static String TABLE = "_friend";
+    private static final String TABLE = "_friend";
 
-    private static final String INDEX = "unique_index_user_id";
+    private static final String INDEX = "unique_index_friend_user_id";
     private static final String COLUMN_UID = "user_id";
     private static final String COLUMN_USERNAME = "user_name";
     private static final String COLUMN_LATESTCONTENT = "user_latest_content";

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IM</string>
+    <string name="app_name">MIM</string>
     <string name="register_fail_for_account_already_exist">Account Already Exist!</string>
     <string name="registerSuccess">注册成功</string>
     <string name="network_not_work">请检查网络是否已连接</string>
@@ -16,7 +16,6 @@
     <string name="signin_fail">Sign in fail!Recheck your ACCOUNT and PASSWORD!</string>
     <string name="signout">Sign Out</string>
     <string name="signout_fail">Sign Out Fail!Error code is:</string>
-    <!--<string name="default_ip">rbcore.52im.net</string>-->
     <string name="default_ip">121.42.199.202</string>
     <string name="register_fail_for_network">Please Recheck Your Netwok!</string>
     <string name="signup">Sign Up</string>
@@ -35,4 +34,5 @@
     <string name="add_friend_fail_by_friend_not_found">Friend Not Found!</string>
     <string name="add_friend_fail_by_already_add">Already Add!</string>
     <string name="query_friend_fail">Query Friend Fail!</string>
+    <string name="send">send</string>
 </resources>

@@ -4,7 +4,6 @@ import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -15,7 +14,11 @@ import com.saladjack.im.IMAidl;
 import com.saladjack.im.IMClientManager;
 import com.saladjack.im.conf.ConfigEntity;
 import com.saladjack.im.core.LocalUDPDataSender;
+import com.saladjack.im.utils.AppUtils;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -34,7 +37,6 @@ public class IMService extends Service {
     @Override public void onCreate() {
         super.onCreate();
         IMClientManager.getInstance(this).initIM();
-        System.out.println("onCreate");
     }
 
 
@@ -48,22 +50,6 @@ public class IMService extends Service {
         Log.d(TAG,"onDestroy");
         IMClientManager.getInstance(this).release();
     }
-
-
-    protected String getCurrentProcessName() {
-        String currentProcName = "";
-        int pid = android.os.Process.myPid();
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
-            if (processInfo.pid == pid) {
-                currentProcName = processInfo.processName;
-                break;
-            }
-        }
-        return currentProcName;
-    }
-
-
 
     private IMAidl.Stub mBinder = new IMAidl.Stub() {
         @Override public void signIn(String account, String password, String serverIP, int serverPort) throws RemoteException {
@@ -85,6 +71,17 @@ public class IMService extends Service {
                     else System.out.println("SignInFail");
                 }
             }.execute();
+        }
+
+        @Override public void signOut() throws RemoteException {
+            Observable.create((Observable.OnSubscribe<Integer>) subscriber -> subscriber.onNext(LocalUDPDataSender.getInstance(IMService.this).sendSignout()))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(code -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("code",code);
+                            AppUtils.sendBroadCast(IMService.this,bundle,"signout");
+                    });
         }
 
         @Override public void sendMessage(String message, int friendId, boolean qos) throws RemoteException {
