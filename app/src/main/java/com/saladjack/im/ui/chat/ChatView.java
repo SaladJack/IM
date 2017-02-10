@@ -1,25 +1,17 @@
 package com.saladjack.im.ui.chat;
 
+import java.util.List;
+
+import scut.saladjack.core.bean.FriendMessageBean;
+
 /**
  * Created by saladjack on 17/1/27.
  */
 
 public interface ChatView {
-    void showSendMessage(String txt);
-
-    void showResponseMessage(String txt);
-
-    void showIMInfo_blue(String txt);
-
-    void showIMInfo_brightred(String txt);
-
-    void onDisconnect(String txt);
-
-    void showIMInfo_green(String txt);
-
     void onSendMessageSuccess();
-
     void onSendMessageFail(Integer code);
-
-    
+    void onInsertMessageToDbFinish(FriendMessageBean friendMessageBean);
+    void onQueryMessageFromDbFinish(List<FriendMessageBean> friendMessageBeen);
+    void onQueryUserNameFromDbFinish(String userName);
 }

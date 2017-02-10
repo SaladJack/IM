@@ -104,7 +104,7 @@ public class LocalUDPDataSender
 	public int sendSignout()
 	{
 		int code = ErrorCode.COMMON_CODE_OK;
-		if(ClientCoreSDK.getInstance().issigninHasInit())
+		if(ClientCoreSDK.getInstance().isSignInHasInit())
 		{
 			byte[] b = ProtocalFactory.createPLoginoutInfo(ClientCoreSDK.getInstance().getCurrentUserId()
 					, ClientCoreSDK.getInstance().getCurrentAccount()).toBytes();
@@ -112,15 +112,15 @@ public class LocalUDPDataSender
 			// 登出信息成功发出时
 			if(code == 0)
 			{
-	//			// 发出退出登录的消息同时也关闭心跳线程
-	//			KeepAliveDaemon.getInstance(context).stop();
-	//			// 重置登录标识
-	//			ClientCoreSDK.getInstance().setsigninHasInit(false);
+				// 发出退出登录的消息同时也关闭心跳线程
+				KeepAliveDaemon.getInstance(context).stop();
+				// 重置登录标识
+				ClientCoreSDK.getInstance().setSignInHasInit(false);
 			}
 		}
 		
-		// 释放SDK资源
-		ClientCoreSDK.getInstance().release();
+		// 释放SDK资源 // FIXME: 2017/2/8 登出释放会导致登录失败，原因是再次登录时部分未初始化
+//		ClientCoreSDK.getInstance().release();
 		
 		return code;
 	}

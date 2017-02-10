@@ -17,7 +17,7 @@ public class MinePresenter implements MineIPresenter {
     }
 
     @Override public void signout() {
-        model.signout();
+        model.signOut();
     }
 
     @Override public void fetchUserInfo() {
@@ -29,11 +29,11 @@ public class MinePresenter implements MineIPresenter {
     }
 
     @Override public void onSignoutSuccess() {
-        view.onSingoutSuccess();
+        view.onSignOutSuccess();
     }
 
     @Override public void onSignoutFail(int code) {
-        view.onSignoutFail(code);
+        view.onSignOutFail(code);
     }
 
 }

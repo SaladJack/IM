@@ -5,5 +5,5 @@ package com.saladjack.im.ui.mine;
  */
 public interface MineIModel {
     void fetchUserInfo();
-    void signout();
+    void signOut();
 }

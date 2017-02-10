@@ -116,7 +116,7 @@ public class KeepAliveDaemon
 				// 极端情况下本次循环内可能执行时间超过了时间间隔，此处是防止在前一
 				// 次还没有运行完的情况下又重复过执行，从而出现无法预知的错误
 				if(!_excuting) {
-					// Handler的机制是在主线程中执行的，所以此处在放在另一个线程里，否则会报错哦
+					// Handler的机制是在主线程中执行的，所以此处在放在另一个线程里，否则会报错
 					new AsyncTask<Object, Integer, Integer>()
 					{
 						private boolean willStop = false;

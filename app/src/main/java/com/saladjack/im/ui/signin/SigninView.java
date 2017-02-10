@@ -11,5 +11,5 @@ public interface SigninView {
 
     void onSigninSuccess(int userId, String userName);
 
-    void onsigninFail(int errorcode);
+    void onSigninFail(int errorcode);
 }

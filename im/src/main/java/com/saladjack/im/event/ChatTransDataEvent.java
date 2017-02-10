@@ -34,7 +34,7 @@ public interface ChatTransDataEvent
 	 * 表示的是其它客户端发过来的消息）
 	 * @param dataContent 消息内容的文本表示形式
 	 */
-	public void onTransBuffer(String fingerPrintOfProtocal, int dwUserid, String dataContent);
+	void onTransBuffer(String fingerPrintOfProtocal, int dwUserid, String dataContent);
 	
 	/**
 	 * 服务端反馈的出错信息回调事件通知。
@@ -42,5 +42,5 @@ public interface ChatTransDataEvent
 	 * @param errorCode 错误码，定义在常量表{@link ErrorCode.ForS}中
 	 * @param errorMsg 描述错误内容的文本信息
 	 */
-	public void onErrorResponse(int errorCode, String errorMsg);
+	void onErrorResponse(int errorCode, String errorMsg);
 }

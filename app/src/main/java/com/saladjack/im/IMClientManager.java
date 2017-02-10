@@ -36,15 +36,13 @@ public class IMClientManager
 	
 	private Context context = null;
 
-	public static IMClientManager getInstance(Context context)
-	{
+	public static IMClientManager getInstance(Context context) {
 		if(instance == null)
 			instance = new IMClientManager(context);
 		return instance;
 	}
 	
-	private IMClientManager(Context context)
-	{
+	private IMClientManager(Context context) {
 		this.context = context;
 		initIM();
 	}
@@ -71,9 +69,9 @@ public class IMClientManager
 			ClientCoreSDK.getInstance().init(this.context);
 	    
 			// 设置事件回调
-			baseEventListener = new ChatBaseEventImpl();
-			transDataListener = new ChatTransDataEventImpl();
-			messageQoSListener = new MessageQoSEventImpl();
+			baseEventListener = new ChatBaseEventImpl(context);
+			transDataListener = new ChatTransDataEventImpl(context);
+			messageQoSListener = new MessageQoSEventImpl(context);
 			ClientCoreSDK.getInstance().setChatBaseEvent(baseEventListener);
 			ClientCoreSDK.getInstance().setChatTransDataEvent(transDataListener);
 			ClientCoreSDK.getInstance().setMessageQoSEvent(messageQoSListener);

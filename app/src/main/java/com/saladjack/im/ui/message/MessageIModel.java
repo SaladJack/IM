@@ -5,4 +5,7 @@ package com.saladjack.im.ui.message;
  */
 public interface MessageIModel {
 
+    void insertMessageToDbAndQueryFriend(int friendId, String content);
+
+    void queryFriendWithLatestContent();
 }

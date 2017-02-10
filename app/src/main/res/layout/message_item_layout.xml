@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/friend_layout"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/message_item_layout"
+        android:padding="10dp"
+        style="@style/profile_item_style">
+        <ImageView
+            android:id="@+id/message_item_friend_avatar"
+            android:src="@drawable/avatar"
+            android:layout_centerVertical="true"
+            style="@style/friend_item_tv_style"/>
+        <TextView
+            android:id="@+id/name"
+            android:text="name"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/message_item_friend_avatar"
+            android:layout_alignTop="@id/message_item_friend_avatar"
+            android:textSize="@dimen/friend_name_textsize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/latest_content"
+            android:layout_marginTop="2dp"
+            android:text="latest_content"
+            android:layout_toRightOf="@id/message_item_friend_avatar"
+            android:layout_below="@id/name"
+            android:textSize="@dimen/friend_latest_content_textsize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+</LinearLayout>

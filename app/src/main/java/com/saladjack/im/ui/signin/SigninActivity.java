@@ -1,6 +1,6 @@
 package com.saladjack.im.ui.signin;
 
-import com.saladjack.im.IMClientManager;
+import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.home.HomeActivity;
 import com.saladjack.im.ui.signup.SignUpActivity;
@@ -9,19 +9,21 @@ import com.saladjack.im.utils.AppUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager.BadTokenException;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.saladjack.im.R;
+import com.saladjack.im.utils.DrawableUtils;
 
 import scut.saladjack.core.bean.UserBean;
 import scut.saladjack.core.db.dao.UserDao;
@@ -32,6 +34,7 @@ import scut.saladjack.core.db.dao.UserDao;
 
 public class SigninActivity extends BaseActivity implements SigninView {
 
+
 	public static void open(Context context) {
 		Intent intent = new Intent(context,SigninActivity.class);
 		context.startActivity(intent);
@@ -39,43 +42,85 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	private static final String TAG = "SigninActivity";
 
-	private EditText editServerIp = null;
-	private EditText editServerPort = null;
 
-	private EditText accountEt = null;
-	private EditText pwdEt = null;
-	private Button btnsignin = null;
-	private TextView viewVersion = null;
+
+	private TextInputEditText accountEditText;
+	private TextInputEditText pwdEditText;
 	/** 登录进度提示 */
 	private OnSigninProgress onSigninProgress = null;
 
 	private SigninIPresenter presenter;
+	private BroadcastReceiver mSignInSuccessReceiver;
+	private BroadcastReceiver mSignInFailReceiver;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		IMClientManager.getInstance(this).initIM();
 		this.setContentView(R.layout.signin_activity);
 		presenter = new SigninPresenter(this);
 		// 界面UI基本设置
 		initViews();
+		mSignInSuccessReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int userId = bundle.getInt("userId",-1);
+				String userName = bundle.getString("userName");
+				onSigninSuccess(userId,userName);
+			}
+		};
+		mSignInFailReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int errorCode = bundle.getInt("errorCode",-1);
+				onSigninFail(errorCode);
+			}
+		};
 	}
 
 	private void initViews() {
-		editServerIp = (EditText)this.findViewById(R.id.serverIP_editText);
-		editServerPort = (EditText)this.findViewById(R.id.serverPort_editText);
-		btnsignin = (Button)this.findViewById(R.id.signin_btn);
-		accountEt = (EditText)this.findViewById(R.id.signinName_editText);
-		pwdEt = (EditText)this.findViewById(R.id.signinPsw_editText);
-		viewVersion = (TextView)this.findViewById(R.id.demo_version);
-		// Demo程序的版本号
-		viewVersion.setText(AppUtils.getProgrammVersion(this));
+
+		accountEditText = (TextInputEditText) findViewById(R.id.account_editText);
+		pwdEditText = (TextInputEditText) findViewById(R.id.psw_editText);
+		//user
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			Drawable[] uds = accountEditText.getCompoundDrawablesRelative();
+			Drawable warpDrawable = DrawableUtils.tintDrawable(uds[0], getResources().getColorStateList(R.color.login_icon_colors));
+			accountEditText.setCompoundDrawablesRelative(warpDrawable, uds[1], uds[2], uds[3]);
+		} else {
+			Drawable[] uds = accountEditText.getCompoundDrawables();
+			Drawable warpDrawable = DrawableUtils.tintDrawable(uds[0], getResources().getColorStateList(R.color.login_icon_colors));
+			accountEditText.setCompoundDrawables(warpDrawable, uds[1], uds[2], uds[3]);
+		}
+		//pwd
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			Drawable[] pds = pwdEditText.getCompoundDrawablesRelative();
+			Drawable warp = DrawableUtils.tintDrawable(pds[0], getResources().getColorStateList(R.color.login_icon_colors));
+			pwdEditText.setCompoundDrawablesRelative(warp, pds[1], pds[2], pds[3]);
+		} else {
+			Drawable[] pds = pwdEditText.getCompoundDrawables();
+			Drawable warp = DrawableUtils.tintDrawable(pds[0], getResources().getColorStateList(R.color.login_icon_colors));
+			pwdEditText.setCompoundDrawables(warp, pds[1], pds[2], pds[3]);
+		}
+
 		onSigninProgress = new OnSigninProgress(this);
-		this.setTitle("登录");
-		btnsignin.setOnClickListener(v -> doSignin());
+		findViewById(R.id.signin_btn).setOnClickListener(v -> doSignin());
 		findViewById(R.id.signup_btn).setOnClickListener(v-> SignUpActivity.open(this));
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		IntentFilter filterSignInSucess = new IntentFilter("onSignInSuccess");
+		IntentFilter filterSignInFail = new IntentFilter("onSignInFail");
+		registerReceiver(mSignInSuccessReceiver,filterSignInSucess);
+		registerReceiver(mSignInFailReceiver,filterSignInFail);
+	}
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unregisterReceiver(mSignInSuccessReceiver);
+		unregisterReceiver(mSignInFailReceiver);
+	}
 
 	/**
 	 * 登录处理。
@@ -86,10 +131,12 @@ public class SigninActivity extends BaseActivity implements SigninView {
 			return;
 		}
 		// 设置服务器地址和端口号
-		String serverIP = editServerIp.getText().toString();
-		String serverPort = editServerPort.getText().toString();
-		String account = accountEt.getText().toString().trim();
-		String password = pwdEt.getText().toString().trim();
+		String serverIP = "121.42.199.202";
+		String serverPort = "7901";
+//		String account = accountEditText.getText().toString().trim();
+//		String password = pwdEditText.getText().toString().trim();
+		String account = "123456";
+		String password = "123456";
 		int port = -1;
 		if(!TextUtils.isEmpty(serverIP.trim()) && !TextUtils.isEmpty(serverPort.trim())){
 			serverIP = serverIP.trim();
@@ -104,13 +151,13 @@ public class SigninActivity extends BaseActivity implements SigninView {
 			// 发送登录数据包
 			if(!TextUtils.isEmpty(account)) {
 				onSigninProgress.showProgressing(true);
-				IMClientManager.getInstance(this).getBaseEventListener().setSigninView(this);
 				presenter.signin(this,account,password,serverIP,port);
+				Constant.USER_ACCOUNT = account;
+				Constant.USER_PASSWORD = password;
 			}
 		}
 		else {
 			showToast(R.string.confirm_ip_port_not_null);
-			return;
 		}
 	}
 
@@ -127,8 +174,9 @@ public class SigninActivity extends BaseActivity implements SigninView {
 	@Override public void onSigninSuccess(int userId, String userName) {
 		onSigninProgress.showProgressing(false);
 		// 登录成功
-
-		UserBean userBean = new UserBean(userId,userName,accountEt.getText().toString().trim(),pwdEt.getText().toString().trim());
+		Constant.USER_ID = userId;
+		Constant.USER_NAME = userName;
+		UserBean userBean = new UserBean(userId,userName, accountEditText.getText().toString().trim(), pwdEditText.getText().toString().trim());
 		UserDao userDao = new UserDao();
 		userDao.updateUser(userBean);
 		userDao.close();
@@ -138,7 +186,7 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	}
 
-	@Override public void onsigninFail(int errorCode) {
+	public void onSigninFail(int errorCode) {
 		showToast(R.string.signin_fail);
 	}
 

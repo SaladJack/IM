@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/ToolbarStyle">
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/titlebar_tv_style"
+            android:text="@string/profile"
+            android:layout_gravity="center"
+            />
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:id="@+id/user_ll"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        style="@style/profile_item_style">
+        <ImageView
+            android:id="@+id/profile_user_avatar"
+            android:src="@drawable/avatar"
+            android:layout_centerVertical="true"
+            style="@style/profile_item_tv_style"/>
+        <TextView
+            android:id="@+id/profile_user_id"
+            android:layout="@id/profile_user_avatar"
+            android:layout_toRightOf="@id/profile_user_avatar"
+            android:text="userid"
+            style="@style/profile_item_tv_style" />
+
+        <TextView
+            android:id="@+id/profile_user_name"
+            android:layout_toRightOf="@id/profile_user_avatar"
+            android:layout_below="@+id/profile_user_id"
+            android:text="1111111111"
+            style="@style/profile_item_tv_style"
+            />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/profile_add"
+        style="@style/normal_button_tv_style"
+        android:layout_marginTop="10dp"
+        android:text="@string/add"
+        android:background="@drawable/button_bg"
+        />
+    <Button
+        android:id="@+id/profile_messages"
+        style="@style/normal_button_tv_style"
+        android:layout_marginTop="10dp"
+        android:text="@string/message"
+        android:visibility="visible"
+        android:background="@drawable/button_bg"
+        />
+</LinearLayout>

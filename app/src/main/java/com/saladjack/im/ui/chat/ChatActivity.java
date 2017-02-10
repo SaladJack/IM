@@ -18,116 +18,176 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.saladjack.im.IMClientManager;
 import scut.saladjack.core.bean.FriendBean;
+import scut.saladjack.core.bean.FriendMessageBean;
+import scut.saladjack.core.bean.UserBean;
+import scut.saladjack.core.db.dao.FriendMessageDao;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import com.saladjack.im.R;
+import com.saladjack.im.ui.home.HomeActivity;
+import com.saladjack.im.utils.TimeUtils;
 
 /**
  * Created by saladjack on 17/1/27.
  */
 
-public class ChatActivity extends Activity implements ChatView
-{
-	public static void open(Context context, FriendBean friendBean){
+public class ChatActivity extends Activity implements ChatView {
+
+
+	public static void open(Context context, UserBean userBean){
 		Intent intent = new Intent(context,ChatActivity.class);
-		intent.putExtra(FRIEND_BEAN,friendBean);
+		intent.putExtra(USER_BEAN,userBean);
 		context.startActivity(intent);
 	}
 
-	private final static String TAG = ChatActivity.class.getSimpleName();
 
-	private final static String FRIEND_BEAN = "friendBean";
+	public final static String USER_BEAN = "user_bean";
+	private ChatAdapter adapter;
+	private LinearLayoutManager linearLayoutManager;
 	private ChatIPresenter presenter;
 
-	private EditText editId = null;
-	private EditText editContent = null;
-	private Button btnSend = null;
-	
-	private ListView chatInfoListView;
-	private MyAdapter chatInfoListAdapter;
-	private FriendBean friendBean;
-
+	private TextView toolbarTitle;
+	private EditText editContent;
+	private Button btnSend;
+	private int friendId;
+	private UserBean userBean;
+	private RecyclerView chatRv;
+	private BroadcastReceiver mChatReceiver;
+	private FriendMessageDao friendMessageDao;
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.chat_activity);
 		presenter = new ChatPresenter(this);
-		friendBean = (FriendBean) getIntent().getSerializableExtra(FRIEND_BEAN);
 		initViews();
-		initOthers();
+		handleIntent();
+		mChatReceiver = new BroadcastReceiver() {
+			@Override public void onReceive(Context context, Intent intent) {
+				abortBroadcast();
+				Bundle bundle = intent.getBundleExtra("bundle");
+				int _friendId = bundle.getInt("friendId",friendId);
+				if(_friendId != friendId) return;
+				int contentType = bundle.getInt("contentType",-1);
+				String content = bundle.getString("content");
+				presenter.insertMessageToDb(friendMessageDao,friendId,contentType,content, TimeUtils.getCurTimeMills());
+
+			}
+		};
+
+	}
+	private void handleIntent(){
+		if(friendMessageDao == null) friendMessageDao = new FriendMessageDao();
+		Intent intent = getIntent();
+		Bundle bundle = intent.getBundleExtra("bundle");
+		String content = null;
+		if(bundle != null) {
+			content = bundle.getString("content");
+			userBean = (UserBean) bundle.getParcelable(USER_BEAN);
+		}else if(intent != null){
+			userBean = (UserBean) intent.getParcelableExtra(USER_BEAN);
+		}
+			friendId = userBean.getUserId();
+			if (TextUtils.isEmpty(userBean.getUserName()))
+				presenter.queryUserNameFromDb(friendMessageDao, userBean.getUserId());
+			else setTitle(userBean.getUserName());
+			if (!TextUtils.isEmpty(content))
+				presenter.insertMessageToDb(friendMessageDao, friendId, ContentType.RECEIVE, content, TimeUtils.getCurTimeMills());
+
 	}
 	private void initViews() {
 		btnSend = (Button)this.findViewById(R.id.send_btn);
 		editContent = (EditText)this.findViewById(R.id.content_editText);
-
-		chatInfoListView = (ListView)this.findViewById(R.id.chat_lv);
-		chatInfoListAdapter = new MyAdapter(this);
-		chatInfoListView.setAdapter(chatInfoListAdapter);
+		chatRv = (RecyclerView)findViewById(R.id.chat_rv);
+		toolbarTitle = (TextView)findViewById(R.id.toolbar_title);
+		linearLayoutManager = new LinearLayoutManager(this);
+		chatRv.setLayoutManager(linearLayoutManager);
+		adapter = new ChatAdapter();
+		chatRv.setAdapter(adapter);
 		btnSend.setOnClickListener(v-> {
 			String content = editContent.getText().toString().trim();
 			if(content.length() > 0) {
-				showSendMessage(editContent.getText().toString().trim());
-				presenter.sendMessage(this, content,friendBean.getId(), true);
+				editContent.setText("");
+				long time = TimeUtils.getCurTimeMills();
+				showSendMessage(content,time);
+				presenter.insertMessageToDb(friendMessageDao,friendId,ContentType.SEND,content,time);
+				presenter.sendMessage(this, content, userBean.getUserId(), true);
 			}
 		});
+		
+
 	}
 
+	private void setTitle(String title){
+		toolbarTitle.setText(title);
+	}
 
-	private void initOthers() {
-		IMClientManager.getInstance(this).getTransDataListener().setChatView(this);
-		IMClientManager.getInstance(this).getBaseEventListener().setChatView(this);
-		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(this);
+	@Override protected void onStart() {
+		super.onStart();
+		if(friendMessageDao == null) friendMessageDao = new FriendMessageDao();
+		presenter.queryMessageFromDb(friendMessageDao,friendId);
+		IntentFilter filterChat = new IntentFilter("chat");
+		filterChat.setPriority(70);
+		registerReceiver(mChatReceiver,filterChat);
+	}
+
+	@Override protected void onStop() {
+		super.onStop();
+		friendMessageDao.close();
+		friendMessageDao = null;
+		unregisterReceiver(mChatReceiver);
+
+	}
+
+	@Override public void onBackPressed() {
+		super.onBackPressed();
+		finish();
+		Intent intent = new Intent(this, HomeActivity.class);
+		intent.putExtra("friendId",friendId);
+		intent.putExtra("latestContent",adapter.getLastItem().getMessage());
+		startActivity(intent);
 	}
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
-		IMClientManager.getInstance(this).getTransDataListener().setChatView(null);
-		IMClientManager.getInstance(this).getBaseEventListener().setChatView(null);
-		IMClientManager.getInstance(this).getMessageQoSListener().setChatView(null);
 	}
 
 	
-//	private void doExit()
-//	{
-//		finish();
-//		System.exit(0);
-//	}
-
 
 
 	//--------------------------------------------------------------- 各种信息输出方法 START
-	@Override public void showSendMessage(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
-	}
-	@Override public void showResponseMessage(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.black);
+	public void showSendMessage(String txt,long time) {
+		adapter.addItem(txt,ContentType.SEND,time);
 	}
 
-	@Override public void showIMInfo_blue(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.blue);
+	public void showResponseMessage(String txt,long time) {
+		adapter.addItem(txt,ContentType.RECEIVE,time);
 	}
-	@Override public void showIMInfo_brightred(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.brightred);
+
+	public void showIMInfo_blue(String txt,long time) {
+		adapter.addItem(txt,ContentType.FAIL,time);
 	}
-	@Override public void onDisconnect(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.red);
+	public void showSendMessageFail(String txt,long time) {
+		adapter.addItem(txt,ContentType.FAIL,time);
 	}
-	@Override public void showIMInfo_green(String txt) {
-		chatInfoListAdapter.addItem(txt, ChatInfoColorType.green);
+	public void showDisconnectMessage(String txt,long time) {
+		adapter.addItem(txt,ContentType.DISCONNECT,time);
+	}
+	public void showReConnectMessage(String txt,long time) {
+		adapter.addItem(txt,ContentType.RECONNECT,time);
 	}
 
 	@Override public void onSendMessageSuccess() {
@@ -135,106 +195,150 @@ public class ChatActivity extends Activity implements ChatView
 	}
 
 	@Override public void onSendMessageFail(Integer code) {
-
+//		showSendMessageFail();
 	}
+
+	@Override public void onInsertMessageToDbFinish(FriendMessageBean friendMessageBean) {
+		int contentType = friendMessageBean.getMessageType();
+		long time = friendMessageBean.getTimeStamp();
+		String content = friendMessageBean.getMessage();
+		switch (contentType){
+			case ContentType.RECEIVE:
+				showResponseMessage(content,time);
+				break;
+			case ContentType.FAIL:
+				showSendMessageFail(content,time);
+			case ContentType.DISCONNECT:
+				showDisconnectMessage(content,time);
+				break;
+			case ContentType.RECONNECT:
+				showReConnectMessage(content,time);
+				break;
+		}
+	}
+
+	@Override public void onQueryMessageFromDbFinish(List<FriendMessageBean> friendMessageBeen) {
+		adapter.setData(friendMessageBeen);
+	}
+
+	@Override public void onQueryUserNameFromDbFinish(String userName) {
+		setTitle(userName);
+	}
+
 	//--------------------------------------------------------------- 各种信息输出方法 END
 	
 	//--------------------------------------------------------------- inner classes START
-	/**
-	 * 各种显示列表Adapter实现类。
-	 */
-	public class MyAdapter extends BaseAdapter {
-		private List<Map<String, Object>> mData;
-        private LayoutInflater mInflater;
-        private SimpleDateFormat hhmmDataFormat = new SimpleDateFormat("HH:mm:ss");
-         
-        public MyAdapter(Context context){
-            this.mInflater = LayoutInflater.from(context);
-            mData = new ArrayList<>();
-        }
-        
-        public void addItem(String content, ChatInfoColorType color) {
-        	Map<String, Object> it = new HashMap<String, Object>();
-        	it.put("__content__", content);
-			it.put("__time__",hhmmDataFormat.format(new Date()));
-        	it.put("__color__", color);
-        	mData.add(it);
-        	this.notifyDataSetChanged();
-        	chatInfoListView.setSelection(this.getCount());
-        }
-        
-        @Override
-        public int getCount() 
-        {
-            return mData.size();
-        }
- 
-        @Override
-        public Object getItem(int arg0) 
-        {
-            return null;
-        }
- 
-        @Override
-        public long getItemId(int arg0) 
-        {
-            return 0;
-        }
- 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
-            if (convertView == null) {
-                holder=new ViewHolder();  
-                convertView = mInflater.inflate(R.layout.chat_item_layout, null);
-                holder.content = (TextView)convertView.findViewById(R.id.chat_content_tv);
-				holder.time = (TextView)convertView.findViewById(R.id.time);
-                convertView.setTag(holder);
-            }
-            else {
-                holder = (ViewHolder)convertView.getTag();
-            }
-             
-            holder.content.setText((String)mData.get(position).get("__content__"));
-			holder.time.setText((String)mData.get(position).get("__time__"));
-            ChatInfoColorType colorType = (ChatInfoColorType)mData.get(position).get("__color__");
-            switch(colorType) {
-	            case blue:
-	            	holder.content.setTextColor(Color.rgb(0,0,255));  
-	            	break;
-	            case brightred:
-	            	holder.content.setTextColor(Color.rgb(255,0,255));  
-	            	break;
-	            case red:
-	            	holder.content.setTextColor(Color.rgb(255,0,0));  
-	            	break;
-	            case green:
-	            	holder.content.setTextColor(Color.rgb(0,128,0));  
-	            	break;
-	            case black:
-	            default:
-	            	holder.content.setTextColor(Color.rgb(0, 0, 0));  
-	            	break;
-            }
-             
-            return convertView;
-        }
-        
-        public final class ViewHolder {
-            public TextView content;
-			public TextView time;
+
+
+	public class ChatAdapter extends RecyclerView.Adapter {
+		
+		private Context context;
+		private List<FriendMessageBean> mData;
+		private SimpleDateFormat hhmmDataFormat = new SimpleDateFormat("HH:mm:ss");
+
+		public ChatAdapter() {
+			mData = new ArrayList<>();
 		}
-    }
-	
-	/**
-	 * 信息颜色常量定义。
-	 */
-	public enum ChatInfoColorType {
-    	black,
-    	blue,
-    	brightred,
-    	red,
-    	green,
-    }
-	//--------------------------------------------------------------- inner classes END
+		public void setData(List<FriendMessageBean> friendMessageBeen) {
+			mData.clear();
+			System.out.println("setData+"  + friendMessageBeen.size());
+			mData.addAll(friendMessageBeen);
+			this.notifyDataSetChanged();
+			chatRv.smoothScrollToPosition(getItemCount());
+		}
+
+		public FriendMessageBean getLastItem(){
+			return mData.get(mData.size() - 1);
+		}
+
+		public synchronized void addItem(String content, int type,long time) {
+			FriendMessageBean it = new FriendMessageBean();
+			it.setMessage(content);
+			it.setMessageType(type);
+			it.setTimeStamp(time);
+			mData.add(it);
+			this.notifyDataSetChanged();
+			chatRv.smoothScrollToPosition(getItemCount());
+		}
+
+
+		@Override public int getItemViewType(int position) {
+			return mData.get(position).getMessageType();
+		}
+
+		@Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			context = parent.getContext();
+			View view;
+			switch (viewType) {
+				case ContentType.SEND:
+					view = LayoutInflater.from(context).inflate(R.layout.chat_item_send_layout, parent, false);
+					return new SendVH(view);
+				case ContentType.RECEIVE:
+					view = LayoutInflater.from(context).inflate(R.layout.chat_item_receive_layout, parent, false);
+					return new ReceiveVH(view);
+				default://FAIL,CONNECT,RECONNECT
+					view = LayoutInflater.from(context).inflate(R.layout.chat_item_fail_layout, parent, false);
+					return new FailVH(view);
+			}
+		}
+
+		@Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+			if(holder == null) return;
+			if (holder instanceof SendVH) {
+				SendVH sendVH = (SendVH) holder;
+				if(sendVH.content != null) sendVH.content.setText(mData.get(position).getMessage());
+				if(sendVH.time != null)    sendVH.time.setText(TimeUtils.milliseconds2String(mData.get(position).getTimeStamp(),hhmmDataFormat));
+			} else if (holder instanceof ReceiveVH) {
+				ReceiveVH receiveVH = (ReceiveVH) holder;
+				if(receiveVH.content != null)  receiveVH.content.setText(mData.get(position).getMessage());
+				if(receiveVH.time != null) 	   receiveVH.time.setText(TimeUtils.milliseconds2String(mData.get(position).getTimeStamp(),hhmmDataFormat));
+			} else if (holder instanceof FailVH) {
+				FailVH failVH = (FailVH) holder;
+				if (failVH.content != null)    failVH.content.setText(mData.get(position).getMessage());
+			}
+
+		}
+
+		@Override
+		public int getItemCount() {
+			return mData.size();
+		}
+
+		
+
+		class SendVH extends RecyclerView.ViewHolder {
+			public TextView content;
+			public TextView time;
+			public SendVH(View itemView) {
+				super(itemView);
+				content = (TextView) itemView.findViewById(R.id.send_content);
+				time = (TextView) itemView.findViewById(R.id.send_time);
+			}
+		}
+
+		class ReceiveVH extends RecyclerView.ViewHolder {
+			public TextView content;
+			public TextView time;
+
+			public ReceiveVH(View itemView) {
+				super(itemView);
+				content = (TextView) itemView.findViewById(R.id.receive_content);
+				time = (TextView) itemView.findViewById(R.id.receive_time);
+			}
+		}
+
+		class FailVH extends RecyclerView.ViewHolder {
+			public TextView content;
+
+			public FailVH(View itemView) {
+				super(itemView);
+				content = (TextView) itemView.findViewById(R.id.fail_content);
+			}
+
+
+		}
+
+	}
+
 }
+

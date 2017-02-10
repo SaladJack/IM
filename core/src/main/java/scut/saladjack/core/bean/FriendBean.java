@@ -11,6 +11,20 @@ public class FriendBean implements Serializable {
     private String name;
     private String latestContent;
 
+    public FriendBean() {
+    }
+
+    public FriendBean(int id, String name, String latestContent) {
+        this.id = id;
+        this.name = name;
+        this.latestContent = latestContent;
+    }
+
+    public FriendBean(UserBean userBean) {
+        id = userBean.getUserId();
+        name = userBean.getUserName();
+    }
+
     public int getId() {
         return id;
     }
@@ -33,5 +47,14 @@ public class FriendBean implements Serializable {
 
     public void setLatestContent(String latestContent) {
         this.latestContent = latestContent;
+    }
+
+    @Override
+    public String toString() {
+        return "FriendBean{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", latestContent='" + latestContent + '\'' +
+                '}';
     }
 }

@@ -18,15 +18,15 @@ public class SignUpPresenter implements SignUpIPresenter {
         model.signUp(userName,account,password);
     }
 
-    @Override public void signUpSuccess() {
+    @Override public void onSignUpSuccess() {
         view.onSignUpSuccess();
     }
 
-    @Override public void signUpFailForAccountAlreadyExist() {
+    @Override public void onSignUpFailForAccountAlreadyExist() {
         view.onSignUpFailForAccountAlreadyExist();
     }
 
-    @Override public void signUpFailForNetWork() {
+    @Override public void onSignUpFailForNetWork() {
         view.onSignUpFailForNetWork();
     }
 

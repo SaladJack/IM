@@ -5,9 +5,9 @@ package com.saladjack.im.ui.signup;
  */
 public interface SignUpIPresenter {
     void signUp(String userName, String account, String password);
-    void signUpSuccess();
+    void onSignUpSuccess();
 
-    void signUpFailForAccountAlreadyExist();
+    void onSignUpFailForAccountAlreadyExist();
 
-    void signUpFailForNetWork();
+    void onSignUpFailForNetWork();
 }

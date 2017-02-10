@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+
+
 android {
     compileSdkVersion 24
     buildToolsVersion '24.0.3'
@@ -14,9 +16,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
 }
 
 dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
+
     compile files('libs/MobileIMSDKServer_meta.jar')
 }

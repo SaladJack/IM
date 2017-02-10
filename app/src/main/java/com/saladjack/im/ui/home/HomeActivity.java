@@ -70,6 +70,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         mViewPager.setAdapter(adapter);
     }
 
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int friendId = intent.getIntExtra("friendId",-1);
+        String latestContent = intent.getStringExtra("latestContent");
+        ((MessageFragment)fragmentList.get(0)).refresh(friendId,latestContent);
+    }
 
     @Override protected void onDestroy() {
         super.onDestroy();
