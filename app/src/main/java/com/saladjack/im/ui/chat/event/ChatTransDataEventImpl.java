@@ -24,7 +24,7 @@ public class ChatTransDataEventImpl implements ChatTransDataEvent {
 	@Override public void onTransBuffer(String fingerPrintOfProtocal, int dwUserid, String dataContent) {
 		Log.d(TAG, "【DEBUG_UI】收到来自用户"+dwUserid+"的消息:"+dataContent);
 		Bundle bundle = new Bundle();
-		bundle.putInt("contentType", ContentType.RESPONSE);
+		bundle.putInt("contentType", ContentType.RECEIVE);
 		bundle.putString("content",dataContent);
 		bundle.putInt("friendId",dwUserid);
 		sendOrderedBroadCast(bundle,"chat");

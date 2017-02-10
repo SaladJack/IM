@@ -1,5 +1,7 @@
 package com.saladjack.im.ui.message;
 
+import java.util.List;
+
 import scut.saladjack.core.bean.FriendBean;
 
 /**
@@ -7,9 +9,13 @@ import scut.saladjack.core.bean.FriendBean;
  */
 public interface MessageIPrensenter {
 
-    void queryFriend(int friendId, String content);
+    void insertMessageToDbAndQueryFriend(int friendId, String content);
 
-    void onQueryFriendSuccess(FriendBean friendBean);
+    void onInsertMessageToDbAndQueryFriendSuccess(FriendBean friendBean);
 
-    void onQueryFriendFail();
+    void onInsertMessageToDbAndQueryFriendFail();
+
+    void queryFriendWithLatestContent();
+
+    void onQueryFriendWithLatestContentFinish(List<FriendBean> friendBeen);
 }

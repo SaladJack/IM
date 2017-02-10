@@ -1,5 +1,7 @@
 package com.saladjack.im.ui.message;
 
+import java.util.List;
+
 import scut.saladjack.core.bean.FriendBean;
 
 /**
@@ -10,4 +12,6 @@ public interface MessageView {
     void onQueryFriendSuccess(FriendBean friendBean);
 
     void onQueryFriendFail();
+
+    void onQueryFriendWithLatestContentFinish(List<FriendBean> friendBeen);
 }

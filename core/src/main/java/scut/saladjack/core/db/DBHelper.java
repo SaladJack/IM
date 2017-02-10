@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import scut.saladjack.core.db.dao.FriendDao;
+import scut.saladjack.core.db.dao.FriendMessageDao;
 import scut.saladjack.core.db.dao.UserDao;
 
 /**
@@ -31,6 +32,9 @@ public class DBHelper extends SQLiteOpenHelper {
         //朋友表
         db.execSQL(FriendDao.createTable());
         db.execSQL(FriendDao.createIndex());
+        //消息表
+        db.execSQL(FriendMessageDao.createTable());
+        db.execSQL(FriendMessageDao.createIndex());
 
 
     }

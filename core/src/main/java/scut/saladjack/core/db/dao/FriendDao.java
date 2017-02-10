@@ -3,6 +3,9 @@ package scut.saladjack.core.db.dao;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import scut.saladjack.core.bean.FriendBean;
 
 /**
@@ -43,6 +46,19 @@ public class FriendDao extends BaseDao {
         sb.append("CREATE UNIQUE INDEX " + INDEX + " ON ");
         sb.append(TABLE + " (" + COLUMN_UID + ")");
         return sb.toString();
+    }
+
+    public List<FriendBean> queryList(){
+        String selection = COLUMN_LATESTCONTENT + "!=?";
+        String[] selectionArgs = new String[]{""};
+        Cursor cursor = query(TABLE, null, selection, selectionArgs, null, null, null);
+        List<FriendBean> list = new ArrayList<>();
+        if (cursor.getCount() == 0) return list;
+
+        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+            list.add(getFriendBean(cursor));
+        cursor.close();
+        return list;
     }
 
     public FriendBean query(int uid) {

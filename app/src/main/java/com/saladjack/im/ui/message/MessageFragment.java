@@ -17,6 +17,7 @@ import scut.saladjack.core.bean.FriendBean;
 import com.saladjack.im.R;
 import com.saladjack.im.app.Constant;
 import com.saladjack.im.ui.base.BaseFragment;
+import com.saladjack.im.ui.chat.ChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class MessageFragment extends BaseFragment implements MessageView {
 
     private RecyclerView friendRv;
     private MessageAdapter adapter;
-    private List<FriendBean> friendList;
+    private List<FriendBean> friendList = new ArrayList<>();
     private BroadcastReceiver mMessagReceiver;
     private MessageIPrensenter presenter;
 
@@ -38,13 +39,16 @@ public class MessageFragment extends BaseFragment implements MessageView {
         presenter = new MessagePresenter(this);
         friendRv = (RecyclerView) view.findViewById(R.id.friend_rv);
         friendRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        friendList = new ArrayList<>();
+
         int id = Constant.USER_ID;
+
         friendList.add(createFriend(id,"Self",""));
-
         adapter = new MessageAdapter(friendList);
+        presenter.queryFriendWithLatestContent();
+        adapter.setOnItemClickListener(userBean -> {
+            ChatActivity.open(getContext(),userBean);
+        });
         friendRv.setAdapter(adapter);
-
         mMessagReceiver = new BroadcastReceiver() {
             @Override public void onReceive(Context context, Intent intent) {
                 abortBroadcast();
@@ -52,7 +56,7 @@ public class MessageFragment extends BaseFragment implements MessageView {
                 int friendId = bundle.getInt("friendId");
                 String content = bundle.getString("content");
                 int contentType = bundle.getInt("contentType");
-                presenter.queryFriend(friendId,content);
+                presenter.insertMessageToDbAndQueryFriend(friendId,content);
             }
         };
 
@@ -79,6 +83,9 @@ public class MessageFragment extends BaseFragment implements MessageView {
         return friend;
     }
 
+    public void refresh(int friendId,String latestContent){
+        presenter.insertMessageToDbAndQueryFriend(friendId,latestContent);
+    }
 
     @Override public void onQueryFriendSuccess(FriendBean friendBean) {
         adapter.addItem(friendBean);
@@ -86,5 +93,13 @@ public class MessageFragment extends BaseFragment implements MessageView {
 
     @Override public void onQueryFriendFail() {
         showToast(R.string.query_friend_fail);
+    }
+
+    @Override public void onQueryFriendWithLatestContentFinish(List<FriendBean> friendBeen) {
+        adapter.reset(friendBeen);
+    }
+
+    @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -27,9 +27,10 @@ public class ShowNotificationReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(""+friendId)
-                .setTicker(content)
+                .setContentText(content)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.launcher);
+                .setSmallIcon(R.drawable.launcher)
+                .setAutoCancel(true);
         NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(2, builder.build());
 

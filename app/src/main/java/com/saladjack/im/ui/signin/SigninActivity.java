@@ -133,8 +133,10 @@ public class SigninActivity extends BaseActivity implements SigninView {
 		// 设置服务器地址和端口号
 		String serverIP = "121.42.199.202";
 		String serverPort = "7901";
-		String account = accountEditText.getText().toString().trim();
-		String password = pwdEditText.getText().toString().trim();
+//		String account = accountEditText.getText().toString().trim();
+//		String password = pwdEditText.getText().toString().trim();
+		String account = "123456";
+		String password = "123456";
 		int port = -1;
 		if(!TextUtils.isEmpty(serverIP.trim()) && !TextUtils.isEmpty(serverPort.trim())){
 			serverIP = serverIP.trim();

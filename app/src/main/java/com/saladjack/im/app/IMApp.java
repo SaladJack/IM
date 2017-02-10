@@ -41,7 +41,9 @@ public class IMApp extends CoreApplication {
 
                 }
             };
-            bindService(new Intent(this, IMService.class), connection, BIND_AUTO_CREATE);
+            Intent intent = new Intent(this, IMService.class);
+            startService(intent);
+            bindService(intent, connection, BIND_AUTO_CREATE);
 
             sInstance = this;
         }

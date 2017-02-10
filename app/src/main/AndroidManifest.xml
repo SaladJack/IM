@@ -40,7 +40,9 @@
         <activity android:name=".ui.profile.ProfileActivity"/>
         <service android:name=".service.IMService"
             android:process=":imservice"/>
-
+        <service android:name=".service.IMService$GrayInnerService"
+            android:process=":imservice"/>
+            />
         <receiver android:name=".receiver.ShowNotificationReceiver"
             android:process=":imservice">
             <intent-filter android:priority="50">

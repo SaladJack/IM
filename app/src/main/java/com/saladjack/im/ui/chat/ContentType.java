@@ -9,8 +9,6 @@ public class ContentType {
     public static final int RECEIVE = 2;
     public static final int FAIL = 3;
 
-
-    public static final int RESPONSE = 4;
-    public static final int DISCONNECT = 5;
-    public static final int RECONNECT = 6;
+    public static final int DISCONNECT = 4;
+    public static final int RECONNECT = 5;
 }

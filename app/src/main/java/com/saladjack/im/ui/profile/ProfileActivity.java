@@ -36,7 +36,7 @@ public class ProfileActivity extends BaseActivity implements ProfileView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
         presenter = new ProfilePresenter(this);
-        userBean = (UserBean)getIntent().getSerializableExtra(USER_BEAN);
+        userBean = (UserBean)getIntent().getParcelableExtra(USER_BEAN);
         ((TextView)findViewById(R.id.profile_user_id)).setText(String.format("ID: %d",userBean.getUserId()));
         ((TextView)findViewById(R.id.profile_user_name)).setText("Name: " + userBean.getUserName());
         addBtn = (Button)findViewById(R.id.profile_add);
