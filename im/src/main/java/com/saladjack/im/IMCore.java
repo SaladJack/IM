@@ -34,11 +34,11 @@ import android.util.Log;
  * MobileIMSDK框架的核心入口类。
  * <br>
  * 本类主要提供一些全局参数的读取和设置。
- * 
+ * Created by saladjack on 17/2/10.
  */
-public class ClientCoreSDK
+public class IMCore
 {
-	private final static String TAG = ClientCoreSDK.class.getSimpleName();
+	private final static String TAG = IMCore.class.getSimpleName();
 	
 	/** true表示开启MobileIMSDK Debug信息在Logcat下的输出，否则关闭。默认为true. */
 	public static boolean DEBUG = true;
@@ -54,7 +54,7 @@ public class ClientCoreSDK
 	 */
 	public static boolean autoResignin = true;
 	
-	private static ClientCoreSDK instance = null;
+	private static IMCore instance = null;
 	
 	/** 
 	 * 当调用 {@link #init(Context)}方法后本字段将被置为true，调用{@link #release()}
@@ -161,14 +161,14 @@ public class ClientCoreSDK
 	 * 
 	 * @return
 	 */
-	public static ClientCoreSDK getInstance()
+	public static IMCore getInstance()
 	{
 		if(instance == null)
-			instance = new ClientCoreSDK();
+			instance = new IMCore();
 		return instance;
 	}
 	
-	private ClientCoreSDK()
+	private IMCore()
 	{
 //		init();
 	}
@@ -297,7 +297,7 @@ public class ClientCoreSDK
 	 * @param currentUserId 用户成功登录后，服务端分配的id号
 	 * @return
 	 */
-	public ClientCoreSDK setCurrentUserId(int currentUserId)
+	public IMCore setCurrentUserId(int currentUserId)
 	{
 		this.currentUserId = currentUserId;
 		return this;
@@ -323,7 +323,7 @@ public class ClientCoreSDK
 	 * @param currentAccount
 	 * @return
 	 */
-	public ClientCoreSDK setCurrentAccount(String currentAccount) {
+	public IMCore setCurrentAccount(String currentAccount) {
 		this.currentAccount = currentAccount;
 		return this;
 	}
@@ -377,7 +377,7 @@ public class ClientCoreSDK
 	 * @return
 	 * @since 2.1.6
 	 */
-	public ClientCoreSDK setCurrentsigninExtra(String currentsigninExtra)
+	public IMCore setCurrentsigninExtra(String currentsigninExtra)
 	{
 		this.currentsigninExtra = currentsigninExtra;
 		return this;
@@ -402,7 +402,7 @@ public class ClientCoreSDK
 	 * @param signinHasInit
 	 * @return
 	 */
-	public ClientCoreSDK setSignInHasInit(boolean signinHasInit)
+	public IMCore setSignInHasInit(boolean signinHasInit)
 	{
 		this.signinHasInit = signinHasInit;
 //		if(!signined)
@@ -553,19 +553,15 @@ public class ClientCoreSDK
 			NetworkInfo wifiNetInfo = connectMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI); 
 			if (!(mobNetInfo != null && mobNetInfo.isConnected())
 					&& !(wifiNetInfo != null && wifiNetInfo.isConnected()))
-			{ 
-//				if(ClientCoreSDK.DEBUG)
-				Log.e(TAG, "【本地网络通知】检测本地网络连接断开了!");
-				
-				//
-				localDeviceNetworkOk = false;
-				
+			{
+
+
 				// 尝试关闭本地Socket（以便等网络恢复时能重新建立Socket，也就间接达到了重置网络的能力）
 				LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
 			}
 			else 
 			{ 
-				if(ClientCoreSDK.DEBUG)
+				if(IMCore.DEBUG)
 					// connect network 
 					Log.e(TAG, "【本地网络通知】检测本地网络已连接上了!");
 				
@@ -576,12 +572,12 @@ public class ClientCoreSDK
 				// 【此处可以解决以下场景问题：】当用户成功登录后，本地网络断开了，则此时自动重连机制已启动，
 				// 而本地侦听的开启是在登录信息成功发出时（本地网络连好后，信息是可以发出的）启动的，而
 				// 收到网络连接好的消息可能要滞后于真正的网络连接好（那此时间间隔内登录数据可以成功发出）
-				// ，那么此时如果启动侦听则必须导致侦听不可能成功。以下代码保证在收到网络连接消息时，先无条件关闭
+				// ，那么此时如果启动侦听则我们必须使侦听不可能成功。以下代码保证在收到网络连接消息时，先无条件关闭
 				// 网络连接，当下一个自动登录循环到来时自然就重新建立Socket了，那么此时重新登录消息发出后再
 				// 启动UDP侦听就ok了。--> 说到底，关闭网络连接就是为了在下次使用网络时无条件重置Socket，从而保证
 				// Socket被建立时是处于正常的网络状况下。
 				LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
-			} 
+			}
 		}
 	};
 }
