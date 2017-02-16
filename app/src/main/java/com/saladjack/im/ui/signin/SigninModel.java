@@ -37,7 +37,7 @@ public class SigninModel implements SigninIModel {
 //             * @param code 数据发送返回码，0 表示数据成功发出，否则是错误码
 //             */
 //            @Override
-//            protected void fireAfterSendsignin(int code) {
+//            protected void fireAfterSendSignIn(int code) {
 //                if(code == 0) presenter.onSendMsgSuccess();
 //                else          presenter.onSendMsgFail(code);
 //            }

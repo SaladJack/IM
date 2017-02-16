@@ -11,4 +11,7 @@ public class Constant {
     public static String USER_PASSWORD = "";
 
     public static final String ACTION_CHAT = "chat";
+
+    public static final String IP_ADDRESS = "119.29.95.34";
+    public static final String IP_PORT = "7901";
 }

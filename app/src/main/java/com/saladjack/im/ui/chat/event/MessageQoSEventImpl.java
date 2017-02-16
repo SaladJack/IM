@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 
 import com.saladjack.im.event.MessageQoSEvent;
-import net.openmob.mobileimsdk.server.protocal.Protocal;
+
+import com.saladjack.im.protocal.Protocal;
 import com.saladjack.im.ui.chat.ChatView;
 
 import android.content.Context;

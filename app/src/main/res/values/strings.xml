@@ -35,4 +35,5 @@
     <string name="add_friend_fail_by_already_add">Already Add!</string>
     <string name="query_friend_fail">Query Friend Fail!</string>
     <string name="send">send</string>
+    <string name="fetch_userinfo_fail">Fetch Userinfo Fail!</string>
 </resources>

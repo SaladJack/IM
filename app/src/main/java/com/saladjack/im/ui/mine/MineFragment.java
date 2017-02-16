@@ -69,5 +69,9 @@ public class MineFragment extends BaseFragment implements MineView{
         showToast(R.string.signout_fail + code);
     }
 
+    @Override public void onFetchUserInfoFail() {
+        showToast(R.string.fetch_userinfo_fail);
+    }
+
 
 }

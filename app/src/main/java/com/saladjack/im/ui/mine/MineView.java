@@ -12,4 +12,5 @@ public interface MineView {
     void onSignOutSuccess();
 
     void onSignOutFail(int code);
+    void onFetchUserInfoFail();
 }

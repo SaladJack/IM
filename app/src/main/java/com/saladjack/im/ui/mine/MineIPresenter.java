@@ -11,4 +11,7 @@ public interface MineIPresenter {
     void signout();
     void onSignoutSuccess();
     void onSignoutFail(int code);
+
+
+    void onFetchUserInfoFail();
 }

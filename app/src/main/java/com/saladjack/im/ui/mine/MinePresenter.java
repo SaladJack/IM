@@ -36,4 +36,8 @@ public class MinePresenter implements MineIPresenter {
         view.onSignOutFail(code);
     }
 
+    @Override public void onFetchUserInfoFail() {
+        view.onFetchUserInfoFail();
+    }
+
 }

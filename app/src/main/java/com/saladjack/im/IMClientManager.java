@@ -63,25 +63,25 @@ public class IMClientManager
 //			ConfigEntity.setSenseMode(SenseMode.MODE_10S);
 	    
 			// 开启/关闭DEBUG信息输出
-//	    	ClientCoreSDK.DEBUG = false;
+//	    	IMCore.DEBUG = false;
 			
 
-			ClientCoreSDK.getInstance().init(this.context);
+			IMCore.getInstance().init(this.context);
 	    
 			// 设置事件回调
 			baseEventListener = new ChatBaseEventImpl(context);
 			transDataListener = new ChatTransDataEventImpl(context);
 			messageQoSListener = new MessageQoSEventImpl(context);
-			ClientCoreSDK.getInstance().setChatBaseEvent(baseEventListener);
-			ClientCoreSDK.getInstance().setChatTransDataEvent(transDataListener);
-			ClientCoreSDK.getInstance().setMessageQoSEvent(messageQoSListener);
+			IMCore.getInstance().setChatBaseEvent(baseEventListener);
+			IMCore.getInstance().setChatTransDataEvent(transDataListener);
+			IMCore.getInstance().setMessageQoSEvent(messageQoSListener);
 			
 			init = true;
 		}
 	}
 
 	public void release() {
-		ClientCoreSDK.getInstance().release();
+		IMCore.getInstance().release();
 	}
 
 	public ChatTransDataEventImpl getTransDataListener()
