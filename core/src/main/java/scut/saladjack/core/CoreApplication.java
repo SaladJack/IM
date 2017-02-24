@@ -4,6 +4,8 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
+import scut.saladjack.core.utils.CrashHandler;
+
 /**
  * Created by saladjack on 17/1/28.
  */
@@ -16,6 +18,7 @@ public class CoreApplication extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        CrashHandler.getInstance().init(this);
         String currentProcessName = getCurrentProcessName();
         if (currentProcessName.endsWith(":imservice")) {
             return;
