@@ -4,6 +4,8 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import scut.saladjack.core.utils.CrashHandler;
 
 /**
@@ -19,6 +21,8 @@ public class CoreApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         CrashHandler.getInstance().init(this);
+        if(LeakCanary.isInAnalyzerProcess(this)) return;
+        LeakCanary.install(this);
         String currentProcessName = getCurrentProcessName();
         if (currentProcessName.endsWith(":imservice")) {
             return;

@@ -2,6 +2,7 @@ package com.saladjack.im.ui.chat.event;
 
 
 import com.saladjack.im.event.ChatBaseEvent;
+import com.saladjack.im.service.IMService;
 import com.saladjack.im.ui.chat.ChatView;
 import com.saladjack.im.ui.signin.SigninView;
 
@@ -26,11 +27,10 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
 
 
 
-	@Override public void onSignInMessage(int userId, int responseCode, String username)
-	{
+	@Override public void onSignInMessage(int userId, int responseCode, String username) {
 		if (responseCode == 0) {
 
-
+			((IMService)context).setUserId(userId);
 			Log.i(TAG, "【DEBUG_UI】登录成功，当前分配的user_id=！"+userId);
 //			if(this.chatView != null) {
 //				this.chatView.showReConnectMessage("Reconnect Success");
@@ -64,8 +64,7 @@ public class ChatBaseEventImpl implements ChatBaseEvent {
 
 	@Override public void onLinkCloseMessage(int errcode) {
 		Log.e(TAG, "【DEBUG_UI】网络连接出错关闭了，error：" + errcode);
-		
-		// TODO 以下代码仅用于DEMO哦
+
 //		if(this.chatView != null) {
 //			this.chatView.onDisconnect("服务器连接已断开,error="+errcode);
 //		}

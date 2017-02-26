@@ -86,7 +86,7 @@ public class AutoReSigninDaemon {
 		autoResigninRunning = true;
 	}
 
-	public boolean isautoResigninRunning()
+	public boolean isAutoReSignInRunning()
 	{
 		return autoResigninRunning;
 	}

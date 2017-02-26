@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.saladjack.im.R;
 import com.saladjack.im.ui.base.BaseFragment;
 import com.saladjack.im.ui.findfriends.FindFriendsActivity;
-import com.saladjack.im.ui.signin.SigninActivity;
+import com.saladjack.im.ui.signin.SignInActivity;
 
 import scut.saladjack.core.bean.UserBean;
 
@@ -62,7 +62,7 @@ public class MineFragment extends BaseFragment implements MineView{
 
     @Override public void onSignOutSuccess() {
         getActivity().finish();
-        SigninActivity.open(getContext());
+        SignInActivity.open(getContext());
     }
 
     @Override public void onSignOutFail(int code) {

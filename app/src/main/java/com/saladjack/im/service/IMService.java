@@ -15,6 +15,8 @@ import android.util.Log;
 import com.saladjack.im.IMAidl;
 import com.saladjack.im.IMClientManager;
 import com.saladjack.im.conf.ConfigEntity;
+import com.saladjack.im.core.AutoReSigninDaemon;
+import com.saladjack.im.core.KeepAliveDaemon;
 import com.saladjack.im.core.LocalUDPDataSender;
 import com.saladjack.im.utils.AppUtils;
 
@@ -30,8 +32,7 @@ import rx.schedulers.Schedulers;
 public class IMService extends Service {
     private static final String TAG = "IMService";
     private final static int GRAY_SERVICE_ID = 1001;
-
-
+    private int userId = -1;
     @Nullable @Override public IBinder onBind(Intent intent) {
         return mBinder;
     }
@@ -57,7 +58,6 @@ public class IMService extends Service {
 
     @Override public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG,"onDestroy");
         IMClientManager.getInstance(this).release();
     }
 
@@ -66,14 +66,7 @@ public class IMService extends Service {
             ConfigEntity.serverIP = serverIP;
             ConfigEntity.serverUDPPort = serverPort;
 
-            // 异步提交登录名和密码
             new LocalUDPDataSender.SendSigninDataAsync(IMService.this, account, password) {
-                /**
-                 * 登录信息发送完成后将调用本方法（注意：此处仅是登录信息发送完成
-                 * ，真正的登录结果要在异步回调中处理）。
-                 *
-                 * @param code 数据发送返回码，0 表示数据成功发出，否则是错误码
-                 */
                 @Override
                 protected void fireAfterSendSignIn(int code) {
                     if(code == 0) {
@@ -96,14 +89,19 @@ public class IMService extends Service {
 
         @Override public void sendMessage(String message, int friendId, boolean qos) throws RemoteException {
             new LocalUDPDataSender.SendCommonDataAsync(IMService.this, message, friendId, true) {
-                @Override
-                protected void onPostExecute(Integer code) {
+                @Override protected void onPostExecute(Integer code) {
 //                    if(code == 0)
 ////                        onSendMessageSuccess();
 //                    else
 ////                    presenter.onSendMessageFail(code);
                 }
             }.execute();
+        }
+
+        @Override
+        public int getUserId() throws RemoteException {
+//            return KeepAliveDaemon.getInstance(IMService.this).isKeepAliveRunning() || AutoReSigninDaemon.getInstance(IMService.this).isAutoReSignInRunning();
+            return userId;
         }
     };
 
@@ -122,5 +120,9 @@ public class IMService extends Service {
             stopSelf();
             return super.onStartCommand(intent, flags, startId);
         }
+    }
+
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 }

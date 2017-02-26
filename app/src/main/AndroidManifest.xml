@@ -14,7 +14,7 @@
         android:name=".app.IMApp">
 
         <activity
-            android:name=".ui.signin.SigninActivity"
+            android:name=".ui.signin.SignInActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"

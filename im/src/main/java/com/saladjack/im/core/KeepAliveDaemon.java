@@ -48,8 +48,7 @@ public class KeepAliveDaemon {
 		init();
 	}
 	
-	private void init()
-	{
+	private void init() {
 		handler = new Handler();
 		runnable = new Runnable(){
 			@Override
@@ -115,8 +114,7 @@ public class KeepAliveDaemon {
 	}
 	
 
-	public boolean isKeepAliveRunning()
-	{
+	public boolean isKeepAliveRunning() {
 		return keepAliveRunning;
 	}
 	

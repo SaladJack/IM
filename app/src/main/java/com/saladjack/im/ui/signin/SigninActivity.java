@@ -1,6 +1,7 @@
 package com.saladjack.im.ui.signin;
 
 import com.saladjack.im.app.Constant;
+import com.saladjack.im.app.IMApp;
 import com.saladjack.im.ui.base.BaseActivity;
 import com.saladjack.im.ui.home.HomeActivity;
 import com.saladjack.im.ui.signup.SignUpActivity;
@@ -17,6 +18,7 @@ import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.support.design.widget.TextInputEditText;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,15 +34,15 @@ import scut.saladjack.core.db.dao.UserDao;
  * Created by saladjack on 17/1/27.
  */
 
-public class SigninActivity extends BaseActivity implements SigninView {
+public class SignInActivity extends BaseActivity implements SigninView {
 
 
 	public static void open(Context context) {
-		Intent intent = new Intent(context,SigninActivity.class);
+		Intent intent = new Intent(context,SignInActivity.class);
 		context.startActivity(intent);
 	}
 
-	private static final String TAG = "SigninActivity";
+	private static final String TAG = "SignInActivity";
 
 
 
@@ -55,9 +57,14 @@ public class SigninActivity extends BaseActivity implements SigninView {
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		System.out.println("SignIn: onCreate");
+//		if(alreadySignIn()){
+//			HomeActivity.open(this);
+//			finish();
+//		}
 		this.setContentView(R.layout.signin_activity);
+
 		presenter = new SigninPresenter(this);
-		// 界面UI基本设置
 		initViews();
 		mSignInSuccessReceiver = new BroadcastReceiver() {
 			@Override public void onReceive(Context context, Intent intent) {
@@ -161,6 +168,26 @@ public class SigninActivity extends BaseActivity implements SigninView {
 		}
 	}
 
+	private boolean alreadySignIn(){
+		UserDao userDao = new UserDao();
+		try {
+			int userId = IMApp.getInstance().getBinder().getUserId();
+			if(userId > 0) {
+				UserBean userBean = userDao.query(userId);
+				Constant.USER_ID = userId;
+				Constant.USER_NAME = userBean.getUserName();
+				Constant.USER_ACCOUNT = userBean.getAccount();
+				Constant.USER_PASSWORD = userBean.getPassword();
+				return true;
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}finally {
+			userDao.close();
+		}
+		return false;
+
+	}
 
 	@Override public void onSendMsgSuccess() {
 		showToast(R.string.send_msg_success);
@@ -232,7 +259,7 @@ public class SigninActivity extends BaseActivity implements SigninView {
 		 */
 		private void onTimeout() {
 			// 本观察者中由用户选择是否重试登录或者取消登录重试
-			new AlertDialog.Builder(SigninActivity.this)
+			new AlertDialog.Builder(SignInActivity.this)
 					.setTitle("超时了")
 					.setMessage("登录超时，可能是网络故障或服务器无法连接，是否重试？")
 					.setPositiveButton("重试！", new DialogInterface.OnClickListener(){

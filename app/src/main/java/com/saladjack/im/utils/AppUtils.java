@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import java.util.List;
+
 /**
  * Created by saladjack on 17/1/27.
  */
@@ -16,11 +18,9 @@ public class AppUtils {
     /**
      * 获取APP版本信息.
      */
-    public static String getProgramVersion(Context context)
-    {
+    public static String getProgramVersion(Context context) {
         PackageInfo info;
-        try
-        {
+        try {
             info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             return info.versionName;
         }
@@ -35,13 +35,11 @@ public class AppUtils {
      * 查看网络是否已连接
      * @return
      */
-    public static boolean checkNetworkState(Context context)
-    {
+    public static boolean checkNetworkState(Context context) {
         boolean flag = false;
         ConnectivityManager manager = (ConnectivityManager)context.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
-        if(manager.getActiveNetworkInfo() != null)
-        {
+        if(manager.getActiveNetworkInfo() != null) {
             flag = manager.getActiveNetworkInfo().isAvailable();
         }
 
@@ -69,6 +67,20 @@ public class AppUtils {
         Intent intent = new Intent(action);
         intent.putExtra("bundle",bundle);
         context.sendBroadcast(intent);
+    }
+
+
+    public static boolean isAppAlive(Context context, String packageName){
+        ActivityManager activityManager =
+                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processInfos
+                = activityManager.getRunningAppProcesses();
+        for(int i = 0; i < processInfos.size(); i++){
+            if(processInfos.get(i).processName.equals(packageName)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
