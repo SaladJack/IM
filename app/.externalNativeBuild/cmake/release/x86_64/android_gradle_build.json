@@ -1,0 +1,56 @@
+
+{
+	"buildFiles" : [ "D:/AndroidStudioProjects/IM/app/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\x86_64 --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"common-Release-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "common",
+			"buildCommand" : "D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\x86_64 --target common",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  -target x86_64-none-linux-android -gcc-toolchain D:/android-ndk-r12b/toolchains/x86_64-4.9/prebuilt/windows-x86_64 --sysroot=D:/android-ndk-r12b/platforms/android-21/arch-x86_64  -Dcommon_EXPORTS -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\x86_64\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -fno-exceptions -fno-rtti  -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "D:/AndroidStudioProjects/IM/app/src/main/cpp/common.cpp",
+					"workingDirectory" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/x86_64"
+				}
+			],
+			"output" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/obj/x86_64/libcommon.so",
+			"toolchain" : "1995973877"
+		},
+		"native-lib-Release-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "native-lib",
+			"buildCommand" : "D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\x86_64 --target native-lib",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  -target x86_64-none-linux-android -gcc-toolchain D:/android-ndk-r12b/toolchains/x86_64-4.9/prebuilt/windows-x86_64 --sysroot=D:/android-ndk-r12b/platforms/android-21/arch-x86_64  -Dnative_lib_EXPORTS -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\x86_64\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -fno-exceptions -fno-rtti  -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "D:/AndroidStudioProjects/IM/app/src/main/cpp/native-lib.cpp",
+					"workingDirectory" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/x86_64"
+				}
+			],
+			"output" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/obj/x86_64/libnative-lib.so",
+			"toolchain" : "1995973877"
+		}
+	},
+	"toolchains" : 
+	{
+		"1995973877" : 
+		{
+			"cCompilerExecutable" : "D:/android-ndk-r12b/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "D:/android-ndk-r12b/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

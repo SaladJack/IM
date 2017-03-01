@@ -1,0 +1,56 @@
+
+{
+	"buildFiles" : [ "D:/AndroidStudioProjects/IM/app/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\mips --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"common-Release-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "common",
+			"buildCommand" : "D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\mips --target common",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  -target mipsel-none-linux-android -gcc-toolchain D:/android-ndk-r12b/toolchains/mipsel-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=D:/android-ndk-r12b/platforms/android-15/arch-mips  -Dcommon_EXPORTS -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fno-exceptions -fno-rtti  -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "D:/AndroidStudioProjects/IM/app/src/main/cpp/common.cpp",
+					"workingDirectory" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips"
+				}
+			],
+			"output" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/obj/mips/libcommon.so",
+			"toolchain" : "1995973877"
+		},
+		"native-lib-Release-mips" : 
+		{
+			"abi" : "mips",
+			"artifactName" : "native-lib",
+			"buildCommand" : "D:\\Users\\Administrator\\AppData\\Local\\Android\\sdk1\\cmake\\3.6.3155560\\bin\\cmake.exe --build D:\\AndroidStudioProjects\\IM\\app\\.externalNativeBuild\\cmake\\release\\mips --target native-lib",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  -target mipsel-none-linux-android -gcc-toolchain D:/android-ndk-r12b/toolchains/mipsel-linux-android-4.9/prebuilt/windows-x86_64 --sysroot=D:/android-ndk-r12b/platforms/android-15/arch-mips  -Dnative_lib_EXPORTS -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\mips\\include -isystem D:\\android-ndk-r12b\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mips32 -Wa,--noexecstack -Wformat -Werror=format-security -fno-exceptions -fno-rtti  -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "D:/AndroidStudioProjects/IM/app/src/main/cpp/native-lib.cpp",
+					"workingDirectory" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips"
+				}
+			],
+			"output" : "D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/obj/mips/libnative-lib.so",
+			"toolchain" : "1995973877"
+		}
+	},
+	"toolchains" : 
+	{
+		"1995973877" : 
+		{
+			"cCompilerExecutable" : "D:/android-ndk-r12b/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "D:/android-ndk-r12b/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

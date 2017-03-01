@@ -1,0 +1,4 @@
+D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips/CMakeFiles/common.dir
+D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips/CMakeFiles/native-lib.dir
+D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips/CMakeFiles/edit_cache.dir
+D:/AndroidStudioProjects/IM/app/.externalNativeBuild/cmake/release/mips/CMakeFiles/rebuild_cache.dir
